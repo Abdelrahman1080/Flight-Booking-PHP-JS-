@@ -2,7 +2,14 @@
 
 require_once 'db.php';
 
- 
+function jsonResponse($status, $message, $data = null) {
+    echo json_encode([
+        "status" => $status,
+        "message" => $message,
+        "data" => $data
+    ]);
+    exit;
+}
 function getCurrentUser() {
     // Start session if not already started
     if (session_status() === PHP_SESSION_NONE) {
