@@ -182,7 +182,7 @@
 							<td>${f.seats ?? '-'}</td>
 							<td>${badgeForStatus(f.status)}</td>
 							<td class="text-right">
-								<a class="btn btn-outline btn-sm btn-edit-flight" data-id="${f.id || ''}" href="editFlight.html?flight=${f.id || ''}"><i class="fas fa-pen"></i> Edit</a>
+								<a class="btn btn-outline btn-sm" data-id="${f.id || ''}" href="viewFlight.html?flight=${f.id || ''}"><i class="fas fa-eye"></i> View</a>
 								<button class="btn btn-outline-secondary btn-sm btn-disable-flight" data-id="${f.id || ''}"><i class="fas fa-power-off"></i> Cancel</button>
 							</td>
 						</tr>`;
@@ -206,17 +206,33 @@
 
 			function fetchFlightDetails(id) {
 				return $.ajax({
-					url: '../../Back-End/company/flight_details.php',
+					url: '../../../Back-End/company/flight_details.php',
 					method: 'GET',
 					data: { flight_id: id },
 					dataType: 'json'
 				});
 			}
 
+			function showFlightDetails(data) {
+				const f = data?.flight || {};
+				const itinerary = (data?.itinerary || []).map(i => i.city_name).join(' → ');
+				const message = [
+					`Flight: ${f.flight_code || '-'}`,
+					`Name/Route: ${f.name || '-'}`,
+					`Departure: ${f.start_datetime || '-'}`,
+					`Arrival: ${f.end_datetime || '-'}`,
+					`Seats: ${f.max_passengers ?? '-'}`,
+					`Fee: ${f.fees ?? '-'}`,
+					`Status: ${f.is_completed ? 'Completed/Cancelled' : 'Scheduled/Active'}`,
+					`Itinerary: ${itinerary || 'n/a'}`
+				].join('\n');
+				alert(message);
+			}
+
 			function loadFlights() {
 				$('#flight-count').text('Loading...');
 				$.ajax({
-					url: '../../Back-End/company/home.php',
+					url: '../../../Back-End/company/home.php',
 					method: 'GET',
 					dataType: 'json',
 					success: function(resp) {
@@ -261,7 +277,7 @@
 				if (!id) return;
 				if (!confirm('Cancel this flight and refund registered passengers?')) return;
 				$.ajax({
-					url: '../../Back-End/company/cancel_flight.php',
+					url: '../../../Back-End/company/cancel_flight.php',
 					method: 'POST',
 					data: { flight_id: id },
 					dataType: 'json',

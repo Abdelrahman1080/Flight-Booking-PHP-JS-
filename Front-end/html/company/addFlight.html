@@ -213,7 +213,7 @@
 				$('#form-status').text('Saving flight...').removeClass('text-error text-success').addClass('text-secondary');
 
 				$.ajax({
-					url: '../../Back-End/company/add-flight.php',
+					url: '../../../Back-End/company/add-flight.php',
 					method: 'POST',
 					contentType: 'application/json',
 					data: JSON.stringify(payload),
