@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>SkyWings - Edit Company Profile</title>
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+	<link rel="stylesheet" href="../../css/styles.css">
+	<script src="../../js/jquery.js"></script>
+	<script src="/Flight-Booking-V2/Front-end/js/session-guard.js"></script>
+	<script src="../../js/scripts.js"></script>
+</head>
+<body>
+	<div class="container flex">
+		<div class="sidebar">
+			<div class="sidebar-brand">
+				<div class="logo flex items-center gap-sm">
+					<i class="fas fa-plane navbar-logo"></i>
+					<h1>SkyWings</h1>
+				</div>
+			</div>
+
+			<div class="sidebar-menu">
+				<a href="../companyDashboard.html" class="sidebar-item" data-page="dashboard">
+					<i class="fas fa-home sidebar-icon"></i>
+					<span>Dashboard</span>
+				</a>
+				<a href="addFlight.html" class="sidebar-item" data-page="add-flight">
+					<i class="fas fa-plane-departure sidebar-icon"></i>
+					<span>Add Flight</span>
+				</a>
+				<a href="manageFlgihts.html" class="sidebar-item" data-page="manage-flights">
+					<i class="fas fa-list sidebar-icon"></i>
+					<span>Manage Flights</span>
+				</a>
+				<a href="bookings.html" class="sidebar-item" data-page="bookings">
+					<i class="fas fa-users sidebar-icon"></i>
+					<span>Bookings</span>
+				</a>
+				<a href="companyProfile.html" class="sidebar-item" data-page="profile">
+					<i class="fas fa-id-card sidebar-icon"></i>
+					<span>Profile</span>
+				</a>
+				<a href="analytics.html" class="sidebar-item" data-page="analytics">
+					<i class="fas fa-chart-bar sidebar-icon"></i>
+					<span>Analytics</span>
+				</a>
+				<a href="companyMessages.html" class="sidebar-item" data-page="messages">
+					<i class="fas fa-envelope sidebar-icon"></i>
+					<span>Messages</span>
+				</a>
+				<a href="../companyDashboard.html#settings" class="sidebar-item" data-page="settings">
+					<i class="fas fa-cog sidebar-icon"></i>
+					<span>Settings</span>
+				</a>
+			</div>
+
+			<div class="user-profile mt-auto p-lg">
+				<div class="user-info flex items-center">
+					<div class="user-avatar" id="company-avatar-initials" style="overflow: hidden;">
+						<img id="company-avatar-logo" src="" alt="" style="display: none; width: 100%; height: 100%; object-fit: cover;">
+						<span id="company-avatar-text">--</span>
+					</div>
+					<div class="user-details">
+						<h4 class="text-md font-semibold" id="companyName">—</h4>
+						<p class="text-sm text-secondary" id="companyRole">—</p>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<div class="main-content">
+			<div class="page-header mb-xl">
+				<div class="header flex justify-between items-center mb-lg">
+					<div>
+						<h2 class="page-title">Edit Company Profile</h2>
+						<p class="page-subtitle">Update your company information</p>
+					</div>
+					<div class="header-actions flex items-center gap-md">
+						<a href="companyProfile.html" class="btn btn-outline"><i class="fas fa-arrow-left"></i> Back to Profile</a>
+						<button class="btn btn-primary" id="save-profile"><i class="fas fa-save"></i> Save Changes</button>
+					</div>
+				</div>
+				<p class="text-sm font-semibold mt-md mb-lg" id="profile-status"></p>
+			</div>
+
+			<!-- Logo Upload Section -->
+			<div class="card mb-lg">
+				<div class="card-header">
+					<h4 class="card-title"><i class="fas fa-image"></i> Company Logo</h4>
+				</div>
+				<div class="card-body">
+					<div class="flex items-center gap-lg">
+						<div style="flex-shrink: 0;">
+							<img id="company-logo-preview" src="" alt="Logo preview" style="width: 120px; height: 120px; object-fit: cover; border-radius: var(--border-radius-lg); display: none; border: 1px solid var(--neutral-light);">
+							<div id="logo-placeholder" style="width: 120px; height: 120px; background-color: var(--neutral-light); border-radius: var(--border-radius-lg); display: flex; align-items: center; justify-content: center; font-size: 3rem; color: var(--neutral-gray);">
+								<i class="fas fa-image"></i>
+							</div>
+						</div>
+						<div style="flex-grow: 1;">
+							<label class="btn btn-outline mb-md" for="company-logo" style="display: inline-flex;"><i class="fas fa-upload"></i> Upload Logo</label>
+							<input type="file" id="company-logo" accept="image/*" class="hidden">
+							<p class="form-text">PNG/JPG, max 2MB, square image recommended.</p>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<!-- Company Details Form -->
+			<div class="card mb-lg">
+				<div class="card-header">
+					<h4 class="card-title"><i class="fas fa-building"></i> Company Information</h4>
+				</div>
+				<div class="card-body">
+					<div class="grid grid-cols-2 gap-lg">
+						<div class="form-group">
+							<label class="form-label" for="company-name">Company Name</label>
+							<input class="form-control" id="company-name" type="text" placeholder="Your company name" required>
+						</div>
+						<div class="form-group">
+							<label class="form-label" for="company-location">Location</label>
+							<input class="form-control" id="company-location" type="text" placeholder="City / Region">
+						</div>
+					</div>
+					<div class="form-group">
+						<label class="form-label" for="company-address">Address</label>
+						<input class="form-control" id="company-address" type="text" placeholder="Full address">
+					</div>
+					<div class="form-group">
+						<label class="form-label" for="company-bio">About Company</label>
+						<textarea class="form-control" id="company-bio" rows="5" placeholder="Describe your airline, operations, and services..."></textarea>
+					</div>
+				</div>
+			</div>
+
+			<!-- Save Status Message -->
+			<div style="height: 20px; margin-bottom: 2rem;"></div>
+		</div>
+	</div>
+
+	<style>
+		.card-header {
+			display: flex;
+			align-items: center;
+			padding: var(--space-md);
+			border-bottom: 1px solid var(--neutral-light);
+		}
+
+		.card-title {
+			display: flex;
+			align-items: center;
+			gap: 0.75rem;
+			margin: 0;
+			font-size: 1.1rem;
+			font-weight: 600;
+			color: var(--neutral-dark);
+		}
+
+		.card-body {
+			padding: var(--space-md);
+		}
+
+		.form-text {
+			display: block;
+			margin-top: 0.5rem;
+			font-size: 0.875rem;
+			color: var(--neutral-gray);
+		}
+
+		.hidden {
+			display: none;
+		}
+	</style>
+
+	<script>
+		$(function() {
+			SkyWingsUI.initNavigation('profile');
+
+			// Load company profile for sidebar
+			$.ajax({
+				url: '../../../Back-End/company/dashboard-company.php',
+				method: 'GET',
+				dataType: 'json',
+				success: function(resp) {
+					if (resp?.success && resp.data?.company) {
+						const c = resp.data.company;
+						const logo = c.logo || null;
+						
+						if (logo) {
+							const logoPath = logo.startsWith('http') ? logo : `../../../Back-End/${logo}`;
+							$('#company-avatar-logo').attr('src', logoPath).show();
+							$('#company-avatar-text').hide();
+						} else {
+							$('#company-avatar-logo').hide();
+							$('#company-avatar-text').text(c.avatarInitials || 'CO').show();
+						}
+						
+						$('#companyName').text(c.name || 'Company');
+						$('#companyRole').text('Flight Operations');
+					}
+				}
+			});
+
+			// Load user profile data from backend to populate form
+			function loadUserProfile() {
+				$.ajax({
+					url: '../../../Back-End/company/company-profile.php',
+					method: 'GET',
+					dataType: 'json',
+					success: function(resp) {
+						if (resp && resp.success && resp.data && resp.data.company) {
+							const company = resp.data.company;
+							
+							// Populate form fields from company record
+							$('#company-name').val(company.company_name || '');
+							$('#company-location').val(company.location || '');
+							$('#company-address').val(company.address || '');
+							$('#company-bio').val(company.bio || '');
+							
+							// Display logo preview if exists
+							if (company.logo) {
+								const logoPath = company.logo.startsWith('http') ? company.logo : `../../../Back-End/${company.logo}`;
+								$('#company-logo-preview').attr('src', logoPath).show();
+								$('#logo-placeholder').hide();
+							}
+						} else {
+							console.warn('Failed to load profile:', resp?.message);
+						}
+					},
+					error: function(xhr) {
+						console.error('Error loading profile', xhr.status, xhr.responseText);
+					}
+				});
+			}
+
+			// Load profile on page initialization
+			loadUserProfile();
+
+			// Logo upload preview handler
+			$('#company-logo').on('change', function(e) {
+				const file = e.target.files && e.target.files[0];
+				if (!file) return;
+				const reader = new FileReader();
+				reader.onload = function(evt) {
+					$('#company-logo-preview').attr('src', evt.target.result).show();
+					$('#logo-placeholder').hide();
+				};
+				reader.readAsDataURL(file);
+			});
+
+			// Save profile handler
+			$('#save-profile').on('click', function(e) {
+				e.preventDefault();
+				const formData = new FormData();
+				formData.append('name', $('#company-name').val());
+				formData.append('bio', $('#company-bio').val());
+				formData.append('address', $('#company-address').val());
+				formData.append('location', $('#company-location').val());
+				
+				const logoFile = $('#company-logo')[0].files[0];
+				if (logoFile) {
+					formData.append('logo', logoFile);
+				}
+
+				const status = $('#profile-status');
+				status.text('Saving...').removeClass('text-error text-success').addClass('text-secondary');
+
+				$.ajax({
+					url: '../../../Back-End/company/edit-company-profile.php',
+					method: 'POST',
+					data: formData,
+					processData: false,
+					contentType: false,
+					success: function(resp) {
+						if (resp && resp.success) {
+							status.text('✓ Profile saved successfully!').removeClass('text-error text-secondary').addClass('text-success');
+							setTimeout(function() {
+								window.location.href = 'companyProfile.html';
+							}, 1500);
+						} else {
+							status.text('✗ ' + (resp?.message || 'Failed to save profile.')).removeClass('text-success text-secondary').addClass('text-error');
+						}
+					},
+					error: function(xhr) {
+						status.text('✗ Error saving profile.').removeClass('text-success text-secondary').addClass('text-error');
+						console.error('Error saving profile', xhr.status, xhr.responseText);
+					}
+				});
+			});
+		});
+	</script>
+</body>
+</html>

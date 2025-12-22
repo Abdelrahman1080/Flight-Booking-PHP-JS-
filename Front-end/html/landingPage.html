@@ -1,0 +1,467 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SkyWings - Book Your Flight Today</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="../css/styles.css">
+    <script src="../js/jquery.js"></script>
+    <style>
+        /* Landing Page Specific Styles */
+        .landing-container {
+            min-height: 100vh;
+            background: linear-gradient(135deg, var(--primary-blue) 0%, var(--secondary-teal) 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: var(--space-lg);
+        }
+
+        .landing-navbar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            background-color: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            box-shadow: var(--shadow-sm);
+            z-index: 1000;
+        }
+
+        .landing-navbar-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: var(--space-md) var(--space-lg);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .landing-brand {
+            display: flex;
+            align-items: center;
+            gap: var(--space-sm);
+            text-decoration: none;
+            color: var(--neutral-dark);
+            font-weight: 700;
+            font-size: var(--font-size-xl);
+        }
+
+        .landing-brand-icon {
+            font-size: 1.75rem;
+            color: var(--primary-blue);
+        }
+
+        .landing-nav-buttons {
+            display: flex;
+            gap: var(--space-md);
+        }
+
+        .landing-hero {
+            width: 100%;
+            max-width: 1200px;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: var(--space-xl);
+            align-items: center;
+            margin-top: 80px;
+        }
+
+        .landing-hero-content {
+            color: var(--neutral-white);
+        }
+
+        .landing-hero-title {
+            font-size: var(--font-size-4xl);
+            font-weight: 700;
+            margin-bottom: var(--space-md);
+            line-height: 1.2;
+        }
+
+        .landing-hero-subtitle {
+            font-size: var(--font-size-lg);
+            margin-bottom: var(--space-xl);
+            opacity: 0.95;
+        }
+
+        .landing-buttons {
+            display: flex;
+            flex-direction: column;
+            gap: var(--space-md);
+        }
+
+        .auth-cards {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: var(--space-lg);
+        }
+
+        .auth-card {
+            background-color: var(--neutral-white);
+            border-radius: var(--border-radius-lg);
+            padding: var(--space-xl);
+            box-shadow: var(--shadow-lg);
+            text-align: center;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            border: 2px solid transparent;
+        }
+
+        .auth-card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-xl);
+            border-color: var(--primary-blue);
+        }
+
+        .auth-card-icon {
+            font-size: 3rem;
+            margin-bottom: var(--space-md);
+            height: 80px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .auth-card-icon-passenger {
+            background-color: var(--primary-blue-light);
+            color: var(--primary-blue);
+            border-radius: var(--border-radius-lg);
+        }
+
+        .auth-card-icon-company {
+            background-color: var(--secondary-teal);
+            color: var(--neutral-white);
+            border-radius: var(--border-radius-lg);
+        }
+
+        .auth-card-title {
+            font-size: var(--font-size-xl);
+            font-weight: 600;
+            margin-bottom: var(--space-sm);
+            color: var(--neutral-dark);
+        }
+
+        .auth-card-description {
+            font-size: var(--font-size-md);
+            color: var(--neutral-gray);
+            margin-bottom: var(--space-lg);
+        }
+
+        .auth-card-buttons {
+            display: flex;
+            flex-direction: column;
+            gap: var(--space-sm);
+        }
+
+        .features-section {
+            background-color: var(--neutral-white);
+            padding: var(--space-2xl) var(--space-lg);
+            margin-top: var(--space-2xl);
+            border-radius: var(--border-radius-lg);
+            box-shadow: var(--shadow-md);
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: var(--space-lg);
+            margin-top: var(--space-lg);
+        }
+
+        .feature-item {
+            text-align: center;
+        }
+
+        .feature-icon {
+            font-size: 2rem;
+            margin-bottom: var(--space-md);
+        }
+
+        .feature-title {
+            font-weight: 600;
+            margin-bottom: var(--space-sm);
+            color: var(--neutral-dark);
+        }
+
+        .feature-description {
+            font-size: var(--font-size-sm);
+            color: var(--neutral-gray);
+        }
+
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 2000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background-color: var(--neutral-white);
+            border-radius: var(--border-radius-lg);
+            box-shadow: var(--shadow-xl);
+            padding: var(--space-xl);
+            width: 100%;
+            max-width: 450px;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: var(--space-lg);
+            padding-bottom: var(--space-md);
+            border-bottom: 1px solid var(--neutral-light);
+        }
+
+        .modal-title {
+            font-size: var(--font-size-2xl);
+            font-weight: 600;
+            color: var(--neutral-dark);
+            margin: 0;
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            font-size: var(--font-size-2xl);
+            color: var(--neutral-gray);
+            cursor: pointer;
+            transition: color 0.3s ease;
+        }
+
+        .modal-close:hover {
+            color: var(--neutral-dark);
+        }
+
+        .modal-body {
+            margin-bottom: var(--space-lg);
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .landing-hero {
+                grid-template-columns: 1fr;
+                margin-top: 100px;
+            }
+
+            .landing-hero-title {
+                font-size: var(--font-size-3xl);
+            }
+
+            .auth-cards {
+                grid-template-columns: 1fr;
+            }
+
+            .features-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .landing-nav-buttons {
+                flex-direction: column;
+            }
+        }
+
+        /* Utility Classes */
+        .mt-auto {
+            margin-top: auto;
+        }
+
+        .mb-md {
+            margin-bottom: var(--space-md);
+        }
+
+        .mb-lg {
+            margin-bottom: var(--space-lg);
+        }
+
+        .mb-xl {
+            margin-bottom: var(--space-xl);
+        }
+
+        .mt-md {
+            margin-top: var(--space-md);
+        }
+
+        .mt-lg {
+            margin-top: var(--space-lg);
+        }
+
+        .p-lg {
+            padding: var(--space-lg);
+        }
+
+        .ml-auto {
+            margin-left: auto;
+        }
+
+        .mr-md {
+            margin-right: var(--space-md);
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation Bar -->
+    <nav class="landing-navbar">
+        <div class="landing-navbar-content">
+            <a href="landingPage.html" class="landing-brand">
+                <i class="fas fa-plane-departure landing-brand-icon"></i>
+                <span>SkyWings</span>
+            </a>
+            <div class="landing-nav-buttons">
+                <button class="btn btn-outline btn-sm" id="loginBtn">Login</button>
+                <button class="btn btn-primary btn-sm" id="signupBtn">Sign Up</button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Landing Container -->
+    <div class="landing-container">
+        <div class="landing-hero">
+            <!-- Left Content -->
+            <div class="landing-hero-content">
+                <h1 class="landing-hero-title">Fly Around the World with Ease</h1>
+                <p class="landing-hero-subtitle">Book your flights, track your trips, and manage your reservations all in one place.</p>
+                <div class="landing-buttons">
+                    <button class="btn btn-primary btn-lg" id="signupBtnHero">
+                        <i class="fas fa-paper-plane"></i> Get Started
+                    </button>
+                    <button class="btn btn-outline btn-lg" style="border-color: white; color: white;" id="loginBtnHero">
+                        <i class="fas fa-sign-in-alt"></i> Sign In
+                    </button>
+                </div>
+            </div>
+
+            <!-- Right Content - Auth Cards -->
+            <div class="auth-cards">
+                <!-- Passenger Card -->
+                <div class="auth-card" id="passengerCard">
+                    <div class="auth-card-icon auth-card-icon-passenger">
+                        <i class="fas fa-user-tie"></i>
+                    </div>
+                    <h3 class="auth-card-title">Book as Passenger</h3>
+                    <p class="auth-card-description">Find and book flights to your favorite destinations</p>
+                    <div class="auth-card-buttons">
+                        <button class="btn btn-primary btn-sm" id="passengerSignup">Sign Up</button>
+                        <button class="btn btn-secondary btn-sm" id="passengerLogin">Login</button>
+                    </div>
+                </div>
+
+                <!-- Company Card -->
+                <div class="auth-card" id="companyCard">
+                    <div class="auth-card-icon auth-card-icon-company">
+                        <i class="fas fa-building"></i>
+                    </div>
+                    <h3 class="auth-card-title">Manage as Company</h3>
+                    <p class="auth-card-description">Add flights and manage your flight operations</p>
+                    <div class="auth-card-buttons">
+                        <button class="btn btn-primary btn-sm" id="companySignup">Sign Up</button>
+                        <button class="btn btn-secondary btn-sm" id="companyLogin">Login</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Features Section (Optional) -->
+    <div style="max-width: 1200px; margin: 0 auto; padding: var(--space-2xl) var(--space-lg);">
+        <div class="features-section">
+            <h2 class="text-3xl font-bold text-center mb-md">Why Choose SkyWings?</h2>
+            <p class="text-center text-secondary mb-lg">Everything you need for seamless flight booking and management</p>
+            <div class="features-grid">
+                <div class="feature-item">
+                    <div class="feature-icon">
+                        <i class="fas fa-lock text-primary"></i>
+                    </div>
+                    <h3 class="feature-title">Secure Bookings</h3>
+                    <p class="feature-description">Your data is protected with enterprise-grade security</p>
+                </div>
+                <div class="feature-item">
+                    <div class="feature-icon">
+                        <i class="fas fa-bolt text-primary"></i>
+                    </div>
+                    <h3 class="feature-title">Fast & Easy</h3>
+                    <p class="feature-description">Book your flight in just a few clicks</p>
+                </div>
+                <div class="feature-item">
+                    <div class="feature-icon">
+                        <i class="fas fa-headset text-primary"></i>
+                    </div>
+                    <h3 class="feature-title">24/7 Support</h3>
+                    <p class="feature-description">Our support team is always ready to help</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Login Modal -->
+    <div class="modal" id="loginModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">Choose Your Role</h2>
+                <button class="modal-close">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="flex flex-col gap-md">
+                    <button class="btn btn-primary btn-lg" id="passengerLoginChoose">
+                        <i class="fas fa-user-tie"></i> Login as Passenger
+                    </button>
+                    <button class="btn btn-secondary btn-lg" id="companyLoginChoose">
+                        <i class="fas fa-building"></i> Login as Company
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        $(document).ready(function() {
+            // Navigation buttons
+            $('#loginBtn, #loginBtnHero, #passengerLogin, #companyLogin').on('click', function() {
+                $('#loginModal').addClass('active');
+            });
+
+            $('#signupBtn, #signupBtnHero, #passengerSignup, #companySignup').on('click', function() {
+                // All sign-ups go through the main register.html page
+                window.location.href = 'register.html';
+            });
+
+            // Modal close buttons
+            $('.modal-close').on('click', function() {
+                $(this).closest('.modal').removeClass('active');
+            });
+
+            // Close modal when clicking outside
+            $(document).on('click', function(e) {
+                if ($(e.target).hasClass('modal')) {
+                    $(e.target).removeClass('active');
+                }
+            });
+
+            // Login role selection
+            $('#passengerLoginChoose').on('click', function() {
+                window.location.href = 'login.html?role=passenger';
+            });
+
+            $('#companyLoginChoose').on('click', function() {
+                window.location.href = 'login.html?role=company';
+            });
+
+            console.log('Landing page loaded successfully!');
+        });
+    </script>
+</body>
+</html>

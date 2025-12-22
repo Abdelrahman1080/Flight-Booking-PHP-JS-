@@ -1,0 +1,767 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SkyWings - Register</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="../css/styles.css">
+    <script src="../js/jquery.js"></script>
+    <style>
+        /* Registration Page Specific Styles */
+        .register-container {
+            min-height: 100vh;
+            display: flex;
+            background: linear-gradient(135deg, var(--primary-blue) 0%, var(--secondary-teal) 100%);
+        }
+
+        .register-brand {
+            position: fixed;
+            top: var(--space-lg);
+            left: var(--space-lg);
+            display: flex;
+            align-items: center;
+            gap: var(--space-sm);
+            text-decoration: none;
+            color: var(--neutral-white);
+            font-weight: 700;
+            font-size: var(--font-size-xl);
+            z-index: 100;
+        }
+
+        .register-brand-icon {
+            font-size: 1.75rem;
+        }
+
+        .register-left {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: var(--space-xl);
+            color: var(--neutral-white);
+            overflow-y: auto;
+        }
+
+        .register-left-content {
+            max-width: 500px;
+            text-align: center;
+        }
+
+        .register-left-title {
+            font-size: var(--font-size-4xl);
+            font-weight: 700;
+            margin-bottom: var(--space-md);
+            line-height: 1.2;
+        }
+
+        .register-left-subtitle {
+            font-size: var(--font-size-lg);
+            opacity: 0.9;
+            margin-bottom: var(--space-2xl);
+        }
+
+        .register-benefits {
+            display: flex;
+            flex-direction: column;
+            gap: var(--space-lg);
+            margin-top: var(--space-xl);
+            text-align: left;
+        }
+
+        .benefit-item {
+            display: flex;
+            align-items: flex-start;
+            gap: var(--space-md);
+        }
+
+        .benefit-icon {
+            font-size: 1.5rem;
+            flex-shrink: 0;
+        }
+
+        .benefit-content h4 {
+            font-weight: 600;
+            margin-bottom: var(--space-xs);
+        }
+
+        .benefit-content p {
+            font-size: var(--font-size-sm);
+            opacity: 0.85;
+        }
+
+        .register-right {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: var(--space-xl);
+            overflow-y: auto;
+        }
+
+        .register-form-container {
+            width: 100%;
+            max-width: 450px;
+            background-color: var(--neutral-white);
+            border-radius: var(--border-radius-lg);
+            padding: var(--space-2xl);
+            box-shadow: var(--shadow-xl);
+        }
+
+        .register-form-header {
+            text-align: center;
+            margin-bottom: var(--space-xl);
+        }
+
+        .register-form-icon {
+            font-size: 3rem;
+            margin-bottom: var(--space-md);
+            color: var(--primary-blue);
+        }
+
+        .register-form-title {
+            font-size: var(--font-size-2xl);
+            font-weight: 600;
+            color: var(--neutral-dark);
+            margin-bottom: var(--space-sm);
+        }
+
+        .register-form-subtitle {
+            font-size: var(--font-size-sm);
+            color: var(--neutral-gray);
+        }
+
+        .form-group {
+            margin-bottom: var(--space-lg);
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: var(--space-xs);
+            font-weight: 600;
+            color: var(--neutral-dark);
+            font-size: var(--font-size-sm);
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 0.875rem 1rem;
+            border: 2px solid var(--neutral-light);
+            border-radius: var(--border-radius-md);
+            font-size: var(--font-size-md);
+            transition: all 0.3s ease;
+            background-color: var(--neutral-white);
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: var(--primary-blue);
+            box-shadow: 0 0 0 3px var(--primary-blue-light);
+        }
+
+        .form-control::placeholder {
+            color: var(--neutral-gray);
+        }
+
+        .form-control.error {
+            border-color: var(--error);
+        }
+
+        .form-control.error:focus {
+            box-shadow: 0 0 0 3px var(--error-light);
+        }
+
+        .form-text.error {
+            color: var(--error);
+            font-size: var(--font-size-sm);
+            margin-top: var(--space-xs);
+            display: none;
+        }
+
+        .form-text.error.show {
+            display: block;
+        }
+
+        /* Account Type Selection */
+        .account-type-section {
+            margin-top: var(--space-2xl);
+            padding-top: var(--space-2xl);
+            border-top: 2px solid var(--neutral-light);
+        }
+
+        .account-type-label {
+            display: block;
+            margin-bottom: var(--space-lg);
+            font-weight: 600;
+            color: var(--neutral-dark);
+            font-size: var(--font-size-sm);
+        }
+
+        .account-type-options {
+            display: flex;
+            gap: var(--space-md);
+        }
+
+        .account-type-option {
+            flex: 1;
+            position: relative;
+        }
+
+        .account-type-input {
+            display: none;
+        }
+
+        .account-type-card {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: var(--space-md);
+            padding: var(--space-lg);
+            border: 2px solid var(--neutral-light);
+            border-radius: var(--border-radius-md);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background-color: var(--neutral-white);
+            text-align: center;
+        }
+
+        .account-type-card:hover {
+            border-color: var(--primary-blue);
+            background-color: var(--primary-blue-light);
+        }
+
+        .account-type-input:checked + .account-type-card {
+            border-color: var(--primary-blue);
+            background-color: var(--primary-blue);
+            color: var(--neutral-white);
+        }
+
+        .account-type-icon {
+            font-size: 2rem;
+        }
+
+        .account-type-name {
+            font-weight: 600;
+            font-size: var(--font-size-md);
+        }
+
+        .account-type-description {
+            font-size: var(--font-size-sm);
+            opacity: 0.8;
+        }
+
+        .account-type-input:checked + .account-type-card .account-type-description {
+            opacity: 1;
+        }
+
+        .btn {
+            width: 100%;
+            padding: 0.875rem 1.5rem;
+            border: none;
+            border-radius: var(--border-radius-md);
+            font-size: var(--font-size-md);
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: var(--space-sm);
+        }
+
+        .btn-primary {
+            background-color: var(--primary-blue);
+            color: var(--neutral-white);
+            margin-top: var(--space-lg);
+        }
+
+        .btn-primary:hover:not(:disabled) {
+            background-color: var(--primary-blue-dark);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .loading-spinner {
+            width: 16px;
+            height: 16px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-top: 2px solid var(--neutral-white);
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .register-login {
+            text-align: center;
+            margin-top: var(--space-lg);
+        }
+
+        .register-login a {
+            color: var(--primary-blue);
+            text-decoration: none;
+            font-weight: 600;
+            transition: color 0.3s ease;
+        }
+
+        .register-login a:hover {
+            color: var(--primary-blue-dark);
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: var(--space-md);
+        }
+
+        .form-row .form-group {
+            margin-bottom: 0;
+        }
+
+        /* Error/Success Alerts */
+        .alert {
+            padding: var(--space-md) var(--space-lg);
+            border-radius: var(--border-radius-md);
+            margin-bottom: var(--space-lg);
+            display: flex;
+            align-items: center;
+            gap: var(--space-md);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .alert.show {
+            opacity: 1;
+        }
+
+        .alert-icon {
+            font-size: 1.25rem;
+            flex-shrink: 0;
+        }
+
+        .alert-message {
+            flex: 1;
+        }
+
+        .alert-success {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .alert-error {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .register-container {
+                flex-direction: column;
+            }
+
+            .register-left {
+                padding: var(--space-lg);
+                min-height: 300px;
+            }
+
+            .register-left-title {
+                font-size: var(--font-size-2xl);
+            }
+
+            .register-right {
+                padding: var(--space-lg);
+            }
+
+            .register-form-container {
+                padding: var(--space-lg);
+            }
+
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+
+            .account-type-options {
+                flex-direction: column;
+            }
+
+            .register-brand {
+                position: static;
+                margin-bottom: var(--space-lg);
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Brand -->
+    <a href="landingPage.html" class="register-brand">
+        <i class="fas fa-plane-departure register-brand-icon"></i>
+        <span>SkyWings</span>
+    </a>
+
+    <div class="register-container">
+        <!-- Left Section -->
+        <div class="register-left">
+            <div class="register-left-content">
+                <h1 class="register-left-title">Join SkyWings</h1>
+                <p class="register-left-subtitle">Book flights and manage your travel with ease</p>
+
+                <div class="register-benefits">
+                    <div class="benefit-item">
+                        <i class="fas fa-check-circle benefit-icon"></i>
+                        <div class="benefit-content">
+                            <h4>Easy Booking</h4>
+                            <p>Find and book flights in seconds</p>
+                        </div>
+                    </div>
+                    <div class="benefit-item">
+                        <i class="fas fa-shield-alt benefit-icon"></i>
+                        <div class="benefit-content">
+                            <h4>Secure & Safe</h4>
+                            <p>Your data is protected with encryption</p>
+                        </div>
+                    </div>
+                    <div class="benefit-item">
+                        <i class="fas fa-headset benefit-icon"></i>
+                        <div class="benefit-content">
+                            <h4>24/7 Support</h4>
+                            <p>We're here to help anytime</p>
+                        </div>
+                    </div>
+                    <div class="benefit-item">
+                        <i class="fas fa-percent benefit-icon"></i>
+                        <div class="benefit-content">
+                            <h4>Best Deals</h4>
+                            <p>Get exclusive offers and discounts</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Right Section - Registration Form -->
+        <div class="register-right">
+            <div class="register-form-container">
+                <!-- Form Header -->
+                <div class="register-form-header">
+                    <i class="fas fa-user-plus register-form-icon"></i>
+                    <h2 class="register-form-title">Create Your Account</h2>
+                    <p class="register-form-subtitle">Start your journey with us</p>
+                </div>
+
+                <!-- Alert Messages -->
+                <div id="alert" class="alert"></div>
+
+                <!-- Registration Form -->
+                <form id="registerForm">
+                    <!-- Name -->
+                    <div class="form-group">
+                        <label class="form-label">Full Name</label>
+                        <input 
+                            type="text" 
+                            class="form-control" 
+                            id="name"
+                            name="name"
+                            placeholder="Enter your full name"
+                            required
+                        >
+                        <small class="form-text error"></small>
+                    </div>
+
+                    <!-- Email -->
+                    <div class="form-group">
+                        <label class="form-label">Email Address</label>
+                        <input 
+                            type="email" 
+                            class="form-control" 
+                            id="email"
+                            name="email"
+                            placeholder="Enter your email"
+                            required
+                        >
+                        <small class="form-text error"></small>
+                    </div>
+
+                    <!-- Phone -->
+                    <div class="form-group">
+                        <label class="form-label">Phone Number</label>
+                        <input 
+                            type="tel" 
+                            class="form-control" 
+                            id="tel"
+                            name="tel"
+                            placeholder="Enter your phone number"
+                        >
+                        <small class="form-text error"></small>
+                    </div>
+
+                    <!-- Password -->
+                    <div class="form-group">
+                        <label class="form-label">Password</label>
+                        <input 
+                            type="password" 
+                            class="form-control" 
+                            id="password"
+                            name="password"
+                            placeholder="Create a strong password"
+                            required
+                        >
+                        <small class="form-text error"></small>
+                    </div>
+
+                    <!-- Confirm Password -->
+                    <div class="form-group">
+                        <label class="form-label">Confirm Password</label>
+                        <input 
+                            type="password" 
+                            class="form-control" 
+                            id="confirmPassword"
+                            name="confirmPassword"
+                            placeholder="Confirm your password"
+                            required
+                        >
+                        <small class="form-text error"></small>
+                    </div>
+
+                    <!-- Account Type Selection -->
+                    <div class="account-type-section">
+                        <label class="account-type-label">Account Type</label>
+                        <div class="account-type-options">
+                            <div class="account-type-option">
+                                <input 
+                                    type="radio" 
+                                    id="passengerType" 
+                                    name="user_type" 
+                                    value="passenger"
+                                    class="account-type-input"
+                                    required
+                                >
+                                <label for="passengerType" class="account-type-card">
+                                    <i class="fas fa-user account-type-icon"></i>
+                                    <span class="account-type-name">Passenger</span>
+                                    <span class="account-type-description">Book flights</span>
+                                </label>
+                            </div>
+                            <div class="account-type-option">
+                                <input 
+                                    type="radio" 
+                                    id="companyType" 
+                                    name="user_type" 
+                                    value="company"
+                                    class="account-type-input"
+                                    required
+                                >
+                                <label for="companyType" class="account-type-card">
+                                    <i class="fas fa-building account-type-icon"></i>
+                                    <span class="account-type-name">Company</span>
+                                    <span class="account-type-description">Manage flights</span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Submit Button -->
+                    <button type="submit" class="btn btn-primary" id="registerBtn">
+                        <span>Create Account & Continue</span>
+                    </button>
+                </form>
+
+                <!-- Login Link -->
+                <div class="register-login">
+                    Already have an account? <a href="login.html">Login here</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        $(document).ready(function() {
+            const registerForm = $('#registerForm');
+            const registerBtn = $('#registerBtn');
+
+            // Form submission
+            registerForm.on('submit', function(e) {
+                e.preventDefault();
+
+                // Clear previous alerts
+                hideAlert();
+
+                // Validate form
+                if (!validateForm()) {
+                    return;
+                }
+
+                // Get account type
+                const userType = $('input[name="user_type"]:checked').val();
+                
+                // Prepare data
+                const registrationData = {
+                    name: $('#name').val().trim(),
+                    email: $('#email').val().trim(),
+                    password: $('#password').val(),
+                    tel: $('#tel').val().trim(),
+                    user_type: userType
+                };
+
+                console.log('Registering user with data:', registrationData);
+
+                // Show loading state
+                registerBtn.prop('disabled', true);
+                registerBtn.html('<div class="loading-spinner"></div><span>Creating Account...</span>');
+
+                // Submit registration
+                $.ajax({
+                    url: '/Flight-Booking-V2/Back-End/auth(log-register)/register.php',
+                    method: 'POST',
+                    contentType: 'application/json',
+                    dataType: 'json',
+                    data: JSON.stringify(registrationData),
+                    success: function(response) {
+                        console.log('Registration response:', response);
+                        console.log('Response type:', typeof response);
+                        console.log('Response keys:', Object.keys(response || {}));
+
+                        if (response && response.success && response.data && response.data.user_id) {
+                            console.log('User registered successfully with ID:', response.data.user_id);
+                            console.log('User type:', userType);
+                            
+                            // Store user data in sessionStorage for quick access on next page
+                            sessionStorage.setItem('newUserType', userType);
+                            sessionStorage.setItem('userData', JSON.stringify(response.data));
+                            
+                            // Verify storage worked
+                            console.log('Stored in sessionStorage:', sessionStorage.getItem('userData'));
+                            
+                            // Also set window.SkyWingsUser directly so profile pages don't need to wait for session check
+                            window.SkyWingsUser = response.data;
+                            
+                            // Redirect based on account type
+                            if (userType === 'company') {
+                                console.log('Redirecting to company registration...');
+                                setTimeout(() => {
+                                    console.log('About to redirect to companyRegister.html');
+                                    window.location.href = 'companyRegister.html';
+                                }, 300);
+                            } else {
+                                console.log('Redirecting to passenger registration...');
+                                setTimeout(() => {
+                                    console.log('About to redirect to userRegister.html');
+                                    window.location.href = 'userRegister.html';
+                                }, 300);
+                            }
+                        } else {
+                            console.error('Registration response validation failed', response);
+                            showAlert('error', (response && response.message) || 'Registration failed');
+                            resetButton();
+                        }
+                    },
+                    error: function(xhr) {
+                        console.error('Registration AJAX error:', xhr.responseText);
+                        let errorMsg = 'Registration failed. Please try again.';
+                        try {
+                            const response = JSON.parse(xhr.responseText);
+                            errorMsg = response.message || errorMsg;
+                        } catch(e) {
+                            errorMsg = xhr.responseText || errorMsg;
+                        }
+                        showAlert('error', errorMsg);
+                        resetButton();
+                    }
+                });
+            });
+
+            // Form validation
+            function validateForm() {
+                const name = $('#name').val().trim();
+                const email = $('#email').val().trim();
+                const password = $('#password').val();
+                const confirmPassword = $('#confirmPassword').val();
+                const userType = $('input[name="user_type"]:checked').val();
+
+                if (!name) {
+                    showFieldError('name', 'Name is required');
+                    return false;
+                }
+
+                if (!email) {
+                    showFieldError('email', 'Email is required');
+                    return false;
+                }
+
+                if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+                    showFieldError('email', 'Invalid email address');
+                    return false;
+                }
+
+                if (!password) {
+                    showFieldError('password', 'Password is required');
+                    return false;
+                }
+
+                if (password.length < 6) {
+                    showFieldError('password', 'Password must be at least 6 characters');
+                    return false;
+                }
+
+                if (password !== confirmPassword) {
+                    showFieldError('confirmPassword', 'Passwords do not match');
+                    return false;
+                }
+
+                if (!userType) {
+                    showAlert('error', 'Please select an account type');
+                    return false;
+                }
+
+                return true;
+            }
+
+            // Show field error
+            function showFieldError(fieldId, message) {
+                const field = $(`#${fieldId}`);
+                field.addClass('error');
+                field.siblings('.form-text.error').text(message).addClass('show');
+            }
+
+            // Clear field errors
+            $('.form-control').on('focus', function() {
+                $(this).removeClass('error');
+                $(this).siblings('.form-text.error').removeClass('show').text('');
+            });
+
+            // Show alert
+            function showAlert(type, message) {
+                const alert = $('#alert');
+                const icon = type === 'success' ? 'fa-check-circle' : 'fa-exclamation-circle';
+                const alertClass = type === 'success' ? 'alert-success' : 'alert-error';
+
+                alert.html(`
+                    <i class="fas ${icon} alert-icon"></i>
+                    <span class="alert-message">${message}</span>
+                `);
+                alert.addClass(`show ${alertClass}`);
+            }
+
+            // Hide alert
+            function hideAlert() {
+                $('#alert').removeClass('show alert-success alert-error').text('');
+            }
+
+            // Reset button
+            function resetButton() {
+                registerBtn.prop('disabled', false);
+                registerBtn.html('<span>Create Account & Continue</span>');
+            }
+        });
+    </script>
+</body>
+</html>

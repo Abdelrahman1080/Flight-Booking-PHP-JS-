@@ -1,4 +1,5 @@
 <?php
+session_start();
 header("Content-Type: application/json");
 require "../configration/db.php";
 require "../configration/helper-functions.php";
@@ -12,11 +13,11 @@ $tel = $data['tel'] ?? '';
 $user_type = $data['user_type'] ?? '';
 
 if (!$name || !$email || !$password || !$user_type) {
-    jsonResponse(false, "Missing required fields");
+    jsonResponse(false, "Missing required fields", null);
 }
 
 if (!in_array($user_type, ['company', 'passenger'])) {
-    jsonResponse(false, "Invalid user type");
+    jsonResponse(false, "Invalid user type", null);
 }
 
 $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
@@ -28,7 +29,7 @@ $check->execute();
 $check->store_result();
 
 if ($check->num_rows > 0) {
-    jsonResponse(false, "Email already exists");
+    jsonResponse(false, "Email already exists", null);
 }
 
 $stmt = $conn->prepare("
@@ -39,10 +40,62 @@ $stmt = $conn->prepare("
 $stmt->bind_param("sssss", $name, $email, $hashedPassword, $tel, $user_type);
 
 if ($stmt->execute()) {
-    jsonResponse(true, "Registered successfully", [
-        "user_id" => $stmt->insert_id,
-        "user_type" => $user_type
-    ]);
+    $userId = $stmt->insert_id;
+    
+    // Set session
+    $_SESSION['user_id'] = $userId;
+    $_SESSION['user_type'] = $user_type;
+    
+    // AUTO-CREATE passenger or company record immediately
+    if ($user_type === 'company') {
+        // Create empty company record
+        $companyStmt = $conn->prepare("
+            INSERT INTO companies (user_id, account_balance)
+            VALUES (?, 0)
+        ");
+        $companyStmt->bind_param("i", $userId);
+        $companyStmt->execute();
+        $companyStmt->close();
+        
+        echo json_encode([
+            "success" => true,
+            "message" => "Registered successfully",
+            "data" => [
+                "user_id" => $userId,
+                "name" => $name,
+                "email" => $email,
+                "tel" => $tel,
+                "user_type" => $user_type
+            ]
+        ]);
+    } else {
+        // Create empty passenger record
+        $passengerStmt = $conn->prepare("
+            INSERT INTO passengers (user_id, account_balance)
+            VALUES (?, 0)
+        ");
+        $passengerStmt->bind_param("i", $userId);
+        $passengerStmt->execute();
+        $passengerStmt->close();
+        
+        echo json_encode([
+            "success" => true,
+            "message" => "Registered successfully",
+            "data" => [
+                "user_id" => $userId,
+                "name" => $name,
+                "email" => $email,
+                "tel" => $tel,
+                "user_type" => $user_type
+            ]
+        ]);
+    }
+    exit();
 }
 
-jsonResponse(false, "Registration failed");
+echo json_encode([
+    "success" => false,
+    "message" => "Registration failed",
+    "data" => null
+]);
+exit();

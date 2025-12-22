@@ -8,7 +8,7 @@ $user_id = $data['user_id'] ?? '';
 $account = $data['account_balance'] ?? 0;
 
 if (!$user_id) {
-    jsonResponse(false, "User ID required");
+    jsonResponse(false, "User ID required", null);
 }
 
 $uploadDir = __DIR__ . "/../uploads";
@@ -41,15 +41,33 @@ if (!empty($_FILES['passport_img']['name'])) {
     );
 }
 
-$stmt = $conn->prepare("
-    INSERT INTO passengers (user_id, photo, passport_img, account_balance)
-    VALUES (?, ?, ?, ?)
-");
+// Check if profile exists
+$checkStmt = $conn->prepare("SELECT id FROM passenger_profiles WHERE user_id = ?");
+$checkStmt->bind_param("i", $user_id);
+$checkStmt->execute();
+$checkResult = $checkStmt->get_result();
 
-$stmt->bind_param("issd", $user_id, $photoPath, $passportPath, $account);
-
-if ($stmt->execute()) {
-    jsonResponse(true, "Passenger profile completed");
+if ($checkResult->num_rows > 0) {
+    // Update existing profile
+    $stmt = $conn->prepare("
+        UPDATE passenger_profiles 
+        SET account_balance = ?,
+            photo = COALESCE(?, photo),
+            passport_img = COALESCE(?, passport_img)
+        WHERE user_id = ?
+    ");
+    $stmt->bind_param("dssi", $account, $photoPath, $passportPath, $user_id);
+} else {
+    // Insert new profile
+    $stmt = $conn->prepare("
+        INSERT INTO passenger_profiles (user_id, photo, passport_img, account_balance)
+        VALUES (?, ?, ?, ?)
+    ");
+    $stmt->bind_param("issd", $user_id, $photoPath, $passportPath, $account);
 }
 
-jsonResponse(false, $stmt->error);
+if ($stmt->execute()) {
+    jsonResponse(true, "Passenger profile completed", null);
+}
+
+jsonResponse(false, $stmt->error, null);

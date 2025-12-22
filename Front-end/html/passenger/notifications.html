@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>SkyWings - Notifications</title>
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+	<link rel="stylesheet" href="../../css/styles.css">
+	<script src="../../js/jquery.js"></script>
+	<script src="/Flight-Booking-V2/Front-end/js/session-guard.js"></script>
+</head>
+<body>
+	<div class="container">
+		<div class="page-header mb-xl flex justify-between items-center">
+			<div>
+				<h2 class="page-title">Notifications</h2>
+				<p class="page-subtitle">Flight updates and alerts</p>
+			</div>
+			<div class="flex items-center gap-sm">
+				<button class="btn btn-outline btn-sm" id="refresh-notifications">Refresh</button>
+				<button class="btn btn-secondary btn-sm" id="mark-all-read">Mark all read</button>
+			</div>
+		</div>
+
+		<div class="card">
+			<div class="card-body" id="notifications-list"></div>
+		</div>
+	</div>
+
+	<script>
+		$(function() {
+			$('#refresh-notifications').on('click', loadNotifications);
+			$('#mark-all-read').on('click', markAllRead);
+
+			function loadNotifications() {
+				// TODO: Wire to notifications endpoint when available and render items.
+			}
+
+			function markAllRead() {
+				// TODO: Wire to mark-as-read endpoint when available, then refresh list.
+			}
+
+			function renderNotifications(items) {
+				const list = $('#notifications-list');
+				list.empty();
+				(items || []).forEach(function(n) {
+					const item = `
+						<div class="alert ${n.type ? `alert-${n.type}` : ''} mb-sm">
+							<div class="alert-icon"><i class="fas fa-bell"></i></div>
+							<div class="alert-content">
+								<p class="alert-title">${n.title || ''}</p>
+								<p class="alert-message">${n.message || ''}</p>
+							</div>
+							<div class="alert-time text-sm text-secondary">${n.time || ''}</div>
+						</div>`;
+					list.append(item);
+				});
+			}
+
+			loadNotifications();
+		});
+	</script>
+</body>
+</html>

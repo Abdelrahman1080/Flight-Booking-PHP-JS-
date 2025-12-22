@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>SkyWings - Analytics</title>
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+	<link rel="stylesheet" href="../../css/styles.css">
+	<script src="../../js/jquery.js"></script>
+	<script src="/Flight-Booking-V2/Front-end/js/session-guard.js"></script>
+	<script src="../../js/scripts.js"></script>
+</head>
+<body>
+	<div class="container flex">
+		<div class="sidebar">
+			<div class="sidebar-brand">
+				<div class="logo flex items-center gap-sm">
+					<i class="fas fa-plane navbar-logo"></i>
+					<h1>SkyWings</h1>
+				</div>
+			</div>
+
+			<div class="sidebar-menu">
+				<a href="../companyDashboard.html" class="sidebar-item" data-page="dashboard">
+					<i class="fas fa-home sidebar-icon"></i>
+					<span>Dashboard</span>
+				</a>
+				<a href="addFlight.html" class="sidebar-item" data-page="add-flight">
+					<i class="fas fa-plane-departure sidebar-icon"></i>
+					<span>Add Flight</span>
+				</a>
+				<a href="manageFlgihts.html" class="sidebar-item" data-page="manage-flights">
+					<i class="fas fa-list sidebar-icon"></i>
+					<span>Manage Flights</span>
+				</a>
+				<a href="bookings.html" class="sidebar-item" data-page="bookings">
+					<i class="fas fa-users sidebar-icon"></i>
+					<span>Bookings</span>
+				</a>
+				<a href="companyProfile.html" class="sidebar-item" data-page="profile">
+					<i class="fas fa-id-card sidebar-icon"></i>
+					<span>Profile</span>
+				</a>
+				<a href="analytics.html" class="sidebar-item" data-page="analytics">
+					<i class="fas fa-chart-bar sidebar-icon"></i>
+					<span>Analytics</span>
+				</a>
+				<a href="companyMessages.html" class="sidebar-item" data-page="messages">
+					<i class="fas fa-envelope sidebar-icon"></i>
+					<span>Messages</span>
+				</a>
+				<a href="../companyDashboard.html#settings" class="sidebar-item" data-page="settings">
+					<i class="fas fa-cog sidebar-icon"></i>
+					<span>Settings</span>
+				</a>
+			</div>
+
+			<div class="user-profile mt-auto p-lg">
+				<div class="user-info flex items-center">
+					<div class="user-avatar" id="company-avatar-initials" style="overflow: hidden;">
+						<img id="company-avatar-logo" src="" alt="" style="display: none; width: 100%; height: 100%; object-fit: cover;">
+						<span id="company-avatar-text">--</span>
+					</div>
+					<div class="user-details">
+						<h4 class="text-md font-semibold" id="companyName">—</h4>
+						<p class="text-sm text-secondary" id="companyRole">—</p>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<div class="main-content">
+			<div class="page-header mb-xl">
+				<div class="header flex justify-between items-center mb-lg">
+					<div>
+						<h2 class="page-title">Analytics</h2>
+						<p class="page-subtitle">Performance, revenue, and operational insights</p>
+					</div>
+					<div class="header-actions flex items-center gap-md">
+						<a class="btn btn-outline" href="bookings.html"><i class="fas fa-users"></i> Bookings</a>
+					</div>
+				</div>
+			</div>
+
+			<div class="stats-grid mb-xl" id="analytics-cards">
+				<div class="stat-card">
+					<div class="stat-icon card-icon-primary"><i class="fas fa-dollar-sign"></i></div>
+					<div class="stat-content">
+						<div class="stat-value" id="card-revenue">$0</div>
+						<div class="stat-label">Monthly Revenue</div>
+						<div class="stat-change positive" id="card-revenue-change">—</div>
+					</div>
+				</div>
+				<div class="stat-card">
+					<div class="stat-icon card-icon-success"><i class="fas fa-percentage"></i></div>
+					<div class="stat-content">
+						<div class="stat-value" id="card-load">0%</div>
+						<div class="stat-label">Avg. Load Factor</div>
+						<div class="stat-change positive" id="card-load-change">—</div>
+					</div>
+				</div>
+				<div class="stat-card">
+					<div class="stat-icon card-icon-warning"><i class="fas fa-clock"></i></div>
+					<div class="stat-content">
+						<div class="stat-value" id="card-ontime">0%</div>
+						<div class="stat-label">On-Time Performance</div>
+						<div class="stat-change" id="card-ontime-change">—</div>
+					</div>
+				</div>
+				<div class="stat-card">
+					<div class="stat-icon card-icon-error"><i class="fas fa-chart-line"></i></div>
+					<div class="stat-content">
+						<div class="stat-value" id="card-yield">$0</div>
+						<div class="stat-label">Yield per Seat</div>
+						<div class="stat-change positive" id="card-yield-change">—</div>
+					</div>
+				</div>
+			</div>
+
+			<div class="grid grid-cols-2 gap-lg mb-lg">
+				<div class="card">
+					<div class="card-header flex justify-between items-center">
+						<h3 class="card-title">Route Performance</h3>
+						<span class="text-sm text-secondary">Current month</span>
+					</div>
+					<div class="card-body" id="route-performance"></div>
+				</div>
+
+				<div class="card">
+					<div class="card-header flex justify-between items-center">
+						<h3 class="card-title">Operational KPIs</h3>
+						<span class="text-sm text-secondary">Live</span>
+					</div>
+					<div class="card-body" id="kpi-list"></div>
+				</div>
+			</div>
+
+			<div class="card">
+				<div class="card-header flex justify-between items-center">
+					<h3 class="card-title">On-Time Performance</h3>
+					<span class="text-sm text-secondary">By base</span>
+				</div>
+				<div class="card-body" id="otp-list"></div>
+			</div>
+		</div>
+	</div>
+
+	<script>
+		$(function() {
+			SkyWingsUI.initNavigation('analytics');
+
+			// Load company profile for sidebar
+			$.ajax({
+				url: '../../../Back-End/company/dashboard-company.php',
+				method: 'GET',
+				dataType: 'json',
+				success: function(resp) {
+					if (resp?.success && resp.data?.company) {
+						const c = resp.data.company;
+						const logo = c.logo || null;
+						
+						if (logo) {
+							const logoPath = logo.startsWith('http') ? logo : `../../../Back-End/${logo}`;
+							$('#company-avatar-logo').attr('src', logoPath).show();
+							$('#company-avatar-text').hide();
+						} else {
+							$('#company-avatar-logo').hide();
+							$('#company-avatar-text').text(c.avatarInitials || 'CO').show();
+						}
+						
+						$('#companyName').text(c.name || 'Company');
+						$('#companyRole').text('Flight Operations');
+					}
+				}
+			});
+
+			function fmtCurrency(n) {
+				const num = Number(n || 0);
+				return `$${num.toLocaleString(undefined, { maximumFractionDigits: 0 })}`;
+			}
+
+			function fmtPercent(n) {
+				const num = Number(n || 0);
+				return `${num.toFixed(0)}%`;
+			}
+
+			function fetchFlights() {
+				return $.ajax({ url: '../../Back-End/company/home.php', method: 'GET', dataType: 'json' });
+			}
+
+			function fetchFlightDetails(flightId) {
+				return $.ajax({ url: '../../Back-End/company/flight_details.php', method: 'GET', dataType: 'json', data: { flight_id: flightId } });
+			}
+
+			function renderCards(metrics) {
+				$('#card-revenue').text(fmtCurrency(metrics.revenue));
+				$('#card-revenue-change').text(metrics.revenueChange || '—');
+				$('#card-load').text(fmtPercent(metrics.load));
+				$('#card-load-change').text(metrics.loadChange || '—').addClass('positive');
+				$('#card-ontime').text(fmtPercent(metrics.ontime));
+				$('#card-ontime-change').text(metrics.ontimeChange || '—');
+				$('#card-yield').text(fmtCurrency(metrics.yield));
+				$('#card-yield-change').text(metrics.yieldChange || '—');
+			}
+
+			function renderRoutes(items) {
+				const routeContainer = $('#route-performance');
+				routeContainer.empty();
+				if (!items.length) {
+					routeContainer.append('<p class="text-secondary">No routes to display.</p>');
+					return;
+				}
+				items.forEach(function(r) {
+					const block = `
+						<div class="stats-item mb-md">
+							<div>
+								<h4 class="text-md font-semibold">${r.name}</h4>
+								<p class="text-sm text-secondary">${r.bookings} bookings</p>
+							</div>
+							<div class="text-md font-semibold">${fmtPercent(r.load)}</div>
+						</div>
+						<div class="progress-bar"><div class="progress" style="width:${Math.min(100, Math.max(0, r.load))}%"></div></div>`;
+					routeContainer.append(block);
+				});
+			}
+
+			function renderKPIs(kpis) {
+				const kpiList = $('#kpi-list');
+				kpiList.empty();
+				kpis.forEach(function(k) {
+					const item = `
+						<div class="stats-item mb-md">
+							<div>
+								<h4 class="text-md font-semibold">${k.title}</h4>
+							</div>
+							<div class="text-md ${k.status === 'warning' ? 'text-warning' : 'text-success'} font-semibold">${k.value}</div>
+						</div>`;
+					kpiList.append(item);
+				});
+			}
+
+			function renderOTPByBase(items) {
+				const otpList = $('#otp-list');
+				otpList.empty();
+				if (!items.length) {
+					otpList.append('<p class="text-secondary">No OTP data yet.</p>');
+					return;
+				}
+				items.forEach(function(o) {
+					const item = `
+						<div class="stats-item mb-md">
+							<div>
+								<h4 class="text-md font-semibold">${o.base}</h4>
+							</div>
+							<div class="text-md font-semibold">${fmtPercent(o.ontime)}</div>
+						</div>
+						<div class="progress-bar"><div class="progress" style="width:${Math.min(100, Math.max(0, o.ontime))}%"></div></div>`;
+					otpList.append(item);
+				});
+			}
+
+			function computeAnalytics(baseFlights, detailsById) {
+				let totalRevenue = 0;
+				let totalSeats = 0;
+				let totalRegistered = 0;
+				let onTimeCount = 0;
+				const routes = [];
+				const baseMap = {};
+
+				baseFlights.forEach(function(f) {
+					const d = detailsById[f.id] || {};
+					const flightInfo = d.flight || {};
+					const fees = Number(flightInfo.fees || 0);
+					const seats = Number(flightInfo.max_passengers || 0);
+					const reg = (d.registered_passengers || []).length;
+					const pend = (d.pending_passengers || []).length;
+
+					totalRevenue += reg * fees;
+					totalSeats += seats;
+					totalRegistered += reg;
+
+					const status = (f.status || '').toLowerCase();
+					if (status && status !== 'delayed' && status !== 'cancelled') onTimeCount++;
+
+					const routeName = (flightInfo.name || f.name || f.route || f.flight_code || 'Route').trim();
+					const loadPct = seats > 0 ? (reg / seats) * 100 : 0;
+					routes.push({ name: routeName, load: loadPct, bookings: reg });
+
+					const origin = routeName.includes('->') ? routeName.split('->')[0].trim() : '—';
+					if (!baseMap[origin]) baseMap[origin] = { base: origin, flights: 0, ontime: 0 };
+					baseMap[origin].flights += 1;
+					if (status && status !== 'delayed' && status !== 'cancelled') baseMap[origin].ontime += 1;
+				});
+
+				const load = totalSeats > 0 ? (totalRegistered / totalSeats) * 100 : 0;
+				const yieldPerSeat = totalSeats > 0 ? totalRevenue / totalSeats : 0;
+				const ontime = baseFlights.length > 0 ? (onTimeCount / baseFlights.length) * 100 : 0;
+
+				const kpis = [];
+				const totalPending = Object.values(detailsById).reduce((acc, d) => acc + ((d.pending_passengers || []).length), 0);
+				const totalBookings = totalRegistered + totalPending;
+				const pendingRate = totalBookings > 0 ? (totalPending / totalBookings) * 100 : 0;
+				const avgFee = totalRegistered > 0 ? (totalRevenue / totalRegistered) : 0;
+				kpis.push({ title: 'Total bookings', value: (totalBookings).toLocaleString(), status: 'success' });
+				kpis.push({ title: 'Pending approval', value: fmtPercent(pendingRate), status: pendingRate > 15 ? 'warning' : 'success' });
+				kpis.push({ title: 'Avg. ticket fee', value: fmtCurrency(avgFee), status: 'success' });
+
+				const otpByBase = Object.values(baseMap).map(b => ({ base: b.base, ontime: b.flights > 0 ? (b.ontime / b.flights) * 100 : 0 }))
+					.sort((a,b) => b.ontime - a.ontime);
+
+				return {
+					cards: { revenue: totalRevenue, load: load, ontime: ontime, yield: yieldPerSeat },
+					routes: routes.sort((a,b) => b.bookings - a.bookings).slice(0, 5),
+					kpis: kpis,
+					otpByBase: otpByBase.slice(0, 5)
+				};
+			}
+
+			function loadAnalytics() {
+				// Reset placeholders while loading
+				renderCards({ revenue: 0, load: 0, ontime: 0, yield: 0 });
+				$('#route-performance').html('<p class="text-secondary">Loading routes…</p>');
+				$('#kpi-list').html('');
+				$('#otp-list').html('');
+
+				fetchFlights().done(function(resp) {
+					if (!resp?.success) {
+						renderCards({ revenue: 0, load: 0, ontime: 0, yield: 0 });
+						$('#route-performance').html('<p class="text-secondary">No flights found.</p>');
+						return;
+					}
+					const flights = resp.data?.flights || [];
+					if (!flights.length) {
+						renderCards({ revenue: 0, load: 0, ontime: 0, yield: 0 });
+						$('#route-performance').html('<p class="text-secondary">No flights found.</p>');
+						return;
+					}
+
+					const detailPromises = flights.map(f => fetchFlightDetails(f.id).then(r => ({ id: f.id, resp: r })).catch(() => ({ id: f.id, resp: { success: false, data: {} } })));
+					Promise.all(detailPromises).then(function(results) {
+						const detailsById = {};
+						results.forEach(function(item) {
+							if (item.resp && item.resp.success) detailsById[item.id] = item.resp.data || {};
+							else detailsById[item.id] = {};
+						});
+
+						const analytics = computeAnalytics(flights, detailsById);
+						renderCards(analytics.cards);
+						renderRoutes(analytics.routes);
+						renderKPIs(analytics.kpis);
+						renderOTPByBase(analytics.otpByBase);
+					}).catch(function(err){
+						console.error('analytics details error', err);
+						$('#route-performance').html('<p class="text-error">Error loading flight details.</p>');
+					});
+				}).fail(function(xhr) {
+					console.error('analytics home error', xhr.responseText);
+					renderCards({ revenue: 0, load: 0, ontime: 0, yield: 0 });
+					$('#route-performance').html('<p class="text-error">Network error loading flights.</p>');
+				});
+			}
+
+			loadAnalytics();
+		});
+	</script>
+</body>
+</html>

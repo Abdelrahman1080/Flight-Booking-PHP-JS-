@@ -1,0 +1,493 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SkyWings - Company Dashboard</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="../css/styles.css">
+    <script src="../js/jquery.js"></script>
+    <script src="/Flight-Booking-V2/Front-end/js/session-guard.js"></script>
+    <script src="../js/scripts.js"></script>
+    <style>
+        /* Dashboard Utilities */
+        .mt-auto {
+            margin-top: auto;
+        }
+
+        .mb-md {
+            margin-bottom: var(--space-md);
+        }
+
+        .mb-lg {
+            margin-bottom: var(--space-lg);
+        }
+
+        .mb-xl {
+            margin-bottom: var(--space-xl);
+        }
+
+        .mt-md {
+            margin-top: var(--space-md);
+        }
+
+        .mt-lg {
+            margin-top: var(--space-lg);
+        }
+
+        .p-lg {
+            padding: var(--space-lg);
+        }
+
+        .ml-auto {
+            margin-left: auto;
+        }
+
+        .mr-md {
+            margin-right: var(--space-md);
+        }
+
+        /* Stats Grid */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: var(--space-lg);
+            margin-bottom: var(--space-xl);
+        }
+
+        .stat-card {
+            background-color: var(--neutral-white);
+            padding: var(--space-lg);
+            border-radius: var(--border-radius-lg);
+            box-shadow: var(--shadow-md);
+            transition: all 0.3s ease;
+        }
+
+        .stat-card:hover {
+            box-shadow: var(--shadow-lg);
+            transform: translateY(-2px);
+        }
+
+        .stat-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: var(--border-radius-md);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.75rem;
+            margin-bottom: var(--space-md);
+        }
+
+        .stat-value {
+            font-size: var(--font-size-2xl);
+            font-weight: 700;
+            color: var(--neutral-dark);
+            margin-bottom: var(--space-xs);
+        }
+
+        .stat-label {
+            font-size: var(--font-size-sm);
+            color: var(--neutral-gray);
+            margin-bottom: var(--space-sm);
+        }
+
+        .stat-change {
+            font-size: var(--font-size-sm);
+            display: flex;
+            align-items: center;
+            gap: var(--space-xs);
+        }
+
+        .stat-change.positive {
+            color: var(--success);
+        }
+
+        .stat-change.negative {
+            color: var(--error);
+        }
+
+        .card-icon-primary {
+            background-color: var(--primary-blue-light);
+            color: var(--primary-blue);
+        }
+
+        .card-icon-success {
+            background-color: var(--success-light);
+            color: var(--success);
+        }
+
+        .card-icon-warning {
+            background-color: var(--warning-light);
+            color: var(--warning);
+        }
+
+        .card-icon-error {
+            background-color: var(--error-light);
+            color: var(--error);
+        }
+
+        /* Progress Bar */
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background-color: var(--neutral-light);
+            border-radius: var(--border-radius-full);
+            overflow: hidden;
+            margin-top: var(--space-sm);
+        }
+
+        .progress {
+            height: 100%;
+            background-color: var(--primary-blue);
+            border-radius: var(--border-radius-full);
+        }
+
+        .progress-1 {
+            width: 75%;
+        }
+
+        .progress-2 {
+            width: 60%;
+        }
+
+        .progress-3 {
+            width: 85%;
+        }
+
+        .stats-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container flex">
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <div class="sidebar-brand">
+                <div class="logo flex items-center gap-sm">
+                    <i class="fas fa-plane navbar-logo"></i>
+                    <h1>SkyWings</h1>
+                </div>
+            </div>
+            
+            <div class="sidebar-menu">
+                <a href="companyDashboard.html" class="sidebar-item active" data-page="dashboard">
+                    <i class="fas fa-home sidebar-icon"></i>
+                    <span>Dashboard</span>
+                </a>
+                <a href="company/addFlight.html" class="sidebar-item" data-page="add-flight">
+                    <i class="fas fa-plane-departure sidebar-icon"></i>
+                    <span>Add Flight</span>
+                </a>
+                <a href="company/manageFlgihts.html" class="sidebar-item" data-page="manage-flights">
+                    <i class="fas fa-list sidebar-icon"></i>
+                    <span>Manage Flights</span>
+                </a>
+                <a href="company/bookings.html" class="sidebar-item" data-page="bookings">
+                    <i class="fas fa-users sidebar-icon"></i>
+                    <span>Bookings</span>
+                </a>
+                <a href="company/companyProfile.html" class="sidebar-item" data-page="profile">
+                    <i class="fas fa-id-card sidebar-icon"></i>
+                    <span>Profile</span>
+                </a>
+                <a href="company/analytics.html" class="sidebar-item" data-page="analytics">
+                    <i class="fas fa-chart-bar sidebar-icon"></i>
+                    <span>Analytics</span>
+                </a>
+                <a href="company/companyMessages.html" class="sidebar-item" data-page="messages">
+                    <i class="fas fa-envelope sidebar-icon"></i>
+                    <span>Messages</span>
+                </a>
+                <a href="companyDashboard.html#settings" class="sidebar-item" data-page="settings">
+                    <i class="fas fa-cog sidebar-icon"></i>
+                    <span>Settings</span>
+                </a>
+            </div>
+            
+            <div class="user-profile mt-auto p-lg">
+                <div class="user-info flex items-center">
+                    <div class="user-avatar" id="company-avatar-initials" style="overflow: hidden;">
+                        <img id="company-avatar-logo" src="" alt="" style="display: none; width: 100%; height: 100%; object-fit: cover;">
+                        <span id="company-avatar-text">--</span>
+                    </div>
+                    <div class="user-details">
+                        <h4 class="text-md font-semibold" id="companyName">—</h4>
+                        <p class="text-sm text-secondary" id="companyRole">—</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <div class="page-header mb-xl">
+                <div class="header flex justify-between items-center mb-lg">
+                    <div>
+                        <h2 class="page-title">Company Dashboard</h2>
+                        <p class="page-subtitle" id="companyWelcome">Welcome back! Here's your flight operations overview</p>
+                    </div>
+                    <div class="header-actions flex items-center gap-md">
+                        <button class="btn btn-primary" id="cta-add-flight">
+                            <i class="fas fa-plus"></i> Add Flight
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Dashboard Cards -->
+            <div class="stats-grid mb-xl" id="company-stats">
+                <div class="stat-card">
+                    <div class="stat-icon card-icon-primary">
+                        <i class="fas fa-plane"></i>
+                    </div>
+                    <div class="stat-content">
+                        <div class="stat-value" id="stat-active-flights">0</div>
+                        <div class="stat-label">Active Flights</div>
+                        <div class="stat-change" id="stat-active-change"></div>
+                    </div>
+                </div>
+                
+                <div class="stat-card">
+                    <div class="stat-icon card-icon-success">
+                        <i class="fas fa-check-circle"></i>
+                    </div>
+                    <div class="stat-content">
+                        <div class="stat-value" id="stat-total-bookings">0</div>
+                        <div class="stat-label">Total Bookings</div>
+                        <div class="stat-change" id="stat-total-bookings-change"></div>
+                    </div>
+                </div>
+                
+                <div class="stat-card">
+                    <div class="stat-icon card-icon-warning">
+                        <i class="fas fa-clock"></i>
+                    </div>
+                    <div class="stat-content">
+                        <div class="stat-value" id="stat-pending-confirmations">0</div>
+                        <div class="stat-label">Pending Confirmations</div>
+                        <div class="stat-change" id="stat-pending-change"></div>
+                    </div>
+                </div>
+                
+                <div class="stat-card">
+                    <div class="stat-icon card-icon-error">
+                        <i class="fas fa-dollar-sign"></i>
+                    </div>
+                    <div class="stat-content">
+                        <div class="stat-value" id="stat-revenue">$0</div>
+                        <div class="stat-label">Revenue This Month</div>
+                        <div class="stat-change" id="stat-revenue-change"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Active Flights Table -->
+            <div class="card mb-xl">
+                <div class="card-header flex justify-between items-center">
+                    <h3 class="card-title">Recent Bookings</h3>
+                    <a href="company/bookings.html" class="btn btn-outline btn-sm">
+                        View All <i class="fas fa-arrow-right ml-auto"></i>
+                    </a>
+                </div>
+                <div class="card-body">
+                    <div class="table-container">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Booking ID</th>
+                                    <th>Passenger</th>
+                                    <th>Flight</th>
+                                    <th>Status</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody id="recent-bookings-body">
+                                <!-- Dynamic rows -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Analytics Section -->
+            <div class="grid grid-cols-2 gap-lg">
+                <div class="card">
+                    <h3 class="card-title mb-md">Top Routes</h3>
+                    <div class="card-body" id="top-routes">
+                        <div class="stats-item">
+                            <div>
+                                <h4 class="text-md font-semibold" id="route-1-name">—</h4>
+                                <p class="text-sm text-secondary" id="route-1-info">—</p>
+                            </div>
+                            <div class="text-md font-semibold">—</div>
+                        </div>
+                        <div class="progress-bar">
+                            <div class="progress progress-1" style="width: 0%"></div>
+                        </div>
+                        
+                        <div class="stats-item mt-md">
+                            <div>
+                                <h4 class="text-md font-semibold" id="route-2-name">—</h4>
+                                <p class="text-sm text-secondary" id="route-2-info">—</p>
+                            </div>
+                            <div class="text-md font-semibold">—</div>
+                        </div>
+                        <div class="progress-bar">
+                            <div class="progress progress-2" style="width: 0%"></div>
+                        </div>
+                        
+                        <div class="stats-item mt-md">
+                            <div>
+                                <h4 class="text-md font-semibold" id="route-3-name">—</h4>
+                                <p class="text-sm text-secondary" id="route-3-info">—</p>
+                            </div>
+                            <div class="text-md font-semibold">—</div>
+                        </div>
+                        <div class="progress-bar">
+                            <div class="progress progress-3" style="width: 0%"></div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="card">
+                    <h3 class="card-title mb-md">Recent Activity</h3>
+                    <div class="card-body" id="company-recent-activity"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        $(document).ready(function() {
+            SkyWingsUI.initNavigation('dashboard');
+            SkyWingsUI.bindSidebarClicks();
+
+            // Add Flight button
+            $('#cta-add-flight').click(function(e) {
+                e.preventDefault();
+                window.location.href = 'company/addFlight.html';
+            });
+
+            // Delegated manage/review buttons for dynamic rows
+            $(document).on('click', '.btn-view-booking', function() {
+                alert('Booking details would open here.');
+            });
+
+            function renderCompanyDashboard(data) {
+                const name = data.company?.name || 'Company';
+                const role = 'Flight Operations';
+                const initials = data.company?.avatarInitials || (name.match(/\b\w/g) || []).join('').substring(0,2).toUpperCase();
+                const logo = data.company?.logo || null;
+                
+                // Update sidebar profile - show logo if available, otherwise initials
+                if (logo) {
+                    const logoPath = logo.startsWith('http') ? logo : `../../Back-End/${logo}`;
+                    $('#company-avatar-logo').attr('src', logoPath).show();
+                    $('#company-avatar-text').hide();
+                } else {
+                    $('#company-avatar-logo').hide();
+                    $('#company-avatar-text').text(initials).show();
+                }
+                
+                $('#companyName').text(name);
+                $('#companyRole').text(role);
+                
+                $('#companyWelcome').text(`Welcome back, ${name}! Here's your flight operations overview`);
+
+                // Stats
+                $('#stat-active-flights').text(data.stats?.activeFlights ?? '0');
+                $('#stat-total-bookings').text(data.stats?.totalBookings ?? '0');
+                $('#stat-pending-confirmations').text(data.stats?.pendingConfirmations ?? '0');
+                $('#stat-revenue').text(data.stats?.revenueThisMonth ?? '$0');
+
+                // Recent bookings
+                const tbody = $('#recent-bookings-body');
+                tbody.empty();
+                (data.recentBookings || []).forEach(function(b){
+                    const row = `
+                        <tr>
+                            <td>${b.id}</td>
+                            <td>${b.passenger}</td>
+                            <td>${b.flight}</td>
+                            <td><span class="badge ${b.status === 'Confirmed' ? 'badge-success' : 'badge-warning'}">${b.status}</span></td>
+                            <td class="text-right"><button class="btn btn-outline btn-sm btn-view-booking">View</button></td>
+                        </tr>
+                    `;
+                    tbody.append(row);
+                });
+
+                // Top routes
+                const routes = data.topRoutes || [];
+                if (routes[0]) {
+                    $('#route-1-name').text(routes[0].name);
+                    $('#route-1-info').text(`${routes[0].bookings} bookings this month`);
+                    $('.progress.progress-1').css('width', (routes[0].percent || 0) + '%');
+                }
+                if (routes[1]) {
+                    $('#route-2-name').text(routes[1].name);
+                    $('#route-2-info').text(`${routes[1].bookings} bookings this month`);
+                    $('.progress.progress-2').css('width', (routes[1].percent || 0) + '%');
+                }
+                if (routes[2]) {
+                    $('#route-3-name').text(routes[2].name);
+                    $('#route-3-info').text(`${routes[2].bookings} bookings this month`);
+                    $('.progress.progress-3').css('width', (routes[2].percent || 0) + '%');
+                }
+
+                // Recent activity
+                const actList = $('#company-recent-activity');
+                if (data.recentActivity && data.recentActivity.length) {
+                    actList.empty();
+                    data.recentActivity.forEach(function(a){
+                        const iconClass = a.icon || (a.status === 'success' ? 'fas fa-check-circle text-success' : a.status === 'error' ? 'fas fa-times-circle text-error' : 'fas fa-info-circle text-primary');
+                        const item = `
+                            <div class="stats-item mt-md">
+                                <div>
+                                    <h4 class="text-md font-semibold">${a.title}</h4>
+                                    <p class="text-sm text-secondary">${a.date}</p>
+                                </div>
+                                <div><i class="${iconClass}"></i></div>
+                            </div>
+                        `;
+                        actList.append(item);
+                    });
+                }
+            }
+
+            function loadCompanyDashboard() {
+                $.ajax({
+                    url: '../../Back-End/company/dashboard-company.php',
+                    method: 'GET',
+                    dataType: 'json',
+                    success: function(resp) {
+                           console.log('=== DASHBOARD RESPONSE ===', resp);
+                        if (resp && resp.success) {
+                               console.log('Company data:', resp.data?.company);
+                            renderCompanyDashboard(resp.data || {});
+                        } else {
+                            console.warn('Failed to load company dashboard:', resp?.message);
+                        }
+                    },
+                    error: function(xhr) {
+                        console.error('Error loading company dashboard', xhr.status, xhr.responseText);
+                           console.log('Response text:', xhr.responseText);
+                    }
+                });
+            }
+
+            loadCompanyDashboard();
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>SkyWings - My Trips</title>
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+	<link rel="stylesheet" href="../../css/styles.css">
+	<script src="../../js/jquery.js"></script>
+	<script src="/Flight-Booking-V2/Front-end/js/session-guard.js"></script>
+</head>
+<body>
+	<div class="container">
+		<div class="page-header mb-xl flex justify-between items-center">
+			<div>
+				<h2 class="page-title">My Trips</h2>
+				<p class="page-subtitle">Upcoming and past flights</p>
+			</div>
+			<div class="flex items-center gap-sm">
+				<button class="btn btn-outline btn-sm" id="refresh-trips">Refresh</button>
+			</div>
+		</div>
+
+		<div class="grid grid-cols-2 gap-lg">
+			<div class="card">
+				<div class="card-header flex justify-between items-center">
+					<h3 class="card-title">Upcoming</h3>
+					<div class="text-sm text-secondary" id="upcoming-count"></div>
+				</div>
+				<div class="card-body">
+					<div class="table-container">
+						<table class="table">
+							<thead>
+								<tr>
+									<th>Flight</th>
+									<th>Route</th>
+									<th>Schedule</th>
+									<th>Status</th>
+								</tr>
+							</thead>
+							<tbody id="upcoming-body"></tbody>
+						</table>
+					</div>
+				</div>
+			</div>
+
+			<div class="card">
+				<div class="card-header flex justify-between items-center">
+					<h3 class="card-title">Completed</h3>
+					<div class="text-sm text-secondary" id="completed-count"></div>
+				</div>
+				<div class="card-body">
+					<div class="table-container">
+						<table class="table">
+							<thead>
+								<tr>
+									<th>Flight</th>
+									<th>Route</th>
+									<th>Date</th>
+									<th>SkyMiles</th>
+								</tr>
+							</thead>
+							<tbody id="completed-body"></tbody>
+						</table>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<script>
+		$(function() {
+			$('#refresh-trips').on('click', loadTrips);
+
+			function loadTrips() {
+				$.ajax({
+					url: '../../Back-End/passenger/dashboard-passenger.php',
+					method: 'GET',
+					dataType: 'json'
+				}).done(function(res) {
+					renderTrips(res);
+				}).fail(function() {
+					renderTrips({});
+				});
+			}
+
+			function renderTrips(data) {
+				renderUpcoming(data.upcomingFlights || []);
+				renderCompleted(data.completedTrips || []);
+			}
+
+			function renderUpcoming(list) {
+				const body = $('#upcoming-body');
+				body.empty();
+				$('#upcoming-count').text(list.length ? `${list.length} trips` : '');
+				list.forEach(function(f) {
+					const row = `
+						<tr>
+							<td>
+								<div class="flight-details">
+									<h4>${f.flightNumber || ''}</h4>
+									<p class="text-secondary">${f.airline || ''}</p>
+								</div>
+							</td>
+							<td>
+								<div class="flight-route">
+									<h4>${f.route || ''}</h4>
+									<p class="text-secondary">${f.origin || ''} → ${f.destination || ''}</p>
+								</div>
+							</td>
+							<td>
+								<div class="flight-time">
+									<h4>${f.date || ''}</h4>
+									<p class="text-secondary">${f.time || ''}</p>
+								</div>
+							</td>
+							<td><span class="badge badge-primary">${f.status || ''}</span></td>
+						</tr>`;
+					body.append(row);
+				});
+			}
+
+			function renderCompleted(list) {
+				const body = $('#completed-body');
+				body.empty();
+				$('#completed-count').text(list.length ? `${list.length} trips` : '');
+				list.forEach(function(f) {
+					const row = `
+						<tr>
+							<td>
+								<div class="flight-details">
+									<h4>${f.flightNumber || ''}</h4>
+									<p class="text-secondary">${f.airline || ''}</p>
+								</div>
+							</td>
+							<td>
+								<div class="flight-route">
+									<h4>${f.route || ''}</h4>
+									<p class="text-secondary">${f.origin || ''} → ${f.destination || ''}</p>
+								</div>
+							</td>
+							<td>
+								<div class="flight-time">
+									<h4>${f.date || ''}</h4>
+									<p class="text-secondary">${f.time || ''}</p>
+								</div>
+							</td>
+							<td class="text-primary">${f.skyMiles || ''}</td>
+						</tr>`;
+					body.append(row);
+				});
+			}
+
+			loadTrips();
+		});
+	</script>
+</body>
+</html>

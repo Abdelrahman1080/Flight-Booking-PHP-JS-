@@ -1,0 +1,808 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SkyWings - Login</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="../css/styles.css">
+    <script src="../js/jquery.js"></script>
+    <style>
+        /* Login Page Specific Styles */
+        .login-container {
+            min-height: 100vh;
+            display: flex;
+            background: linear-gradient(135deg, var(--primary-blue) 0%, var(--secondary-teal) 100%);
+        }
+
+        .login-brand {
+            position: fixed;
+            top: var(--space-lg);
+            left: var(--space-lg);
+            display: flex;
+            align-items: center;
+            gap: var(--space-sm);
+            text-decoration: none;
+            color: var(--neutral-white);
+            font-weight: 700;
+            font-size: var(--font-size-xl);
+            z-index: 100;
+        }
+
+        .login-brand-icon {
+            font-size: 1.75rem;
+        }
+
+        .login-left {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: var(--space-xl);
+            color: var(--neutral-white);
+        }
+
+        .login-left-content {
+            max-width: 500px;
+            text-align: center;
+        }
+
+        .login-left-title {
+            font-size: var(--font-size-4xl);
+            font-weight: 700;
+            margin-bottom: var(--space-md);
+            line-height: 1.2;
+        }
+
+        .login-left-subtitle {
+            font-size: var(--font-size-lg);
+            opacity: 0.9;
+            margin-bottom: var(--space-2xl);
+        }
+
+        .login-benefits {
+            display: flex;
+            flex-direction: column;
+            gap: var(--space-lg);
+            margin-top: var(--space-xl);
+            text-align: left;
+        }
+
+        .benefit-item {
+            display: flex;
+            align-items: flex-start;
+            gap: var(--space-md);
+        }
+
+        .benefit-icon {
+            font-size: 1.5rem;
+            flex-shrink: 0;
+        }
+
+        .benefit-content h4 {
+            font-weight: 600;
+            margin-bottom: var(--space-xs);
+        }
+
+        .benefit-content p {
+            font-size: var(--font-size-sm);
+            opacity: 0.85;
+        }
+
+        .login-right {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: var(--space-xl);
+        }
+
+        .login-form-container {
+            width: 100%;
+            max-width: 400px;
+            background-color: var(--neutral-white);
+            border-radius: var(--border-radius-lg);
+            padding: var(--space-2xl);
+            box-shadow: var(--shadow-xl);
+        }
+
+        .login-form-header {
+            text-align: center;
+            margin-bottom: var(--space-xl);
+        }
+
+        .login-form-icon {
+            font-size: 3rem;
+            margin-bottom: var(--space-md);
+        }
+
+        .login-form-icon.passenger {
+            color: var(--primary-blue);
+        }
+
+        .login-form-icon.company {
+            color: var(--secondary-teal);
+        }
+
+        .login-form-title {
+            font-size: var(--font-size-2xl);
+            font-weight: 600;
+            color: var(--neutral-dark);
+            margin-bottom: var(--space-sm);
+        }
+
+        .login-form-subtitle {
+            font-size: var(--font-size-sm);
+            color: var(--neutral-gray);
+        }
+
+        .form-group {
+            margin-bottom: var(--space-lg);
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: var(--space-xs);
+            font-weight: 600;
+            color: var(--neutral-dark);
+            font-size: var(--font-size-sm);
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 0.875rem 1rem;
+            border: 2px solid var(--neutral-light);
+            border-radius: var(--border-radius-md);
+            font-size: var(--font-size-md);
+            transition: all 0.3s ease;
+            background-color: var(--neutral-white);
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: var(--primary-blue);
+            box-shadow: 0 0 0 3px var(--primary-blue-light);
+        }
+
+        .form-control::placeholder {
+            color: var(--neutral-gray);
+        }
+
+        .form-control.error {
+            border-color: var(--error);
+        }
+
+        .form-control.error:focus {
+            box-shadow: 0 0 0 3px var(--error-light);
+        }
+
+        .form-text.error {
+            color: var(--error);
+            font-size: var(--font-size-sm);
+            margin-top: var(--space-xs);
+            display: none;
+        }
+
+        .form-text.error.show {
+            display: block;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: var(--space-md);
+        }
+
+        .login-remember {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: var(--space-lg);
+            font-size: var(--font-size-sm);
+        }
+
+        .login-remember-label {
+            display: flex;
+            align-items: center;
+            gap: var(--space-sm);
+            cursor: pointer;
+        }
+
+        .login-remember-checkbox {
+            width: 18px;
+            height: 18px;
+            cursor: pointer;
+        }
+
+        .login-forgot {
+            color: var(--primary-blue);
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+
+        .login-forgot:hover {
+            color: var(--primary-blue-dark);
+        }
+
+        .btn-login {
+            width: 100%;
+            margin-bottom: var(--space-md);
+        }
+
+        .login-signup {
+            text-align: center;
+            color: var(--neutral-gray);
+            font-size: var(--font-size-sm);
+        }
+
+        .login-signup a {
+            color: var(--primary-blue);
+            text-decoration: none;
+            font-weight: 600;
+            transition: color 0.3s ease;
+        }
+
+        .login-signup a:hover {
+            color: var(--primary-blue-dark);
+        }
+
+        .alert {
+            padding: var(--space-md);
+            border-radius: var(--border-radius-md);
+            margin-bottom: var(--space-md);
+            display: flex;
+            align-items: flex-start;
+            gap: var(--space-md);
+            display: none;
+        }
+
+        .alert.show {
+            display: flex;
+        }
+
+        .alert-icon {
+            font-size: 1.25rem;
+            flex-shrink: 0;
+        }
+
+        .alert-content {
+            flex: 1;
+        }
+
+        .alert-message {
+            font-size: var(--font-size-sm);
+        }
+
+        .alert-success {
+            background-color: var(--success-light);
+            border-left: 4px solid var(--success);
+            color: #22543d;
+        }
+
+        .alert-error {
+            background-color: var(--error-light);
+            border-left: 4px solid var(--error);
+            color: #742a2a;
+        }
+
+        .loading-spinner {
+            display: none;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            border-top: 3px solid white;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .btn:disabled {
+            opacity: 0.7;
+            cursor: not-allowed;
+        }
+
+        .btn:disabled .loading-spinner {
+            display: inline-block;
+            margin-right: var(--space-sm);
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .login-container {
+                flex-direction: column;
+            }
+
+            .login-left {
+                padding: var(--space-lg);
+            }
+
+            .login-right {
+                padding: var(--space-lg) var(--space-md);
+            }
+
+            .login-form-container {
+                max-width: 100%;
+            }
+
+            .login-left-title {
+                font-size: var(--font-size-3xl);
+            }
+
+            .login-benefits {
+                display: none;
+            }
+        }
+
+        /* Utility Classes */
+        .mb-md {
+            margin-bottom: var(--space-md);
+        }
+
+        .mb-lg {
+            margin-bottom: var(--space-lg);
+        }
+
+        .mb-xl {
+            margin-bottom: var(--space-xl);
+        }
+
+        .mt-md {
+            margin-top: var(--space-md);
+        }
+
+        .gap-md {
+            gap: var(--space-md);
+        }
+
+        .gap-lg {
+            gap: var(--space-lg);
+        }
+
+        .flex {
+            display: flex;
+        }
+
+        .flex-col {
+            flex-direction: column;
+        }
+
+        .items-center {
+            align-items: center;
+        }
+
+        .items-start {
+            align-items: flex-start;
+        }
+
+        .justify-between {
+            justify-content: space-between;
+        }
+
+        .text-primary {
+            color: var(--primary-blue);
+        }
+
+        .text-secondary {
+            color: var(--neutral-gray);
+        }
+
+        .text-sm {
+            font-size: var(--font-size-sm);
+        }
+
+        .font-semibold {
+            font-weight: 600;
+        }
+    </style>
+</head>
+<body>
+    <!-- Brand -->
+    <a href="landingPage.html" class="login-brand">
+        <i class="fas fa-plane-departure"></i>
+        <span>SkyWings</span>
+    </a>
+
+    <div class="login-container">
+        <!-- Left Section -->
+        <div class="login-left">
+            <div class="login-left-content">
+                <div id="passengerContent" style="display: none;">
+                    <h2 class="login-left-title">Welcome Back, Traveler!</h2>
+                    <p class="login-left-subtitle">Access your bookings and discover new destinations</p>
+                    
+                    <div class="login-benefits">
+                        <div class="benefit-item">
+                            <div class="benefit-icon">
+                                <i class="fas fa-plane"></i>
+                            </div>
+                            <div class="benefit-content">
+                                <h4>Book Flights</h4>
+                                <p>Explore and book flights to thousands of destinations</p>
+                            </div>
+                        </div>
+                        <div class="benefit-item">
+                            <div class="benefit-icon">
+                                <i class="fas fa-suitcase"></i>
+                            </div>
+                            <div class="benefit-content">
+                                <h4>Manage Trips</h4>
+                                <p>Track your bookings and upcoming flights</p>
+                            </div>
+                        </div>
+                        <div class="benefit-item">
+                            <div class="benefit-icon">
+                                <i class="fas fa-coins"></i>
+                            </div>
+                            <div class="benefit-content">
+                                <h4>Earn Rewards</h4>
+                                <p>Collect SkyMiles on every booking</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="companyContent" style="display: none;">
+                    <h2 class="login-left-title">Welcome Back, Partner!</h2>
+                    <p class="login-left-subtitle">Manage your flights and grow your business</p>
+                    
+                    <div class="login-benefits">
+                        <div class="benefit-item">
+                            <div class="benefit-icon">
+                                <i class="fas fa-plane-departure"></i>
+                            </div>
+                            <div class="benefit-content">
+                                <h4>Add Flights</h4>
+                                <p>Create and manage your flight schedules</p>
+                            </div>
+                        </div>
+                        <div class="benefit-item">
+                            <div class="benefit-icon">
+                                <i class="fas fa-chart-line"></i>
+                            </div>
+                            <div class="benefit-content">
+                                <h4>Track Analytics</h4>
+                                <p>Monitor your bookings and revenue</p>
+                            </div>
+                        </div>
+                        <div class="benefit-item">
+                            <div class="benefit-icon">
+                                <i class="fas fa-users"></i>
+                            </div>
+                            <div class="benefit-content">
+                                <h4>Manage Passengers</h4>
+                                <p>Handle reservations and customer inquiries</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Right Section - Login Form -->
+        <div class="login-right">
+            <div class="login-form-container">
+                <!-- Passenger Login Form -->
+                <div id="passengerForm" style="display: none;">
+                    <div class="login-form-header">
+                        <div class="login-form-icon passenger">
+                            <i class="fas fa-user-tie"></i>
+                        </div>
+                        <h2 class="login-form-title">Passenger Login</h2>
+                        <p class="login-form-subtitle">Sign in to your account</p>
+                    </div>
+
+                    <div id="passengerAlert" class="alert"></div>
+
+                    <form id="passengerLoginForm">
+                        <div class="form-group">
+                            <label class="form-label" for="passengerEmail">Email Address</label>
+                            <input 
+                                type="email" 
+                                id="passengerEmail" 
+                                name="email" 
+                                class="form-control" 
+                                placeholder="your@email.com"
+                                required
+                            >
+                            <div class="form-text error"></div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label" for="passengerPassword">Password</label>
+                            <input 
+                                type="password" 
+                                id="passengerPassword" 
+                                name="password" 
+                                class="form-control" 
+                                placeholder="••••••••"
+                                required
+                            >
+                            <div class="form-text error"></div>
+                        </div>
+
+                        <div class="login-remember">
+                            <label class="login-remember-label">
+                                <input type="checkbox" class="login-remember-checkbox" name="remember">
+                                <span>Remember me</span>
+                            </label>
+                            <a href="#" class="login-forgot">Forgot password?</a>
+                        </div>
+
+                        <button type="submit" class="btn btn-primary btn-lg btn-login" id="passengerLoginBtn">
+                            <span class="loading-spinner"></span>
+                            <span>Login</span>
+                        </button>
+                    </form>
+
+                    <div class="login-signup">
+                        Don't have an account? <a href="register.html">Sign up here</a>
+                    </div>
+                </div>
+
+                <!-- Company Login Form -->
+                <div id="companyForm" style="display: none;">
+                    <div class="login-form-header">
+                        <div class="login-form-icon company">
+                            <i class="fas fa-building"></i>
+                        </div>
+                        <h2 class="login-form-title">Company Login</h2>
+                        <p class="login-form-subtitle">Manage your flights</p>
+                    </div>
+
+                    <div id="companyAlert" class="alert"></div>
+
+                    <form id="companyLoginForm">
+                        <div class="form-group">
+                            <label class="form-label" for="companyEmail">Email Address</label>
+                            <input 
+                                type="email" 
+                                id="companyEmail" 
+                                name="email" 
+                                class="form-control" 
+                                placeholder="company@email.com"
+                                required
+                            >
+                            <div class="form-text error"></div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label" for="companyPassword">Password</label>
+                            <input 
+                                type="password" 
+                                id="companyPassword" 
+                                name="password" 
+                                class="form-control" 
+                                placeholder="••••••••"
+                                required
+                            >
+                            <div class="form-text error"></div>
+                        </div>
+
+                        <div class="login-remember">
+                            <label class="login-remember-label">
+                                <input type="checkbox" class="login-remember-checkbox" name="remember">
+                                <span>Remember me</span>
+                            </label>
+                            <a href="#" class="login-forgot">Forgot password?</a>
+                        </div>
+
+                        <button type="submit" class="btn btn-primary btn-lg btn-login" id="companyLoginBtn">
+                            <span class="loading-spinner"></span>
+                            <span>Login</span>
+                        </button>
+                    </form>
+
+                    <div class="login-signup">
+                        Don't have an account? <a href="register.html">Sign up here</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        $(document).ready(function() {
+            // Get role from URL parameter
+            const urlParams = new URLSearchParams(window.location.search);
+            const role = urlParams.get('role') || 'passenger';
+
+            // Show appropriate form
+            function showLoginForm(type) {
+                if (type === 'passenger') {
+                    $('#passengerContent').show();
+                    $('#companyContent').hide();
+                    $('#passengerForm').show();
+                    $('#companyForm').hide();
+                } else {
+                    $('#passengerContent').hide();
+                    $('#companyContent').show();
+                    $('#passengerForm').hide();
+                    $('#companyForm').show();
+                }
+            }
+
+            // Initialize
+            showLoginForm(role);
+
+            // Passenger Login Handler
+            $('#passengerLoginForm').on('submit', function(e) {
+                e.preventDefault();
+                
+                const formData = {
+                    email: $('#passengerEmail').val(),
+                    password: $('#passengerPassword').val()
+                };
+
+                // Validation
+                let isValid = true;
+                
+                if (!formData.email) {
+                    $('#passengerEmail').addClass('error');
+                    isValid = false;
+                } else {
+                    $('#passengerEmail').removeClass('error');
+                }
+
+                if (!formData.password) {
+                    $('#passengerPassword').addClass('error');
+                    isValid = false;
+                } else {
+                    $('#passengerPassword').removeClass('error');
+                }
+
+                if (!isValid) return;
+
+                // Show loading state
+                $('#passengerLoginBtn').prop('disabled', true);
+
+                // Send request
+                $.ajax({
+                    type: 'POST',
+                    url: '/Flight-Booking-V2/Back-End/auth(log-register)/login.php',
+                    contentType: 'application/json',
+                    data: JSON.stringify({
+                        email: formData.email,
+                        password: formData.password
+                    }),
+                    success: function(response) {
+                        if (response.success) {
+                            // Store user info if needed
+                            localStorage.setItem('user_id', response.data.user_id);
+                            localStorage.setItem('user_type', response.data.user_type);
+                            
+                            // Redirect by user_type
+                            const type = response.data.user_type;
+                            if (type === 'company') {
+                                window.location.href = 'companyDashboard.html';
+                            } else {
+                                window.location.href = 'userDashboard.html';
+                            }
+                        } else {
+                            showAlert('passengerAlert', response.message, 'error');
+                            $('#passengerLoginBtn').prop('disabled', false);
+                        }
+                    },
+                    error: function(xhr) {
+                        let msg = 'Login failed. Please try again.';
+                        try { const r = JSON.parse(xhr.responseText); msg = r.message || msg; } catch(_) { msg = xhr.responseText || msg; }
+                        showAlert('passengerAlert', msg, 'error');
+                        $('#passengerLoginBtn').prop('disabled', false);
+                    }
+                });
+            });
+
+            // Company Login Handler
+            $('#companyLoginForm').on('submit', function(e) {
+                e.preventDefault();
+                
+                const formData = {
+                    email: $('#companyEmail').val(),
+                    password: $('#companyPassword').val()
+                };
+
+                // Validation
+                let isValid = true;
+                
+                if (!formData.email) {
+                    $('#companyEmail').addClass('error');
+                    isValid = false;
+                } else {
+                    $('#companyEmail').removeClass('error');
+                }
+
+                if (!formData.password) {
+                    $('#companyPassword').addClass('error');
+                    isValid = false;
+                } else {
+                    $('#companyPassword').removeClass('error');
+                }
+
+                if (!isValid) return;
+
+                // Show loading state
+                $('#companyLoginBtn').prop('disabled', true);
+
+                // Send request
+                $.ajax({
+                    type: 'POST',
+                    url: '/Flight-Booking-V2/Back-End/auth(log-register)/login.php',
+                    contentType: 'application/json',
+                    data: JSON.stringify({
+                        email: formData.email,
+                        password: formData.password
+                    }),
+                    success: function(response) {
+                        if (response.success) {
+                            // Store user info if needed
+                            localStorage.setItem('user_id', response.data.user_id);
+                            localStorage.setItem('user_type', response.data.user_type);
+                            
+                            // Redirect by user_type
+                            const type = response.data.user_type;
+                            if (type === 'company') {
+                                window.location.href = 'companyDashboard.html';
+                            } else {
+                                window.location.href = 'userDashboard.html';
+                            }
+                        } else {
+                            showAlert('companyAlert', response.message, 'error');
+                            $('#companyLoginBtn').prop('disabled', false);
+                        }
+                    },
+                    error: function(xhr) {
+                        let msg = 'Login failed. Please try again.';
+                        try { const r = JSON.parse(xhr.responseText); msg = r.message || msg; } catch(_) { msg = xhr.responseText || msg; }
+                        showAlert('companyAlert', msg, 'error');
+                        $('#companyLoginBtn').prop('disabled', false);
+                    }
+                });
+            });
+
+            // Helper function to show alerts
+            function showAlert(alertId, message, type) {
+                const alert = $('#' + alertId);
+                alert.removeClass('alert-success alert-error show');
+                alert.addClass(`alert alert-${type} show`);
+                alert.html(`
+                    <div class="alert-icon">
+                        <i class="fas fa-${type === 'success' ? 'check-circle' : 'exclamation-circle'}"></i>
+                    </div>
+                    <div class="alert-content">
+                        <div class="alert-message">${message}</div>
+                    </div>
+                `);
+            }
+
+            // Input validation on blur
+            $('.form-control').on('blur', function() {
+                const value = $(this).val();
+                const errorElement = $(this).siblings('.form-text.error');
+                
+                if (!value) {
+                    $(this).addClass('error');
+                    errorElement.addClass('show').text('This field is required');
+                } else if ($(this).attr('type') === 'email' && !isValidEmail(value)) {
+                    $(this).addClass('error');
+                    errorElement.addClass('show').text('Please enter a valid email');
+                } else {
+                    $(this).removeClass('error');
+                    errorElement.removeClass('show');
+                }
+            });
+
+            // Helper function to validate email
+            function isValidEmail(email) {
+                const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                return emailRegex.test(email);
+            }
+
+            console.log('Login page loaded with role:', role);
+        });
+    </script>
+</body>
+</html>

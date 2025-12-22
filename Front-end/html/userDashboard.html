@@ -1,0 +1,468 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SkyWings - Flight Dashboard</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="../css/styles.css">
+    <script src="../js/jquery.js"></script>
+    <script src="/Flight-Booking-V2/Front-end/js/session-guard.js"></script>
+</head>
+<body>
+    <div class="container flex">
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <div class="sidebar-brand">
+                <div class="logo flex items-center gap-sm">
+                    <i class="fas fa-plane navbar-logo"></i>
+                    <h1>SkyWings</h1>
+                </div>
+            </div>
+            
+            <div class="sidebar-menu">
+                <a href="#" class="sidebar-item active">
+                    <i class="fas fa-home sidebar-icon"></i>
+                    <span>Dashboard</span>
+                </a>
+                <a href="#" class="sidebar-item">
+                    <i class="fas fa-plane-departure sidebar-icon"></i>
+                    <span>Book Flight</span>
+                </a>
+                <a href="#" class="sidebar-item">
+                    <i class="fas fa-suitcase sidebar-icon"></i>
+                    <span>My Trips</span>
+                </a>
+                <a href="#" class="sidebar-item">
+                    <i class="fas fa-bell sidebar-icon"></i>
+                    <span>Notifications</span>
+                </a>
+                <a href="#" class="sidebar-item">
+                    <i class="fas fa-heart sidebar-icon"></i>
+                    <span>Saved</span>
+                </a>
+                <a href="messages.html" class="sidebar-item">
+                    <i class="fas fa-envelope sidebar-icon"></i>
+                    <span>Messages</span>
+                </a>
+                <a href="#" class="sidebar-item">
+                    <i class="fas fa-cog sidebar-icon"></i>
+                    <span>Settings</span>
+                </a>
+            </div>
+            
+            <div class="user-profile mt-auto p-lg">
+                <div class="user-info flex items-center">
+                    <div class="user-avatar" id="user-avatar-initials">--</div>
+                    <div class="user-details">
+                        <h4 class="text-md font-semibold" id="user-name">—</h4>
+                        <p class="text-sm text-secondary" id="user-membership">—</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <div class="page-header mb-xl">
+                <div class="header flex justify-between items-center mb-lg">
+                    <div>
+                        <h2 class="page-title">Flight Dashboard</h2>
+                        <p class="page-subtitle" id="welcome-text">Welcome back! Here's your flight overview</p>
+                    </div>
+                    <div class="header-actions flex items-center gap-md">
+                        <button class="btn btn-icon">
+                            <i class="fas fa-bell"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Dashboard Cards -->
+            <div class="stats-grid mb-xl">
+                <div class="stat-card">
+                    <div class="stat-icon card-icon-primary">
+                        <i class="fas fa-plane"></i>
+                    </div>
+                    <div class="stat-content">
+                        <div class="stat-value" id="stat-upcoming">0</div>
+                        <div class="stat-label">Upcoming Flights</div>
+                        <div class="stat-change" id="stat-upcoming-change"></div>
+                    </div>
+                </div>
+                
+                <div class="stat-card">
+                    <div class="stat-icon card-icon-success">
+                        <i class="fas fa-check-circle"></i>
+                    </div>
+                    <div class="stat-content">
+                        <div class="stat-value" id="stat-completed">0</div>
+                        <div class="stat-label">Completed Trips</div>
+                        <div class="stat-change" id="stat-completed-change"></div>
+                    </div>
+                </div>
+                
+                <div class="stat-card">
+                    <div class="stat-icon card-icon-warning">
+                        <i class="fas fa-clock"></i>
+                    </div>
+                    <div class="stat-content">
+                        <div class="stat-value" id="stat-pending">0</div>
+                        <div class="stat-label">Pending Bookings</div>
+                        <div class="stat-change" id="stat-pending-change"></div>
+                    </div>
+                </div>
+                
+                <div class="stat-card">
+                    <div class="stat-icon card-icon-error">
+                        <i class="fas fa-coins"></i>
+                    </div>
+                    <div class="stat-content">
+                        <div class="stat-value" id="stat-skymiles">0</div>
+                        <div class="stat-label">SkyMiles Earned</div>
+                        <div class="stat-change" id="stat-skymiles-change"></div>
+                    </div>
+                </div>
+            </div>
+                        <div class="card mb-xl">
+                            <div class="card-header flex justify-between items-center">
+                                <h3 class="card-title">Upcoming Flights</h3>
+                                <a href="#" class="btn btn-outline btn-sm view-all">
+                                    View All <i class="fas fa-arrow-right ml-auto"></i>
+                                </a>
+                            </div>
+                            <div class="card-body">
+                                <div class="table-container">
+                                    <table class="table">
+                                        <thead>
+                                            <tr>
+                                                <th>Flight</th>
+                                                <th>Date & Time</th>
+                                                <th>Route</th>
+                                                <th>Status</th>
+                                                <th>Action</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="upcoming-flights-body">
+                                            <!-- Dynamic rows -->
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Quick Stats -->
+            <div class="grid grid-cols-2 gap-lg">
+                <div class="card">
+                    <h3 class="card-title mb-md">Popular Destinations</h3>
+                    <div class="card-body" id="popular-destinations"></div>
+                </div>
+                
+                <div class="card">
+                    <h3 class="card-title mb-md">Recent Activity</h3>
+                    <div class="card-body" id="recent-activity-list"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal for Flight Details -->
+    <div class="modal" id="flightModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">Flight Details</h3>
+                <button class="modal-close">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="flight-info-details">
+                    <!-- Flight details will be populated here -->
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary modal-close">Close</button>
+                <button class="btn btn-primary">Book Now</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="../js/scripts.js"></script>
+    <script>
+        $(document).ready(function() {
+            // Load user profile from localStorage or backend
+            const userId = localStorage.getItem('user_id');
+            const userName = localStorage.getItem('user_name');
+            
+            // Initialize navigation with user data
+            SkyWingsUI.initNavigation('dashboard', {
+                name: userName || 'Passenger',
+                role: 'Traveler'
+            });
+            SkyWingsUI.bindSidebarClicks();
+
+            // Menu item click handler
+            $('.sidebar-item').click(function(e) {
+                e.preventDefault();
+                $('.sidebar-item').removeClass('active');
+                $(this).addClass('active');
+            });
+
+            // View details button click handler (delegated)
+            $(document).on('click', '.view-details', function() {
+                const flightRow = $(this).closest('tr');
+                const flightNumber = flightRow.find('.flight-details h4').text();
+                const airline = flightRow.find('.flight-details p').text();
+                const date = flightRow.find('td:nth-child(2) h4').text();
+                const time = flightRow.find('td:nth-child(2) p').text();
+                const route = flightRow.find('td:nth-child(3) h4').text();
+                const cities = flightRow.find('td:nth-child(3) p').text();
+                const status = flightRow.find('.badge').text();
+                
+                // Populate modal
+                const modalContent = `
+                    <div class="card">
+                        <div class="card-body">
+                            <div class="flex items-center gap-lg mb-lg">
+                                <div class="flight-icon">
+                                    <i class="fas fa-plane"></i>
+                                </div>
+                                <div>
+                                    <h4 class="text-xl font-bold">${flightNumber}</h4>
+                                    <p class="text-secondary">${airline}</p>
+                                </div>
+                            </div>
+                            
+                            <div class="grid grid-cols-2 gap-md mb-lg">
+                                <div>
+                                    <p class="text-sm text-secondary">Date</p>
+                                    <p class="text-md font-semibold">${date}</p>
+                                </div>
+                                <div>
+                                    <p class="text-sm text-secondary">Time</p>
+                                    <p class="text-md font-semibold">${time}</p>
+                                </div>
+                            </div>
+                            
+                            <div class="mb-lg">
+                                <p class="text-sm text-secondary">Route</p>
+                                <h4 class="text-lg font-bold">${route}</h4>
+                                <p class="text-md">${cities}</p>
+                            </div>
+                            
+                            <div class="mb-lg">
+                                <p class="text-sm text-secondary">Status</p>
+                                <span class="badge ${status === 'Confirmed' ? 'badge-success' : 'badge-warning'}">${status}</span>
+                            </div>
+                            
+                            <div class="alert alert-info">
+                                <div class="flex items-start gap-md">
+                                    <i class="fas fa-info-circle alert-icon"></i>
+                                    <div>
+                                        <h5 class="alert-title">Flight Information</h5>
+                                        <p class="alert-message">This flight is confirmed and ready for boarding. Please arrive at the airport 2 hours before departure.</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                
+                $('.flight-info-details').html(modalContent);
+                $('#flightModal').addClass('active');
+            });
+
+            $('.search-bar input').on('keyup', function() {
+                const searchTerm = $(this).val().toLowerCase();
+                
+                $('.flight-row').each(function() {
+                    const flightText = $(this).text().toLowerCase();
+                    if (flightText.indexOf(searchTerm) > -1) {
+                        $(this).show();
+                    } else {
+                        $(this).hide();
+                    }
+                });
+            });
+
+            // Notification bell click
+            $('.btn-icon').click(function() {
+                const notificationModal = `
+                    <div class="modal" id="notificationModal">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h3 class="modal-title">Notifications (3)</h3>
+                                <button class="modal-close">&times;</button>
+                            </div>
+                            <div class="modal-body">
+                                <div class="flex flex-col gap-md">
+                                    <div class="alert alert-success">
+                                        <div class="flex items-start gap-md">
+                                            <i class="fas fa-plane alert-icon"></i>
+                                            <div>
+                                                <h5 class="alert-title">Flight Update</h5>
+                                                <p class="alert-message">Flight SW 2456 is on schedule for June 15, 2023.</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="alert alert-info">
+                                        <div class="flex items-start gap-md">
+                                            <i class="fas fa-coins alert-icon"></i>
+                                            <div>
+                                                <h5 class="alert-title">SkyMiles Update</h5>
+                                                <p class="alert-message">Your SkyMiles balance increased by 500 points.</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="alert alert-warning">
+                                        <div class="flex items-start gap-md">
+                                            <i class="fas fa-tag alert-icon"></i>
+                                            <div>
+                                                <h5 class="alert-title">Special Offer</h5>
+                                                <p class="alert-message">Get 20% off on your next flight to Tokyo!</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="modal-footer">
+                                <button class="btn btn-secondary modal-close">Close</button>
+                                <button class="btn btn-primary">Mark All as Read</button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                
+                $('#notificationModal').remove();
+                $('body').append(notificationModal);
+                $('#notificationModal').addClass('active');
+                
+                $('#notificationModal .modal-close').click(function() {
+                    $('#notificationModal').removeClass('active');
+                });
+            });
+
+            $('.modal-close').click(function() {
+                $(this).closest('.modal').removeClass('active');
+            });
+
+            $(document).click(function(e) {
+                if ($(e.target).hasClass('modal')) {
+                    $(e.target).removeClass('active');
+                }
+            });
+
+            // View all flights link
+            $('.view-all').click(function(e) {
+                e.preventDefault();
+                alert('This would navigate to a page with all your flights.');
+            });
+
+            // Card hover animation
+            $('.card').hover(
+                function() {
+                    $(this).addClass('shadow-lg');
+                },
+                function() {
+                    $(this).removeClass('shadow-lg');
+                }
+            );
+
+            function renderDashboard(data) {
+                const name = data.user?.name || 'Guest';
+                const membership = data.user?.membership || 'Member';
+                const initials = (name.match(/\b\w/g) || []).join('').substring(0,2).toUpperCase();
+                $('#user-name').text(name);
+                $('#user-membership').text(membership);
+                $('#user-avatar-initials').text(initials);
+                $('#welcome-text').text(`Welcome back, ${name}! Here's your flight overview`);
+
+                // Stats
+                $('#stat-upcoming').text(data.stats?.upcomingFlights ?? '0');
+                $('#stat-completed').text(data.stats?.completedTrips ?? '0');
+                $('#stat-pending').text(data.stats?.pendingBookings ?? '0');
+                $('#stat-skymiles').text(data.stats?.skyMiles ?? '0');
+
+                // Upcoming flights table
+                const tbody = $('#upcoming-flights-body');
+                tbody.empty();
+                (data.upcomingFlights || []).forEach(function(f) {
+                    const row = `
+                        <tr class="flight-row">
+                            <td>
+                                <div class="flight-details">
+                                    <h4 class="text-md font-semibold">${f.flightNumber}</h4>
+                                    <p class="text-sm text-secondary">${f.airline}</p>
+                                </div>
+                            </td>
+                            <td>
+                                <h4 class="text-md font-semibold">${f.date}</h4>
+                                <p class="text-sm text-secondary">${f.time}</p>
+                            </td>
+                            <td>
+                                <h4 class="text-md font-semibold">${f.route}</h4>
+                                <p class="text-sm text-secondary">${f.cities}</p>
+                            </td>
+                            <td>
+                                <span class="badge ${f.status === 'Confirmed' ? 'badge-success' : (f.status === 'Pending' ? 'badge-warning' : 'badge-info')}">${f.status}</span>
+                            </td>
+                            <td class="text-right">
+                                <button class="btn btn-outline btn-sm view-details">Details</button>
+                            </td>
+                        </tr>
+                    `;
+                    tbody.append(row);
+                });
+
+                // Popular destinations (update progress widths)
+                const dests = data.popularDestinations || [];
+                $('.progress.progress-1').css('width', (dests[0]?.percent || 0) + '%');
+                $('.progress.progress-2').css('width', (dests[1]?.percent || 0) + '%');
+                $('.progress.progress-3').css('width', (dests[2]?.percent || 0) + '%');
+
+                // Recent activity
+                const actList = $('#recent-activity-list');
+                if (data.recentActivity && data.recentActivity.length) {
+                    actList.empty();
+                    data.recentActivity.forEach(function(a){
+                        const iconClass = a.icon || (a.status === 'success' ? 'fas fa-check-circle text-success' : a.status === 'error' ? 'fas fa-times-circle text-error' : 'fas fa-info-circle text-primary');
+                        const item = `
+                            <div class="stats-item mt-md">
+                                <div>
+                                    <h4 class="text-md font-semibold">${a.title}</h4>
+                                    <p class="text-sm text-secondary">${a.date}</p>
+                                </div>
+                                <div><i class="${iconClass}"></i></div>
+                            </div>
+                        `;
+                        actList.append(item);
+                    });
+                }
+            }
+
+            function loadDashboard() {
+                $.ajax({
+                    url: '../../Back-End/passenger/dashboard-passenger.php',
+                    method: 'GET',
+                    dataType: 'json',
+                    success: function(resp) {
+                        if (resp && resp.success) {
+                            renderDashboard(resp.data || {});
+                        } else {
+                            console.warn('Failed to load dashboard data:', resp?.message);
+                        }
+                    },
+                    error: function(xhr) {
+                        console.error('Error loading dashboard data', xhr.status, xhr.responseText);
+                    }
+                });
+            }
+
+            loadDashboard();
+        });
+    </script>
+</body>
+</html>

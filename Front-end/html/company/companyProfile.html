@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>SkyWings - Company Profile</title>
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+	<link rel="stylesheet" href="../../css/styles.css">
+	<script src="../../js/jquery.js"></script>
+	<script src="/Flight-Booking-V2/Front-end/js/session-guard.js"></script>
+	<script src="../../js/scripts.js"></script>
+</head>
+<body>
+	<div class="container flex">
+		<div class="sidebar">
+			<div class="sidebar-brand">
+				<div class="logo flex items-center gap-sm">
+					<i class="fas fa-plane navbar-logo"></i>
+					<h1>SkyWings</h1>
+				</div>
+			</div>
+
+			<div class="sidebar-menu">
+				<a href="../companyDashboard.html" class="sidebar-item" data-page="dashboard">
+					<i class="fas fa-home sidebar-icon"></i>
+					<span>Dashboard</span>
+				</a>
+				<a href="addFlight.html" class="sidebar-item" data-page="add-flight">
+					<i class="fas fa-plane-departure sidebar-icon"></i>
+					<span>Add Flight</span>
+				</a>
+				<a href="manageFlgihts.html" class="sidebar-item" data-page="manage-flights">
+					<i class="fas fa-list sidebar-icon"></i>
+					<span>Manage Flights</span>
+				</a>
+				<a href="bookings.html" class="sidebar-item" data-page="bookings">
+					<i class="fas fa-users sidebar-icon"></i>
+					<span>Bookings</span>
+				</a>
+				<a href="companyProfile.html" class="sidebar-item" data-page="profile">
+					<i class="fas fa-id-card sidebar-icon"></i>
+					<span>Profile</span>
+				</a>
+				<a href="analytics.html" class="sidebar-item" data-page="analytics">
+					<i class="fas fa-chart-bar sidebar-icon"></i>
+					<span>Analytics</span>
+				</a>
+				<a href="companyMessages.html" class="sidebar-item" data-page="messages">
+					<i class="fas fa-envelope sidebar-icon"></i>
+					<span>Messages</span>
+				</a>
+				<a href="../companyDashboard.html#settings" class="sidebar-item" data-page="settings">
+					<i class="fas fa-cog sidebar-icon"></i>
+					<span>Settings</span>
+				</a>
+			</div>
+
+			<div class="user-profile mt-auto p-lg">
+				<div class="user-info flex items-center">
+					<div class="user-avatar" id="company-avatar-initials" style="overflow: hidden;">
+						<img id="company-avatar-logo" src="" alt="" style="display: none; width: 100%; height: 100%; object-fit: cover;">
+						<span id="company-avatar-text">--</span>
+					</div>
+					<div class="user-details">
+						<h4 class="text-md font-semibold" id="companyName">—</h4>
+						<p class="text-sm text-secondary" id="companyRole">—</p>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<div class="main-content">
+			<div class="page-header mb-xl">
+				<div class="header flex justify-between items-center mb-lg">
+					<div>
+						<h2 class="page-title">Company Profile</h2>
+						<p class="page-subtitle">View your company information and data persistence</p>
+					</div>
+					<div class="header-actions flex items-center gap-md">
+						<a href="editCompany.html" class="btn btn-primary"><i class="fas fa-edit"></i> Edit Profile</a>
+					</div>
+				</div>
+			</div>
+
+			<div class="card mb-lg">
+				<div class="card-body">
+					<div class="flex items-center gap-lg">
+						<div style="flex-shrink: 0;">
+							<img id="company-logo-display" src="" alt="Company Logo" style="width: 120px; height: 120px; object-fit: cover; border-radius: var(--border-radius-lg); display: none;">
+							<div id="company-logo-placeholder" style="width: 120px; height: 120px; background-color: var(--neutral-light); border-radius: var(--border-radius-lg); display: flex; align-items: center; justify-content: center; font-size: 2rem; font-weight: bold; color: var(--neutral-gray);">
+								<span id="company-initials">--</span>
+							</div>
+						</div>
+						<div style="flex-grow: 1;">
+							<h3 class="text-2xl font-semibold mb-sm" id="display-company-name">—</h3>
+							<p class="text-md text-secondary mb-md" id="display-company-bio">—</p>
+							<div class="flex gap-lg">
+								<div>
+									<p class="text-sm text-secondary">Company ID</p>
+									<p class="text-md font-semibold" id="display-company-id">—</p>
+								</div>
+								<div>
+									<p class="text-sm text-secondary">Account Balance</p>
+									<p class="text-md font-semibold" id="display-account-balance">—</p>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<!-- Company Details Grid -->
+			<div class="grid grid-cols-2 gap-lg mb-lg">
+				<!-- Address & Location -->
+				<div class="card">
+					<div class="card-header">
+						<h4 class="card-title"><i class="fas fa-map-marker-alt"></i> Location</h4>
+					</div>
+					<div class="card-body">
+						<div class="mb-md">
+							<p class="text-sm text-secondary">Address</p>
+							<p class="text-md font-semibold" id="display-address">—</p>
+						</div>
+						<div>
+							<p class="text-sm text-secondary">Location</p>
+							<p class="text-md font-semibold" id="display-location">—</p>
+						</div>
+					</div>
+				</div>
+
+				<!-- User Info -->
+				<div class="card">
+					<div class="card-header">
+						<h4 class="card-title"><i class="fas fa-user"></i> Account Owner</h4>
+					</div>
+					<div class="card-body">
+						<div>
+							<p class="text-sm text-secondary">Name</p>
+							<p class="text-md font-semibold" id="display-user-name">—</p>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<!-- About Section -->
+			<div class="card mb-lg">
+				<div class="card-header">
+					<h4 class="card-title"><i class="fas fa-info-circle"></i> About Company</h4>
+				</div>
+				<div class="card-body">
+					<p class="text-md" id="display-about" style="word-break: break-word; line-height: 1.6;">—</p>
+				</div>
+			</div>
+
+			<!-- Data Persistence Indicator -->
+			<div class="card" style="background-color: var(--success-light); border-left: 4px solid var(--success);">
+				<div class="card-body">
+					<div class="flex items-center gap-md">
+						<i class="fas fa-check-circle" style="color: var(--success); font-size: 1.5rem;"></i>
+						<div>
+							<h4 class="font-semibold text-success">Data Persistence Active</h4>
+							<p class="text-sm text-secondary">Your company profile is securely stored and persists across all sessions.</p>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<style>
+		.card-header {
+			display: flex;
+			align-items: center;
+			padding: var(--space-md);
+			border-bottom: 1px solid var(--neutral-light);
+		}
+
+		.card-title {
+			display: flex;
+			align-items: center;
+			gap: 0.75rem;
+			margin: 0;
+			font-size: 1.1rem;
+			font-weight: 600;
+			color: var(--neutral-dark);
+		}
+
+		.card-body {
+			padding: var(--space-md);
+		}
+	</style>
+
+	<script>
+		$(function() {
+			SkyWingsUI.initNavigation('profile');
+
+			// Load company profile for sidebar
+			$.ajax({
+				url: '../../../Back-End/company/dashboard-company.php',
+				method: 'GET',
+				dataType: 'json',
+				success: function(resp) {
+					if (resp?.success && resp.data?.company) {
+						const c = resp.data.company;
+						const logo = c.logo || null;
+						
+						if (logo) {
+							const logoPath = logo.startsWith('http') ? logo : `../../../Back-End/${logo}`;
+							$('#company-avatar-logo').attr('src', logoPath).show();
+							$('#company-avatar-text').hide();
+						} else {
+							$('#company-avatar-logo').hide();
+							$('#company-avatar-text').text(c.avatarInitials || 'CO').show();
+						}
+						
+						$('#companyName').text(c.name || 'Company');
+						$('#companyRole').text('Flight Operations');
+					}
+				}
+			});
+
+			// Load user profile data from backend
+			function loadUserProfile() {
+				$.ajax({
+					url: '../../../Back-End/company/company-profile.php',
+					method: 'GET',
+					dataType: 'json',
+					success: function(resp) {
+						if (resp && resp.success && resp.data && resp.data.company) {
+							const company = resp.data.company;
+							
+							// Display company logo
+							if (company.logo) {
+								const logoPath = company.logo.startsWith('http') ? company.logo : `../../../Back-End/${company.logo}`;
+								$('#company-logo-display').attr('src', logoPath).show();
+								$('#company-logo-placeholder').hide();
+							}
+							
+							// Display all company information
+							$('#display-company-name').text(company.company_name || '—');
+							$('#display-company-bio').text(company.bio || '—');
+							$('#display-company-id').text(company.id || '—');
+							$('#display-account-balance').text('$' + (company.account_balance || '0'));
+							$('#display-address').text(company.address || '—');
+							$('#display-location').text(company.location || '—');
+							$('#display-user-name').text(company.user_name || '—');
+							$('#display-about').text(company.bio || 'No additional information available.');
+							
+							// Set avatar initials
+							const initials = (company.company_name || 'CO')
+								.split(' ')
+								.map(word => word[0])
+								.join('')
+								.toUpperCase()
+								.substring(0, 2);
+							$('#company-initials').text(initials);
+						} else {
+							console.warn('Failed to load profile:', resp?.message);
+						}
+					},
+					error: function(xhr) {
+						console.error('Error loading profile', xhr.status, xhr.responseText);
+					}
+				});
+			}
+
+			// Load profile on page initialization
+			loadUserProfile();
+		});
+	</script>
+</body>
+</html>

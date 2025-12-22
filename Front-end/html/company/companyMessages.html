@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>SkyWings - Messages</title>
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+	<link rel="stylesheet" href="../../css/styles.css">
+	<script src="../../js/jquery.js"></script>
+	<script src="/Flight-Booking-V2/Front-end/js/session-guard.js"></script>
+	<script src="../../js/scripts.js"></script>
+</head>
+<body>
+	<div class="container flex">
+		<div class="sidebar">
+			<div class="sidebar-brand">
+				<div class="logo flex items-center gap-sm">
+					<i class="fas fa-plane navbar-logo"></i>
+					<h1>SkyWings</h1>
+				</div>
+			</div>
+
+			<div class="sidebar-menu">
+				<a href="../companyDashboard.html" class="sidebar-item" data-page="dashboard">
+					<i class="fas fa-home sidebar-icon"></i>
+					<span>Dashboard</span>
+				</a>
+				<a href="addFlight.html" class="sidebar-item" data-page="add-flight">
+					<i class="fas fa-plane-departure sidebar-icon"></i>
+					<span>Add Flight</span>
+				</a>
+				<a href="manageFlgihts.html" class="sidebar-item" data-page="manage-flights">
+					<i class="fas fa-list sidebar-icon"></i>
+					<span>Manage Flights</span>
+				</a>
+				<a href="bookings.html" class="sidebar-item" data-page="bookings">
+					<i class="fas fa-users sidebar-icon"></i>
+					<span>Bookings</span>
+				</a>
+				<a href="companyProfile.html" class="sidebar-item" data-page="profile">
+					<i class="fas fa-id-card sidebar-icon"></i>
+					<span>Profile</span>
+				</a>
+				<a href="analytics.html" class="sidebar-item" data-page="analytics">
+					<i class="fas fa-chart-bar sidebar-icon"></i>
+					<span>Analytics</span>
+				</a>
+				<a href="companyMessages.html" class="sidebar-item" data-page="messages">
+					<i class="fas fa-envelope sidebar-icon"></i>
+					<span>Messages</span>
+				</a>
+				<a href="../companyDashboard.html#settings" class="sidebar-item" data-page="settings">
+					<i class="fas fa-cog sidebar-icon"></i>
+					<span>Settings</span>
+				</a>
+			</div>
+
+			<div class="user-profile mt-auto p-lg">
+				<div class="user-info flex items-center">
+					<div class="user-avatar" id="company-avatar-initials" style="overflow: hidden;">
+						<img id="company-avatar-logo" src="" alt="" style="display: none; width: 100%; height: 100%; object-fit: cover;">
+						<span id="company-avatar-text">--</span>
+					</div>
+					<div class="user-details">
+						<h4 class="text-md font-semibold" id="companyName">—</h4>
+						<p class="text-sm text-secondary" id="companyRole">—</p>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<div class="main-content">
+			<div class="page-header mb-xl flex justify-between items-center">
+				<div>
+					<h2 class="page-title">Messages</h2>
+					<p class="page-subtitle">Conversations and support</p>
+				</div>
+				<div class="flex items-center gap-sm">
+					<button class="btn btn-outline btn-sm" id="refresh-conversations">
+						<i class="fas fa-rotate"></i> Refresh
+					</button>
+				</div>
+			</div>
+
+			<div class="grid grid-cols-2 gap-lg">
+				<div class="card">
+					<div class="card-header flex justify-between items-center">
+						<h3 class="card-title">Conversations</h3>
+					</div>
+					<div class="card-body">
+						<div class="search-bar mb-md">
+							<i class="fas fa-search search-icon"></i>
+							<input type="text" class="form-control" id="conversation-search" placeholder="Search by name or flight...">
+						</div>
+						<div id="conversation-list" class="message-container"></div>
+					</div>
+				</div>
+
+				<div class="card h-full">
+					<div class="card-header flex justify-between items-center">
+						<h3 class="card-title">Thread</h3>
+						<div class="text-sm text-secondary" id="active-conversation-meta"></div>
+					</div>
+					<div class="card-body">
+						<div id="message-thread" class="message-container" aria-live="polite"></div>
+					</div>
+					<div class="card-footer">
+						<form id="message-form" class="flex items-center gap-sm">
+							<input type="text" class="form-control" id="message-input" placeholder="Type your message" aria-label="Message text">
+							<button type="submit" class="btn btn-primary">
+								<i class="fas fa-paper-plane"></i>
+							</button>
+						</form>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<script>
+		$(function() {
+			SkyWingsUI.initNavigation('messages');
+
+			// Load company profile for sidebar
+			$.ajax({
+				url: '../../../Back-End/company/dashboard-company.php',
+				method: 'GET',
+				dataType: 'json',
+				success: function(resp) {
+					if (resp?.success && resp.data?.company) {
+						const c = resp.data.company;
+						const logo = c.logo || null;
+						
+						if (logo) {
+							const logoPath = logo.startsWith('http') ? logo : `../../../Back-End/${logo}`;
+							$('#company-avatar-logo').attr('src', logoPath).show();
+							$('#company-avatar-text').hide();
+						} else {
+							$('#company-avatar-logo').hide();
+							$('#company-avatar-text').text(c.avatarInitials || 'CO').show();
+						}
+						
+						$('#companyName').text(c.name || 'Company');
+						$('#companyRole').text('Flight Operations');
+					}
+				}
+			});
+
+			// Hook: refresh conversation list
+			$('#refresh-conversations').on('click', function() {
+				loadConversations();
+			});
+
+			// Hook: filter conversations
+			$('#conversation-search').on('input', function() {
+				const term = $(this).val().toLowerCase();
+				$('#conversation-list .message').each(function() {
+					const text = $(this).text().toLowerCase();
+					$(this).toggle(text.includes(term));
+				});
+			});
+
+			// Hook: submit new message
+			$('#message-form').on('submit', function(e) {
+				e.preventDefault();
+				const text = $('#message-input').val().trim();
+				if (!text) return;
+				sendMessage(text);
+				$('#message-input').val('');
+			});
+
+			// Hook: select conversation (delegated)
+			$(document).on('click', '.conversation-item', function() {
+				const conversationId = $(this).data('id');
+				loadThread(conversationId);
+			});
+
+			function loadConversations() {
+				// Implement data fetch and rendering here.
+				// Expected to populate #conversation-list with .conversation-item entries.
+			}
+
+			function loadThread(conversationId) {
+				// Implement message thread fetch using conversationId and render into #message-thread.
+				$('#active-conversation-meta').text(conversationId ? `Conversation #${conversationId}` : '');
+			}
+
+			function sendMessage(text) {
+				// Implement message send API call and then refresh thread.
+				void text; // placeholder to avoid linting errors until wired.
+			}
+
+			// Initial load
+			loadConversations();
+		});
+	</script>
+</body>
+</html>

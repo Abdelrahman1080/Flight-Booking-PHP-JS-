@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>SkyWings - Book Flight</title>
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+	<link rel="stylesheet" href="../../css/styles.css">
+	<script src="../../js/jquery.js"></script>
+	<script src="/Flight-Booking-V2/Front-end/js/session-guard.js"></script>
+</head>
+<body>
+	<div class="container">
+		<div class="page-header mb-xl flex justify-between items-center">
+			<div>
+				<h2 class="page-title">Book a Flight</h2>
+				<p class="page-subtitle">Search and reserve flights</p>
+			</div>
+			<div class="flex items-center gap-sm">
+				<button class="btn btn-outline btn-sm" id="reset-search">Clear</button>
+			</div>
+		</div>
+
+		<div class="card mb-xl">
+			<div class="card-body">
+				<form id="flight-search-form" class="grid grid-cols-3 gap-lg">
+					<div class="form-group">
+						<label class="form-label" for="from-airport">From</label>
+						<input class="form-control" id="from-airport" name="from" placeholder="City or airport" required>
+					</div>
+					<div class="form-group">
+						<label class="form-label" for="to-airport">To</label>
+						<input class="form-control" id="to-airport" name="to" placeholder="City or airport" required>
+					</div>
+					<div class="form-group">
+						<label class="form-label" for="depart-date">Departure</label>
+						<input class="form-control" id="depart-date" name="date" type="date" required>
+					</div>
+					<div class="form-group">
+						<label class="form-label" for="passengers">Passengers</label>
+						<input class="form-control" id="passengers" name="passengers" type="number" min="1" value="1" required>
+					</div>
+					<div class="form-group">
+						<label class="form-label" for="cabin">Cabin</label>
+						<select class="form-control" id="cabin" name="cabin">
+							<option value="economy">Economy</option>
+							<option value="business">Business</option>
+							<option value="first">First</option>
+						</select>
+					</div>
+					<div class="form-group flex items-end">
+						<button class="btn btn-primary" type="submit" id="search-btn">
+							<i class="fas fa-search"></i> Search
+						</button>
+					</div>
+				</form>
+			</div>
+		</div>
+
+		<div class="card">
+			<div class="card-header flex justify-between items-center">
+				<h3 class="card-title">Available Flights</h3>
+				<div class="text-sm text-secondary" id="results-count"></div>
+			</div>
+			<div class="card-body">
+				<div class="table-container">
+					<table class="table">
+						<thead>
+							<tr>
+								<th>Flight</th>
+								<th>Route</th>
+								<th>Schedule</th>
+								<th>Fare</th>
+								<th>Action</th>
+							</tr>
+						</thead>
+						<tbody id="results-body"></tbody>
+					</table>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<script>
+		$(function() {
+			$('#reset-search').on('click', function() {
+				$('#flight-search-form')[0].reset();
+				$('#results-body').empty();
+				$('#results-count').text('');
+			});
+
+			$('#flight-search-form').on('submit', function(e) {
+				e.preventDefault();
+				performSearch(new FormData(this));
+			});
+
+			$(document).on('click', '.book-flight', function() {
+				const flightId = $(this).data('id');
+				reserveFlight(flightId);
+			});
+
+			function performSearch(formData) {
+				// TODO: Wire to search flights endpoint when available.
+				// On success, call renderResults(response.data)
+				void formData;
+			}
+
+			function renderResults(flights) {
+				const body = $('#results-body');
+				body.empty();
+				if (!flights || !flights.length) {
+					$('#results-count').text('No results');
+					return;
+				}
+				$('#results-count').text(`${flights.length} flights`);
+				flights.forEach(function(f) {
+					const row = `
+						<tr>
+							<td>
+								<div class="flight-details">
+									<h4>${f.code || ''}</h4>
+									<p class="text-secondary">${f.airline || ''}</p>
+								</div>
+							</td>
+							<td>
+								<div class="flight-route">
+									<h4>${f.route || ''}</h4>
+									<p class="text-secondary">${f.from || ''} → ${f.to || ''}</p>
+								</div>
+							</td>
+							<td>
+								<div class="flight-time">
+									<h4>${f.date || ''}</h4>
+									<p class="text-secondary">${f.time || ''}</p>
+								</div>
+							</td>
+							<td>
+								<div class="flight-price">
+									<h4>${f.price || ''}</h4>
+									<p class="text-secondary">${f.cabin || ''}</p>
+								</div>
+							</td>
+							<td>
+								<button class="btn btn-primary btn-sm book-flight" data-id="${f.id || ''}">Book</button>
+							</td>
+						</tr>`;
+					body.append(row);
+				});
+			}
+
+			function reserveFlight(flightId) {
+				// TODO: Wire to booking endpoint when available.
+				void flightId;
+			}
+		});
+	</script>
+</body>
+</html>

@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>SkyWings - Add Flight</title>
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+	<link rel="stylesheet" href="../../css/styles.css">
+	<script src="../../js/jquery.js"></script>
+	<script src="/Flight-Booking-V2/Front-end/js/session-guard.js"></script>
+	<script src="../../js/scripts.js"></script>
+</head>
+<body>
+	<div class="container flex">
+		<div class="sidebar">
+			<div class="sidebar-brand">
+				<div class="logo flex items-center gap-sm">
+					<i class="fas fa-plane navbar-logo"></i>
+					<h1>SkyWings</h1>
+				</div>
+			</div>
+
+			<div class="sidebar-menu">
+				<a href="../companyDashboard.html" class="sidebar-item" data-page="dashboard">
+					<i class="fas fa-home sidebar-icon"></i>
+					<span>Dashboard</span>
+				</a>
+				<a href="addFlight.html" class="sidebar-item" data-page="add-flight">
+					<i class="fas fa-plane-departure sidebar-icon"></i>
+					<span>Add Flight</span>
+				</a>
+				<a href="manageFlgihts.html" class="sidebar-item" data-page="manage-flights">
+					<i class="fas fa-list sidebar-icon"></i>
+					<span>Manage Flights</span>
+				</a>
+				<a href="bookings.html" class="sidebar-item" data-page="bookings">
+					<i class="fas fa-users sidebar-icon"></i>
+					<span>Bookings</span>
+				</a>
+				<a href="companyProfile.html" class="sidebar-item" data-page="profile">
+					<i class="fas fa-id-card sidebar-icon"></i>
+					<span>Profile</span>
+				</a>
+				<a href="analytics.html" class="sidebar-item" data-page="analytics">
+					<i class="fas fa-chart-bar sidebar-icon"></i>
+					<span>Analytics</span>
+				</a>
+				<a href="companyMessages.html" class="sidebar-item" data-page="messages">
+					<i class="fas fa-envelope sidebar-icon"></i>
+					<span>Messages</span>
+				</a>
+				<a href="../companyDashboard.html#settings" class="sidebar-item" data-page="settings">
+					<i class="fas fa-cog sidebar-icon"></i>
+					<span>Settings</span>
+				</a>
+			</div>
+
+			<div class="user-profile mt-auto p-lg">
+				<div class="user-info flex items-center">
+					<div class="user-avatar" id="company-avatar-initials" style="overflow: hidden;">
+						<img id="company-avatar-logo" src="" alt="" style="display: none; width: 100%; height: 100%; object-fit: cover;">
+						<span id="company-avatar-text">--</span>
+					</div>
+					<div class="user-details">
+						<h4 class="text-md font-semibold" id="companyName">—</h4>
+						<p class="text-sm text-secondary" id="companyRole">—</p>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<div class="main-content">
+			<div class="page-header mb-xl">
+				<div class="header flex justify-between items-center mb-lg">
+					<div>
+						<h2 class="page-title">Add Flight</h2>
+						<p class="page-subtitle">Create a new flight and publish it to passengers</p>
+					</div>
+					<div class="header-actions flex items-center gap-md">
+						<a class="btn btn-outline" href="manageFlgihts.html"><i class="fas fa-list"></i> Manage Flights</a>
+					</div>
+				</div>
+			</div>
+
+			<div class="card">
+				<div class="card-header">
+					<h3 class="card-title">Flight Details</h3>
+				</div>
+				<div class="card-body">
+					<form id="add-flight-form" class="flex flex-col gap-lg">
+						<div class="grid grid-cols-2 gap-lg">
+							<div class="form-group">
+								<label class="form-label" for="flightCode">Flight Code</label>
+								<input class="form-control" id="flightCode" name="flightCode" type="text" placeholder="e.g., SK123" required>
+							</div>
+							<div class="form-group">
+								<label class="form-label" for="aircraft">Aircraft Type</label>
+								<input class="form-control" id="aircraft" name="aircraft" type="text" placeholder="Airbus A320" required>
+							</div>
+							<div class="form-group">
+								<label class="form-label" for="origin">Origin</label>
+								<input class="form-control" id="origin" name="origin" type="text" placeholder="Cairo (CAI)" required>
+							</div>
+							<div class="form-group">
+								<label class="form-label" for="destination">Destination</label>
+								<input class="form-control" id="destination" name="destination" type="text" placeholder="Dubai (DXB)" required>
+							</div>
+							<div class="form-group">
+								<label class="form-label" for="departure">Departure</label>
+								<input class="form-control" id="departure" name="departure" type="datetime-local" required>
+							</div>
+							<div class="form-group">
+								<label class="form-label" for="arrival">Arrival</label>
+								<input class="form-control" id="arrival" name="arrival" type="datetime-local" required>
+							</div>
+							<div class="form-group">
+								<label class="form-label" for="fare">Base Fare (USD)</label>
+								<input class="form-control" id="fare" name="fare" type="number" step="0.01" min="0" placeholder="180" required>
+							</div>
+							<div class="form-group">
+								<label class="form-label" for="seats">Seats Available</label>
+								<input class="form-control" id="seats" name="seats" type="number" min="1" placeholder="120" required>
+							</div>
+							<div class="form-group">
+								<label class="form-label" for="cabin">Cabin Classes</label>
+								<select class="form-control" id="cabin" name="cabin" required>
+									<option value="" disabled selected>Select cabin mix</option>
+									<option value="economy">Economy only</option>
+									<option value="business">Economy + Business</option>
+									<option value="first">Economy + Business + First</option>
+								</select>
+							</div>
+							<div class="form-group">
+								<label class="form-label" for="status">Status</label>
+								<select class="form-control" id="status" name="status" required>
+									<option value="scheduled" selected>Scheduled</option>
+									<option value="on-time">On Time</option>
+									<option value="delayed">Delayed</option>
+									<option value="cancelled">Cancelled</option>
+								</select>
+							</div>
+						</div>
+						<div class="form-group">
+							<label class="form-label" for="notes">Notes</label>
+							<textarea class="form-control" id="notes" name="notes" rows="3" placeholder="Add operational notes for your team"></textarea>
+						</div>
+						<div class="flex justify-between items-center">
+							<p class="text-sm text-secondary" id="form-status">Ready to add a new flight.</p>
+							<div class="flex items-center gap-sm">
+								<button type="button" class="btn btn-outline" id="reset-form">Reset</button>
+								<button type="submit" class="btn btn-primary"><i class="fas fa-save"></i> Save Flight</button>
+							</div>
+						</div>
+					</form>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<script>
+		$(function() {
+			SkyWingsUI.initNavigation('add-flight');
+
+			$.ajax({
+				url: '../../../Back-End/company/dashboard-company.php',
+				method: 'GET',
+				dataType: 'json',
+				success: function(resp) {
+					if (resp?.success && resp.data?.company) {
+						const c = resp.data.company;
+						const logo = c.logo || null;
+						
+						if (logo) {
+							const logoPath = logo.startsWith('http') ? logo : `../../../Back-End/${logo}`;
+							$('#company-avatar-logo').attr('src', logoPath).show();
+							$('#company-avatar-text').hide();
+						} else {
+							$('#company-avatar-logo').hide();
+							$('#company-avatar-text').text(c.avatarInitials || 'CO').show();
+						}
+						
+						$('#companyName').text(c.name || 'Company');
+						$('#companyRole').text('Flight Operations');
+					}
+				}
+			});
+
+			$('#reset-form').on('click', function(e) {
+				e.preventDefault();
+				document.getElementById('add-flight-form').reset();
+				$('#form-status').text('Form cleared.').removeClass('text-error text-success').addClass('text-secondary');
+			});
+
+			function toDateTime(value) {
+				if (!value) return '';
+				return value.replace('T', ' ') + ':00';
+			}
+
+			$('#add-flight-form').on('submit', function(e) {
+				e.preventDefault();
+				const origin = $('#origin').val();
+				const destination = $('#destination').val();
+				const payload = {
+					flight_code: $('#flightCode').val(),
+					name: `${origin} -> ${destination}`,
+					fees: parseFloat($('#fare').val() || '0'),
+					max_passengers: parseInt($('#seats').val() || '0', 10),
+					start_datetime: toDateTime($('#departure').val()),
+					end_datetime: toDateTime($('#arrival').val()),
+					itinerary: [origin, destination]
+				};
+
+				$('#form-status').text('Saving flight...').removeClass('text-error text-success').addClass('text-secondary');
+
+				$.ajax({
+					url: '../../Back-End/company/add-flight.php',
+					method: 'POST',
+					contentType: 'application/json',
+					data: JSON.stringify(payload),
+					dataType: 'json',
+					success: function(resp) {
+						if (resp?.success) {
+							$('#form-status').text(resp?.message || 'Flight saved successfully.').removeClass('text-error').addClass('text-success');
+							document.getElementById('add-flight-form').reset();
+						} else {
+							$('#form-status').text(resp?.message || 'Unable to save flight.').removeClass('text-success').addClass('text-error');
+						}
+					},
+					error: function(xhr) {
+						$('#form-status').text('Network error. Please try again.').removeClass('text-success').addClass('text-error');
+						console.error('add-flight error', xhr.responseText);
+					}
+				});
+			});
+		});
+	</script>
+</body>
+</html>

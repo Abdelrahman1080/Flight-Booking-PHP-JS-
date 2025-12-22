@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>SkyWings - Bookings</title>
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+	<link rel="stylesheet" href="../../css/styles.css">
+	<script src="../../js/jquery.js"></script>
+	<script src="/Flight-Booking-V2/Front-end/js/session-guard.js"></script>
+	<script src="../../js/scripts.js"></script>
+</head>
+<body>
+	<div class="container flex">
+		<div class="sidebar">
+			<div class="sidebar-brand">
+				<div class="logo flex items-center gap-sm">
+					<i class="fas fa-plane navbar-logo"></i>
+					<h1>SkyWings</h1>
+				</div>
+			</div>
+
+			<div class="sidebar-menu">
+				<a href="../companyDashboard.html" class="sidebar-item" data-page="dashboard">
+					<i class="fas fa-home sidebar-icon"></i>
+					<span>Dashboard</span>
+				</a>
+				<a href="addFlight.html" class="sidebar-item" data-page="add-flight">
+					<i class="fas fa-plane-departure sidebar-icon"></i>
+					<span>Add Flight</span>
+				</a>
+				<a href="manageFlgihts.html" class="sidebar-item" data-page="manage-flights">
+					<i class="fas fa-list sidebar-icon"></i>
+					<span>Manage Flights</span>
+				</a>
+				<a href="bookings.html" class="sidebar-item" data-page="bookings">
+					<i class="fas fa-users sidebar-icon"></i>
+					<span>Bookings</span>
+				</a>
+				<a href="companyProfile.html" class="sidebar-item" data-page="profile">
+					<i class="fas fa-id-card sidebar-icon"></i>
+					<span>Profile</span>
+				</a>
+				<a href="analytics.html" class="sidebar-item" data-page="analytics">
+					<i class="fas fa-chart-bar sidebar-icon"></i>
+					<span>Analytics</span>
+				</a>
+				<a href="companyMessages.html" class="sidebar-item" data-page="messages">
+					<i class="fas fa-envelope sidebar-icon"></i>
+					<span>Messages</span>
+				</a>
+				<a href="../companyDashboard.html#settings" class="sidebar-item" data-page="settings">
+					<i class="fas fa-cog sidebar-icon"></i>
+					<span>Settings</span>
+				</a>
+			</div>
+
+			<div class="user-profile mt-auto p-lg">
+				<div class="user-info flex items-center">
+					<div class="user-avatar" id="company-avatar-initials" style="overflow: hidden;">
+						<img id="company-avatar-logo" src="" alt="" style="display: none; width: 100%; height: 100%; object-fit: cover;">
+						<span id="company-avatar-text">--</span>
+					</div>
+					<div class="user-details">
+						<h4 class="text-md font-semibold" id="companyName">—</h4>
+						<p class="text-sm text-secondary" id="companyRole">—</p>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<div class="main-content">
+			<div class="page-header mb-xl">
+				<div class="header flex justify-between items-center mb-lg">
+					<div>
+						<h2 class="page-title">Bookings</h2>
+						<p class="page-subtitle">Review, confirm, and manage passenger bookings</p>
+					</div>
+					<div class="header-actions flex items-center gap-md">
+						<a class="btn btn-outline" href="manageFlgihts.html"><i class="fas fa-plane"></i> Flights</a>
+					</div>
+				</div>
+			</div>
+
+			<div class="card mb-lg">
+				<div class="card-body">
+					<div class="grid grid-cols-3 gap-lg">
+						<div class="form-group">
+							<label class="form-label" for="booking-search">Search</label>
+							<input class="form-control" id="booking-search" type="text" placeholder="Booking ID or passenger">
+						</div>
+						<div class="form-group">
+							<label class="form-label" for="filter-booking-status">Status</label>
+							<select class="form-control" id="filter-booking-status">
+								<option value="all" selected>All</option>
+								<option value="Confirmed">Confirmed</option>
+								<option value="Pending">Pending</option>
+								<option value="Cancelled">Cancelled</option>
+							</select>
+						</div>
+						<div class="form-group">
+							<label class="form-label" for="filter-flight">Flight</label>
+							<select class="form-control" id="filter-flight">
+								<option value="all" selected>All flights</option>
+							</select>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<div class="card">
+				<div class="card-header flex justify-between items-center">
+					<h3 class="card-title">Recent Bookings</h3>
+					<span class="text-sm text-secondary" id="booking-count">0 bookings</span>
+				</div>
+				<div class="card-body">
+					<div class="table-container">
+						<table class="table">
+							<thead>
+								<tr>
+									<th>Booking ID</th>
+									<th>Passenger</th>
+									<th>Flight</th>
+									<th>Status</th>
+									<th>Amount</th>
+									<th class="text-right">Action</th>
+								</tr>
+							</thead>
+							<tbody id="bookings-body"></tbody>
+						</table>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<script>
+		$(function() {
+			SkyWingsUI.initNavigation('bookings');
+
+			// Load company profile for sidebar
+			$.ajax({
+				url: '../../../Back-End/company/dashboard-company.php',
+				method: 'GET',
+				dataType: 'json',
+				success: function(resp) {
+					if (resp?.success && resp.data?.company) {
+						const c = resp.data.company;
+						const logo = c.logo || null;
+						
+						if (logo) {
+							const logoPath = logo.startsWith('http') ? logo : `../../../Back-End/${logo}`;
+							$('#company-avatar-logo').attr('src', logoPath).show();
+							$('#company-avatar-text').hide();
+						} else {
+							$('#company-avatar-logo').hide();
+							$('#company-avatar-text').text(c.avatarInitials || 'CO').show();
+						}
+						
+						$('#companyName').text(c.name || 'Company');
+						$('#companyRole').text('Flight Operations');
+					}
+				}
+			});
+
+			let flights = [];
+			let bookings = [];
+
+			function statusBadge(status) {
+				if (status === 'Confirmed') return '<span class="badge badge-success">Confirmed</span>';
+				if (status === 'Cancelled') return '<span class="badge badge-error">Cancelled</span>';
+				return '<span class="badge badge-warning">Pending</span>';
+			}
+
+			function renderBookings(list) {
+				const body = $('#bookings-body');
+				body.empty();
+				if (!list.length) {
+					body.append('<tr><td colspan="6" class="text-secondary">No bookings found.</td></tr>');
+					$('#booking-count').text('0 bookings');
+					return;
+				}
+				list.forEach(function(b) {
+					const row = `
+						<tr>
+							<td class="font-semibold">${b.id}</td>
+							<td>${b.passenger}</td>
+							<td>${b.flight}</td>
+							<td>${statusBadge(b.status)}</td>
+							<td>${b.amount}</td>
+							<td class="text-right">
+								<button class="btn btn-outline btn-sm btn-view-booking" data-id="${b.id}"><i class="fas fa-eye"></i> View</button>
+							</td>
+						</tr>`;
+					body.append(row);
+				});
+				$('#booking-count').text(`${list.length} bookings`);
+			}
+
+			function applyBookingFilters() {
+				const query = $('#booking-search').val().toLowerCase();
+				const status = $('#filter-booking-status').val();
+				const flightId = $('#filter-flight').val();
+
+				const filtered = bookings.filter(function(b) {
+					const matchesQuery = !query || b.id.toLowerCase().includes(query) || b.passenger.toLowerCase().includes(query);
+					const matchesStatus = status === 'all' || b.status === status;
+					const matchesFlight = flightId === 'all' || b.flight_id == flightId;
+					return matchesQuery && matchesStatus && matchesFlight;
+				});
+
+				renderBookings(filtered);
+			}
+
+			function loadFlightOptions(list) {
+				const select = $('#filter-flight');
+				select.empty();
+				select.append('<option value="all" selected>All flights</option>');
+				list.forEach(function(f) {
+					select.append(`<option value="${f.id}">${f.flight_code}</option>`);
+				});
+			}
+
+			function fetchFlightDetails(flightId) {
+				return $.ajax({
+					url: '../../Back-End/company/flight_details.php',
+					method: 'GET',
+					dataType: 'json',
+					data: { flight_id: flightId }
+				});
+			}
+
+			function loadBookingsForFlight(flightId) {
+				if (!flightId || flightId === 'all') {
+					bookings = [];
+					renderBookings(bookings);
+					$('#booking-count').text('0 bookings');
+					return;
+				}
+				$('#booking-count').text('Loading...');
+				fetchFlightDetails(flightId).done(function(resp) {
+					if (!resp?.success) {
+						bookings = [];
+						renderBookings(bookings);
+						return;
+					}
+					const data = resp.data || {};
+					const flightCode = data.flight?.flight_code || '—';
+					const amount = data.flight?.fees ? `$${data.flight.fees}` : '$0';
+					const pending = (data.pending_passengers || []).map(function(p) {
+						return { id: `P-${p.id}`, passenger: p.name || p.email || 'Passenger', flight: flightCode, flight_id: flightId, status: 'Pending', amount: amount };
+					});
+					const registered = (data.registered_passengers || []).map(function(p) {
+						return { id: `P-${p.id}`, passenger: p.name || p.email || 'Passenger', flight: flightCode, flight_id: flightId, status: 'Confirmed', amount: amount };
+					});
+					bookings = [...pending, ...registered];
+					applyBookingFilters();
+				}).fail(function(xhr) {
+					console.error('load bookings error', xhr.responseText);
+					bookings = [];
+					renderBookings(bookings);
+				});
+			}
+
+			function loadFlights() {
+				$.ajax({
+					url: '../../Back-End/company/home.php',
+					method: 'GET',
+					dataType: 'json',
+					success: function(resp) {
+						if (resp?.success) {
+							flights = resp.data?.flights || [];
+							loadFlightOptions(flights);
+							const first = flights[0]?.id;
+							if (first) {
+								$('#filter-flight').val(first);
+								loadBookingsForFlight(first);
+							} else {
+								bookings = [];
+								renderBookings(bookings);
+							}
+						}
+					}
+				});
+			}
+
+			$('#booking-search').on('input', applyBookingFilters);
+			$('#filter-booking-status').on('change', applyBookingFilters);
+			$('#filter-flight').on('change', function() {
+				loadBookingsForFlight($(this).val());
+			});
+
+			$(document).on('click', '.btn-view-booking', function() {
+				const id = $(this).data('id');
+				// TODO: Wire to backend endpoint to load and display booking details
+			});
+
+			loadFlights();
+		});
+	</script>
+</body>
+</html>

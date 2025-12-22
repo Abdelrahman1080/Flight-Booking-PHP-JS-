@@ -1,0 +1,393 @@
+{
+	"info": {
+		"_postman_id": "db8393c7-3b8d-42e9-8a6d-b906886af44e",
+		"name": "flight-booking",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "44400435",
+		"_collection_link": "https://abdelrahmanfarag-3941426.postman.co/workspace/Abdelrahman-Farag's-Workspace~aad83db9-6632-44a3-8e6d-77ca4d76f8a3/collection/44400435-db8393c7-3b8d-42e9-8a6d-b906886af44e?action=share&source=collection_link&creator=44400435"
+	},
+	"item": [
+		{
+			"name": "complete-company",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "user_id",
+							"value": "1",
+							"type": "text"
+						},
+						{
+							"key": "bio",
+							"value": "bio-company1",
+							"type": "text"
+						},
+						{
+							"key": "address",
+							"value": "cairo",
+							"type": "text"
+						},
+						{
+							"key": "location",
+							"value": "nasr",
+							"type": "text"
+						},
+						{
+							"key": "account_balance",
+							"value": "50000",
+							"type": "text"
+						},
+						{
+							"key": "logo",
+							"type": "file",
+							"src": "/C:/xampp/htdocs/Flight-Booking-V2/Back-End/uploads/download.jpg"
+						}
+					]
+				},
+				"url": {
+					"raw": "http://localhost/Flight-Booking-V2/Back-End/company/complete-company.php",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"path": [
+						"Flight-Booking-V2",
+						"Back-End",
+						"company",
+						"complete-company.php"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "home-company",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "user_id",
+							"value": "1",
+							"type": "text"
+						},
+						{
+							"key": "bio",
+							"value": "bio-company1",
+							"type": "text"
+						},
+						{
+							"key": "address",
+							"value": "cairo",
+							"type": "text"
+						},
+						{
+							"key": "location",
+							"value": "nasr",
+							"type": "text"
+						},
+						{
+							"key": "account_balance",
+							"value": "50000",
+							"type": "text"
+						},
+						{
+							"key": "logo",
+							"type": "file",
+							"src": "/C:/xampp/htdocs/Flight-Booking-V2/Back-End/uploads/download.jpg"
+						}
+					]
+				},
+				"url": {
+					"raw": "http://localhost/Flight-Booking-V2/Back-End/company/home.php",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"path": [
+						"Flight-Booking-V2",
+						"Back-End",
+						"company",
+						"home.php"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "add-flight",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"flight_code\": \"SKY101\",\r\n  \"name\": \"Cairo to Dubai\",\r\n  \"fees\": 2500,\r\n  \"max_passengers\": 180,\r\n  \"start_datetime\": \"2025-01-10 08:00:00\",\r\n  \"end_datetime\": \"2025-01-10 13:00:00\",\r\n  \"itinerary\": [\"Cairo\", \"Riyadh\", \"Dubai\"]\r\n}\r\n"
+				},
+				"url": {
+					"raw": "http://localhost/Flight-Booking-V2/Back-End/company/add-flight.php",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"path": [
+						"Flight-Booking-V2",
+						"Back-End",
+						"company",
+						"add-flight.php"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "complete-passenger",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "user_id",
+							"value": "2",
+							"type": "text"
+						},
+						{
+							"key": "account_balance",
+							"value": "30000",
+							"type": "text"
+						},
+						{
+							"key": "photo",
+							"type": "file",
+							"src": "/D:/photo/AkWeDCq82c6aEPLlx2nWfYFokaFX9aUqlWuNn7a48Jw=_plaintext_638054405959886624.jpg"
+						},
+						{
+							"key": "passport_img",
+							"type": "file",
+							"src": "/D:/photo/IMG_20230126_120832_080.jpg"
+						}
+					]
+				},
+				"url": {
+					"raw": "http://localhost/Flight-Booking-V2/Back-End/passenger/complete-passenger.php",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"path": [
+						"Flight-Booking-V2",
+						"Back-End",
+						"passenger",
+						"complete-passenger.php"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "register",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"name\": \"Ahmed Ali\",\r\n  \"email\": \"passenger@test.com\",\r\n  \"password\": \"123456\",\r\n  \"tel\": \"01099998888\",\r\n  \"user_type\": \"passenger\"\r\n}\r\n",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost/Flight-Booking-V2/Back-End/auth(log-register)/register.php",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"path": [
+						"Flight-Booking-V2",
+						"Back-End",
+						"auth(log-register)",
+						"register.php"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "login",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"email\": \"company@test.com\",\r\n  \"password\": \"123456\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost/Flight-Booking-V2/Back-End/auth(log-register)/login.php",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"path": [
+						"Flight-Booking-V2",
+						"Back-End",
+						"auth(log-register)",
+						"login.php"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "logout",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"url": {
+					"raw": "http://localhost/Flight-Booking-V2/Back-End/auth(log-register)/logout.php",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"path": [
+						"Flight-Booking-V2",
+						"Back-End",
+						"auth(log-register)",
+						"logout.php"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "messages",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost/Flight-Booking-V2/Back-End/company/message.php",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"path": [
+						"Flight-Booking-V2",
+						"Back-End",
+						"company",
+						"message.php"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "flight_details",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost/Flight-Booking-V2/Back-End/company/flight_details.php?flight_id=1",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"path": [
+						"Flight-Booking-V2",
+						"Back-End",
+						"company",
+						"flight_details.php"
+					],
+					"query": [
+						{
+							"key": "flight_id",
+							"value": "1"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "company-profile",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost/Flight-Booking-V2/Back-End/company/company-profile.php",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"path": [
+						"Flight-Booking-V2",
+						"Back-End",
+						"company",
+						"company-profile.php"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "edit-company-profile",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "name",
+							"value": "edited-company",
+							"type": "text"
+						},
+						{
+							"key": "bio",
+							"value": "bio",
+							"type": "text"
+						},
+						{
+							"key": "address",
+							"value": "adress",
+							"type": "text"
+						},
+						{
+							"key": "logo",
+							"type": "file",
+							"src": "/C:/Users/river/Pictures/Screenshots/Screenshot 2025-03-03 215556.png"
+						}
+					]
+				},
+				"url": {
+					"raw": "http://localhost/Flight-Booking-V2/Back-End/company/edit-company-profile.php",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"path": [
+						"Flight-Booking-V2",
+						"Back-End",
+						"company",
+						"edit-company-profile.php"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
