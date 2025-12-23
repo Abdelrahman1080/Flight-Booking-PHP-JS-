@@ -324,10 +324,7 @@
 
 			$(document).on('click', '.btn-view-booking', function() {
 				const id = $(this).data('id');
-				const booking = allBookings.find(b => b.id == id);
-				if (booking) {
-					alert(`Booking #${booking.id}\nPassenger: ${booking.passenger}\nFlight: ${booking.flight}\nStatus: ${booking.status}\nAmount: ${booking.amount}`);
-				}
+				window.location.href = 'viewBooking.html?booking_id=' + id;
 			});
 
             $(document).on('click', '.btn-message-passenger', function() {

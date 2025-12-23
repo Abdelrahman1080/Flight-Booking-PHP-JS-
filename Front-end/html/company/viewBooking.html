@@ -1,0 +1,469 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>SkyWings - View Booking</title>
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+	<link rel="stylesheet" href="../../css/styles.css">
+	<script src="../../js/jquery.js"></script>
+	<script src="/Flight-Booking-V2/Front-end/js/session-guard.js"></script>
+	<script src="../../js/scripts.js"></script>
+</head>
+<body>
+	<div class="container flex">
+		<div class="sidebar">
+			<div class="sidebar-brand">
+				<div class="logo flex items-center gap-sm">
+					<i class="fas fa-plane navbar-logo"></i>
+					<h1>SkyWings</h1>
+				</div>
+			</div>
+
+			<div class="sidebar-menu">
+				<a href="../companyDashboard.html" class="sidebar-item" data-page="dashboard">
+					<i class="fas fa-home sidebar-icon"></i>
+					<span>Dashboard</span>
+				</a>
+				<a href="addFlight.html" class="sidebar-item" data-page="add-flight">
+					<i class="fas fa-plane-departure sidebar-icon"></i>
+					<span>Add Flight</span>
+				</a>
+				<a href="manageFlgihts.html" class="sidebar-item" data-page="manage-flights">
+					<i class="fas fa-list sidebar-icon"></i>
+					<span>Manage Flights</span>
+				</a>
+				<a href="bookings.html" class="sidebar-item" data-page="bookings">
+					<i class="fas fa-users sidebar-icon"></i>
+					<span>Bookings</span>
+				</a>
+				<a href="companyProfile.html" class="sidebar-item" data-page="profile">
+					<i class="fas fa-id-card sidebar-icon"></i>
+					<span>Profile</span>
+				</a>
+				<a href="analytics.html" class="sidebar-item" data-page="analytics">
+					<i class="fas fa-chart-bar sidebar-icon"></i>
+					<span>Analytics</span>
+				</a>
+				<a href="companyMessages.html" class="sidebar-item" data-page="messages">
+					<i class="fas fa-envelope sidebar-icon"></i>
+					<span>Messages</span>
+				</a>
+				<a href="settings.html" class="sidebar-item" data-page="settings">
+					<i class="fas fa-cog sidebar-icon"></i>
+					<span>Settings</span>
+				</a>
+			</div>
+
+			<div class="user-profile mt-auto p-lg">
+				<div class="user-info flex items-center">
+					<div class="user-avatar" id="company-avatar-initials" style="overflow: hidden;">
+						<img id="company-avatar-logo" src="" alt="" style="display: none; width: 100%; height: 100%; object-fit: cover;">
+						<span id="company-avatar-text">--</span>
+					</div>
+					<div class="user-details">
+						<h4 class="text-md font-semibold" id="companyName">—</h4>
+						<p class="text-sm text-secondary" id="companyRole">—</p>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<div class="main-content">
+			<div class="page-header mb-xl">
+				<div class="header flex justify-between items-center mb-lg">
+					<div>
+						<h2 class="page-title">Booking Details</h2>
+						<p class="page-subtitle" id="booking-subtitle">Review passenger booking</p>
+					</div>
+					<div class="header-actions flex items-center gap-md">
+						<a href="bookings.html" class="btn btn-outline"><i class="fas fa-arrow-left"></i> Back to Bookings</a>
+					</div>
+				</div>
+				<p class="text-sm font-semibold mt-md mb-lg" id="action-status"></p>
+			</div>
+
+			<div class="grid grid-cols-2 gap-lg">
+				<!-- Passenger Information -->
+				<div class="card">
+					<div class="card-header">
+						<h4 class="card-title"><i class="fas fa-user"></i> Passenger Information</h4>
+					</div>
+					<div class="card-body">
+						<div class="form-group mb-lg">
+							<label class="form-label">Full Name</label>
+							<p class="text-md font-semibold" id="passenger-name">—</p>
+						</div>
+						<div class="form-group mb-lg">
+							<label class="form-label">Email</label>
+							<p class="text-md" id="passenger-email">—</p>
+						</div>
+						<div class="form-group mb-lg">
+							<label class="form-label">Phone</label>
+							<p class="text-md" id="passenger-phone">—</p>
+						</div>
+						<div class="form-group">
+							<label class="form-label">Member Since</label>
+							<p class="text-md" id="passenger-joined">—</p>
+						</div>
+					</div>
+				</div>
+
+				<!-- Passenger Photo -->
+				<div class="card">
+					<div class="card-header">
+						<h4 class="card-title"><i class="fas fa-camera"></i> Passenger Photo</h4>
+					</div>
+					<div class="card-body flex flex-col items-center">
+						<img id="passenger-photo" src="" alt="Passenger photo" style="width: 150px; height: 150px; border-radius: 50%; object-fit: cover; display: none; margin-bottom: var(--space-lg); border: 2px solid var(--neutral-light);">
+						<div id="photo-placeholder" style="width: 150px; height: 150px; background-color: var(--neutral-light); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 3rem; color: var(--neutral-gray); margin-bottom: var(--space-lg);">
+							<i class="fas fa-user"></i>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<!-- Flight Information -->
+			<div class="card mb-lg">
+				<div class="card-header">
+					<h4 class="card-title"><i class="fas fa-plane"></i> Flight Information</h4>
+				</div>
+				<div class="card-body">
+					<div class="grid grid-cols-3 gap-lg">
+						<div>
+							<label class="form-label">Flight Code</label>
+							<p class="text-md font-semibold" id="flight-code">—</p>
+						</div>
+						<div>
+							<label class="form-label">Flight Name</label>
+							<p class="text-md font-semibold" id="flight-name">—</p>
+						</div>
+						<div>
+							<label class="form-label">Booking ID</label>
+							<p class="text-md font-semibold" id="booking-id">—</p>
+						</div>
+					</div>
+					<div class="grid grid-cols-2 gap-lg mt-lg">
+						<div>
+							<label class="form-label">Departure</label>
+							<p class="text-md" id="flight-departure">—</p>
+						</div>
+						<div>
+							<label class="form-label">Arrival</label>
+							<p class="text-md" id="flight-arrival">—</p>
+						</div>
+					</div>
+					<div class="mt-lg">
+						<label class="form-label">Route</label>
+						<p class="text-md" id="flight-route">—</p>
+					</div>
+				</div>
+			</div>
+
+			<!-- Booking Details -->
+			<div class="card mb-lg">
+				<div class="card-header">
+					<h4 class="card-title"><i class="fas fa-receipt"></i> Booking Details</h4>
+				</div>
+				<div class="card-body">
+					<div class="grid grid-cols-2 gap-lg">
+						<div>
+							<label class="form-label">Fare per Ticket</label>
+							<h3 class="text-lg font-semibold" id="ticket-fare">$0.00</h3>
+						</div>
+						<div>
+							<label class="form-label">Status</label>
+							<h3 class="text-lg font-semibold" id="booking-status">
+								<span class="badge badge-warning">Pending</span>
+							</h3>
+						</div>
+					</div>
+					<div class="mt-lg">
+						<label class="form-label">Booked At</label>
+						<p class="text-md" id="booked-at">—</p>
+					</div>
+				</div>
+			</div>
+
+			<!-- Actions -->
+			<div class="card" id="action-card" style="display: none;">
+				<div class="card-header">
+					<h4 class="card-title"><i class="fas fa-tasks"></i> Actions</h4>
+				</div>
+				<div class="card-body">
+					<p class="text-sm text-secondary mb-lg">Choose to confirm or decline this booking.</p>
+					<div class="flex gap-md">
+						<button class="btn btn-success" id="confirm-btn"><i class="fas fa-check"></i> Confirm Booking</button>
+						<button class="btn btn-error" id="decline-btn"><i class="fas fa-times"></i> Decline Booking</button>
+					</div>
+				</div>
+			</div>
+
+			<div style="height: 20px; margin-bottom: 2rem;"></div>
+		</div>
+	</div>
+
+	<style>
+		.card-header {
+			display: flex;
+			align-items: center;
+			padding: var(--space-md);
+			border-bottom: 1px solid var(--neutral-light);
+		}
+
+		.card-title {
+			display: flex;
+			align-items: center;
+			gap: 0.75rem;
+			margin: 0;
+			font-size: 1.1rem;
+			font-weight: 600;
+			color: var(--neutral-dark);
+		}
+
+		.card-body {
+			padding: var(--space-md);
+		}
+
+		.flex {
+			display: flex;
+		}
+
+		.flex-col {
+			flex-direction: column;
+		}
+
+		.items-center {
+			align-items: center;
+		}
+
+		.gap-lg {
+			gap: var(--space-lg);
+		}
+
+		.badge-success {
+			background-color: #d4edda;
+			color: #155724;
+			padding: 0.25rem 0.75rem;
+			border-radius: 4px;
+			font-size: 0.875rem;
+		}
+
+		.badge-warning {
+			background-color: #fff3cd;
+			color: #856404;
+			padding: 0.25rem 0.75rem;
+			border-radius: 4px;
+			font-size: 0.875rem;
+		}
+
+		.badge-error {
+			background-color: #f8d7da;
+			color: #721c24;
+			padding: 0.25rem 0.75rem;
+			border-radius: 4px;
+			font-size: 0.875rem;
+		}
+
+		.btn-success {
+			background-color: #28a745;
+			color: white;
+		}
+
+		.btn-success:hover {
+			background-color: #218838;
+		}
+
+		.btn-error {
+			background-color: #dc3545;
+			color: white;
+		}
+
+		.btn-error:hover {
+			background-color: #c82333;
+		}
+	</style>
+
+	<script>
+		$(function() {
+			SkyWingsUI.initNavigation('bookings');
+
+			const bookingId = new URLSearchParams(window.location.search).get('booking_id');
+			if (!bookingId) {
+				$('#action-status').text('Missing booking ID').addClass('text-error');
+				return;
+			}
+
+			// Load company profile for sidebar
+			$.ajax({
+				url: '/Flight-Booking-V2/Back-End/company/company-profile.php',
+				method: 'GET',
+				dataType: 'json',
+				success: function(resp) {
+					if (resp?.success && resp.data?.company) {
+						const c = resp.data.company;
+						const compName = c.company_name || c.name || 'Company';
+						const logo = c.logo || null;
+						
+						if (logo) {
+							const logoPath = logo.startsWith('http') ? logo : '/Flight-Booking-V2/Back-End/' + logo;
+							$('#company-avatar-logo').attr('src', logoPath).show();
+							$('#company-avatar-text').hide();
+						} else {
+							$('#company-avatar-logo').hide();
+							$('#company-avatar-text').text((compName.match(/\b\w/g) || []).join('').substring(0,2).toUpperCase() || 'CO').show();
+						}
+						
+						$('#companyName').text(compName);
+						$('#companyRole').text('Flight Operations');
+					}
+				}
+			});
+
+			// Load booking details
+			function loadBookingDetails() {
+				$.ajax({
+					url: '/Flight-Booking-V2/Back-End/company/flight_details.php',
+					method: 'GET',
+					data: { booking_id: bookingId },
+					dataType: 'json',
+					success: function(resp) {
+						if (resp?.success && resp.data) {
+							renderBookingDetails(resp.data);
+						} else {
+							$('#action-status').text(resp?.message || 'Failed to load booking').addClass('text-error');
+						}
+					},
+					error: function(xhr) {
+						$('#action-status').text('Error loading booking').addClass('text-error');
+						console.error('Load booking error', xhr.status, xhr.responseText);
+					}
+				});
+			}
+
+			function renderBookingDetails(data) {
+				const booking = data.booking;
+				const passenger = data.passenger;
+				const flight = data.flight;
+				const itinerary = data.itinerary || [];
+
+				if (!booking || !passenger || !flight) {
+					$('#action-status').text('Incomplete booking data').addClass('text-error');
+					return;
+				}
+
+				// Passenger info
+				$('#passenger-name').text(passenger.full_name || passenger.name || '—');
+				$('#passenger-email').text(passenger.email || '—');
+				$('#passenger-phone').text(passenger.tel || 'Not provided');
+				
+				if (passenger.created_at) {
+					const date = new Date(passenger.created_at);
+					$('#passenger-joined').text(date.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }));
+				}
+
+				if (passenger.photo && passenger.photo.trim() !== '') {
+					const photoUrl = passenger.photo.startsWith('http') ? passenger.photo : '/Flight-Booking-V2/Back-End/' + passenger.photo;
+					$('#passenger-photo').attr('src', photoUrl).show();
+					$('#photo-placeholder').hide();
+				}
+
+				// Flight info
+				$('#booking-id').text('#' + booking.id);
+				$('#flight-code').text(flight.flight_code || '—');
+				$('#flight-name').text(flight.name || '—');
+				$('#flight-departure').text(flight.start_datetime || '—');
+				$('#flight-arrival').text(flight.end_datetime || '—');
+				$('#ticket-fare').text('$' + parseFloat(flight.fees || 0).toFixed(2));
+
+				const routeText = itinerary.map(i => i.city_name).join(' → ') || '—';
+				$('#flight-route').text(routeText);
+
+				if (booking.booked_at) {
+					const date = new Date(booking.booked_at);
+					$('#booked-at').text(date.toLocaleString('en-US'));
+				}
+
+				// Status
+				const statusText = booking.status.charAt(0).toUpperCase() + booking.status.slice(1);
+				$('#booking-subtitle').text(`Booking #${booking.id} - ${statusText}`);
+
+				if (booking.status === 'pending') {
+					$('#action-card').show();
+					$('#booking-status').html('<span class="badge badge-warning">Pending</span>');
+				} else if (booking.status === 'registered') {
+					$('#booking-status').html('<span class="badge badge-success">Confirmed</span>');
+					$('#action-card').hide();
+				} else if (booking.status === 'cancelled') {
+					$('#booking-status').html('<span class="badge badge-error">Cancelled</span>');
+					$('#action-card').hide();
+				}
+			}
+
+			// Confirm booking
+			$('#confirm-btn').on('click', function() {
+				const btn = $(this);
+				btn.prop('disabled', true).text('Confirming...');
+
+				$.ajax({
+					url: '/Flight-Booking-V2/Back-End/company/booking-management.php',
+					method: 'POST',
+					dataType: 'json',
+					data: { action: 'confirm', booking_id: bookingId },
+					success: function(resp) {
+						if (resp?.success) {
+							$('#action-status').text('✓ Booking confirmed successfully!').removeClass('text-error').addClass('text-success');
+							$('#action-card').hide();
+							loadBookingDetails();
+						} else {
+							$('#action-status').text('✗ ' + (resp?.message || 'Failed to confirm')).addClass('text-error');
+						}
+					},
+					error: function(xhr) {
+						$('#action-status').text('✗ Error confirming booking').addClass('text-error');
+						console.error('Confirm error', xhr.status, xhr.responseText);
+					},
+					complete: function() {
+						btn.prop('disabled', false).text('Confirm Booking');
+					}
+				});
+			});
+
+			// Decline booking
+			$('#decline-btn').on('click', function() {
+				if (!confirm('Are you sure you want to decline this booking? The passenger will be refunded.')) {
+					return;
+				}
+
+				const btn = $(this);
+				btn.prop('disabled', true).text('Declining...');
+
+				$.ajax({
+					url: '/Flight-Booking-V2/Back-End/company/booking-management.php',
+					method: 'POST',
+					dataType: 'json',
+					data: { action: 'decline', booking_id: bookingId },
+					success: function(resp) {
+						if (resp?.success) {
+							$('#action-status').text('✓ Booking declined and passenger refunded!').removeClass('text-error').addClass('text-success');
+							$('#action-card').hide();
+							loadBookingDetails();
+						} else {
+							$('#action-status').text('✗ ' + (resp?.message || 'Failed to decline')).addClass('text-error');
+						}
+					},
+					error: function(xhr) {
+						$('#action-status').text('✗ Error declining booking').addClass('text-error');
+						console.error('Decline error', xhr.status, xhr.responseText);
+					},
+					complete: function() {
+						btn.prop('disabled', false).text('Decline Booking');
+					}
+				});
+			});
+
+			loadBookingDetails();
+		});
+	</script>
+</body>
+</html>

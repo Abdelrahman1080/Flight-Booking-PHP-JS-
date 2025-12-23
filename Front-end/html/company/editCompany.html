@@ -118,13 +118,19 @@
 							<input class="form-control" id="company-name" type="text" placeholder="Your company name" required>
 						</div>
 						<div class="form-group">
+							<label class="form-label" for="company-wallet">Wallet Balance</label>
+							<input class="form-control" id="company-wallet" type="number" placeholder="0.00" step="0.01" min="0">
+						</div>
+					</div>
+					<div class="grid grid-cols-2 gap-lg">
+						<div class="form-group">
 							<label class="form-label" for="company-location">Location</label>
 							<input class="form-control" id="company-location" type="text" placeholder="City / Region">
 						</div>
-					</div>
-					<div class="form-group">
-						<label class="form-label" for="company-address">Address</label>
-						<input class="form-control" id="company-address" type="text" placeholder="Full address">
+						<div class="form-group">
+							<label class="form-label" for="company-address">Address</label>
+							<input class="form-control" id="company-address" type="text" placeholder="Full address">
+						</div>
 					</div>
 					<div class="form-group">
 						<label class="form-label" for="company-bio">About Company</label>
@@ -216,6 +222,7 @@
 							$('#company-location').val(company.location || '');
 							$('#company-address').val(company.address || '');
 							$('#company-bio').val(company.bio || '');
+							$('#company-wallet').val(company.account_balance || 0);
 							
 							// Display logo preview if exists
 							if (company.logo) {
@@ -256,6 +263,7 @@
 				formData.append('bio', $('#company-bio').val());
 				formData.append('address', $('#company-address').val());
 				formData.append('location', $('#company-location').val());
+				formData.append('account_balance', $('#company-wallet').val());
 				
 				const logoFile = $('#company-logo')[0].files[0];
 				if (logoFile) {

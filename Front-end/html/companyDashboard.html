@@ -369,7 +369,10 @@
             });
 
             $(document).on('click', '.btn-view-booking', function() {
-                alert('Booking details would open here.');
+                const bookingId = $(this).data('booking-id');
+                if (bookingId) {
+                    window.location.href = 'company/viewBooking.html?booking_id=' + bookingId;
+                }
             });
 
             function renderCompanyDashboard(data) {
@@ -397,7 +400,7 @@
                                 <td>${b.passenger}</td>
                                 <td>${b.flight}</td>
                                 <td><span class="badge ${statusClass}">${b.status}</span></td>
-                                <td class="text-right"><button class="btn btn-outline btn-sm btn-view-booking">View</button></td>
+                                <td class="text-right"><button class="btn btn-outline btn-sm btn-view-booking" data-booking-id="${b.id}">View</button></td>
                             </tr>
                         `;
                         tbody.append(row);

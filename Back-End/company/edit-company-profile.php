@@ -11,12 +11,13 @@ if (!isset($_SESSION['user_id']) || $_SESSION['user_type'] !== 'company') {
 
 $user_id = $_SESSION['user_id'];
 
-$name = $_POST['name'] ?? '';
+$company_name = $_POST['name'] ?? '';
 $bio = $_POST['bio'] ?? '';
 $address = $_POST['address'] ?? '';
+$account_balance = $_POST['account_balance'] ?? null;
 
-if (!$name) {
-    jsonResponse(false, "Name is required");
+if (!$company_name) {
+    jsonResponse(false, "Company name is required");
 }
 
  
@@ -27,27 +28,34 @@ if (!empty($_FILES['logo']['name'])) {
 }
 
  
-$stmt = $conn->prepare("
-    UPDATE users SET name = ? WHERE id = ?
-");
-$stmt->bind_param("si", $name, $user_id);
-$stmt->execute();
-
- 
-if ($logoPath) {
+if ($logoPath && $account_balance !== null) {
     $stmt = $conn->prepare("
         UPDATE companies
-        SET bio = ?, address = ?, logo = ?
+        SET comapny_name = ?, bio = ?, address = ?, logo = ?, account_balance = ?
         WHERE user_id = ?
     ");
-    $stmt->bind_param("sssi", $bio, $address, $logoPath, $user_id);
+    $stmt->bind_param("sssdi", $company_name, $bio, $address, $logoPath, $account_balance, $user_id);
+} elseif ($logoPath) {
+    $stmt = $conn->prepare("
+        UPDATE companies
+        SET comapny_name = ?, bio = ?, address = ?, logo = ?
+        WHERE user_id = ?
+    ");
+    $stmt->bind_param("ssssi", $company_name, $bio, $address, $logoPath, $user_id);
+} elseif ($account_balance !== null) {
+    $stmt = $conn->prepare("
+        UPDATE companies
+        SET comapny_name = ?, bio = ?, address = ?, account_balance = ?
+        WHERE user_id = ?
+    ");
+    $stmt->bind_param("sssdi", $company_name, $bio, $address, $account_balance, $user_id);
 } else {
     $stmt = $conn->prepare("
         UPDATE companies
-        SET bio = ?, address = ?
+        SET comapny_name = ?, bio = ?, address = ?
         WHERE user_id = ?
     ");
-    $stmt->bind_param("ssi", $bio, $address, $user_id);
+    $stmt->bind_param("sssi", $company_name, $bio, $address, $user_id);
 }
 
 if ($stmt->execute()) {

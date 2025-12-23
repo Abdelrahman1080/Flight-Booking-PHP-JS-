@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>SkyWings - Edit Profile</title>
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+	<link rel="stylesheet" href="../../css/styles.css">
+	<script src="../../js/jquery.js"></script>
+	<script src="/Flight-Booking-V2/Front-end/js/session-guard.js"></script>
+	<script src="../../js/scripts.js"></script>
+</head>
+<body>
+	<div class="container flex">
+		<div class="sidebar">
+			<div class="sidebar-brand">
+				<div class="logo flex items-center gap-sm">
+					<i class="fas fa-plane navbar-logo"></i>
+					<h1>SkyWings</h1>
+				</div>
+			</div>
+
+			<div class="sidebar-menu">
+				<a href="../userDashboard.html" class="sidebar-item">
+					<i class="fas fa-home sidebar-icon"></i>
+					<span>Dashboard</span>
+				</a>
+				<a href="bookFlight.html" class="sidebar-item">
+					<i class="fas fa-plane-departure sidebar-icon"></i>
+					<span>Book Flight</span>
+				</a>
+				<a href="myTrips.html" class="sidebar-item">
+					<i class="fas fa-suitcase sidebar-icon"></i>
+					<span>My Trips</span>
+				</a>
+				<a href="profile.html" class="sidebar-item active">
+					<i class="fas fa-user sidebar-icon"></i>
+					<span>Profile</span>
+				</a>
+				<a href="wallet.html" class="sidebar-item">
+					<i class="fas fa-wallet sidebar-icon"></i>
+					<span>Wallet</span>
+				</a>
+				<a href="messages.html" class="sidebar-item">
+					<i class="fas fa-envelope sidebar-icon"></i>
+					<span>Messages</span>
+				</a>
+				<a href="settings.html" class="sidebar-item">
+					<i class="fas fa-cog sidebar-icon"></i>
+					<span>Settings</span>
+				</a>
+			</div>
+
+			<div class="user-profile mt-auto p-lg">
+				<div class="user-info flex items-center">
+					<div class="user-avatar" id="user-avatar-initials">--</div>
+					<div class="user-details">
+						<h4 class="text-md font-semibold" id="user-name">—</h4>
+						<p class="text-sm text-secondary" id="user-membership">—</p>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<div class="main-content">
+			<div class="page-header mb-xl">
+				<div class="header flex justify-between items-center mb-lg">
+					<div>
+						<h2 class="page-title">Edit Profile</h2>
+						<p class="page-subtitle">Update your personal information</p>
+					</div>
+					<div class="header-actions flex items-center gap-md">
+						<a href="profile.html" class="btn btn-outline"><i class="fas fa-arrow-left"></i> Back to Profile</a>
+						<button class="btn btn-primary" id="save-profile"><i class="fas fa-save"></i> Save Changes</button>
+					</div>
+				</div>
+				<p class="text-sm font-semibold mt-md mb-lg" id="profile-status"></p>
+			</div>
+
+			<!-- Profile Photo Section -->
+			<div class="card mb-lg">
+				<div class="card-header">
+					<h4 class="card-title"><i class="fas fa-camera"></i> Profile Photo</h4>
+				</div>
+				<div class="card-body">
+					<div class="flex items-center gap-lg">
+						<div style="flex-shrink: 0;">
+							<img id="photo-preview" src="" alt="Photo preview" style="width: 120px; height: 120px; border-radius: 50%; object-fit: cover; display: none; border: 1px solid var(--neutral-light);">
+							<div id="photo-placeholder" style="width: 120px; height: 120px; background-color: var(--neutral-light); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 3rem; color: var(--neutral-gray);">
+								<i class="fas fa-user"></i>
+							</div>
+						</div>
+						<div style="flex-grow: 1;">
+							<label class="btn btn-outline mb-md" for="passenger-photo" style="display: inline-flex;"><i class="fas fa-upload"></i> Upload Photo</label>
+							<input type="file" id="passenger-photo" accept="image/*" class="hidden">
+							<p class="form-text">PNG/JPG, max 2MB. Square image recommended.</p>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<!-- Personal Information Form -->
+			<div class="card mb-lg">
+				<div class="card-header">
+					<h4 class="card-title"><i class="fas fa-user"></i> Personal Information</h4>
+				</div>
+				<div class="card-body">
+					<div class="grid grid-cols-2 gap-lg">
+						<div class="form-group">
+							<label class="form-label" for="passenger-name">Full Name</label>
+							<input class="form-control" id="passenger-name" type="text" placeholder="Your full name" required>
+						</div>
+						<div class="form-group">
+							<label class="form-label" for="passenger-phone">Phone Number</label>
+							<input class="form-control" id="passenger-phone" type="tel" placeholder="+1 (555) 000-0000">
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<!-- Passport Section -->
+			<div class="card mb-lg">
+				<div class="card-header">
+					<h4 class="card-title"><i class="fas fa-passport"></i> Passport Information</h4>
+				</div>
+				<div class="card-body">
+					<div class="flex flex-col items-center">
+						<img id="passport-preview" src="" alt="Passport preview" style="max-width: 300px; width: 100%; margin-bottom: var(--space-lg); display: none; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+						<div id="passport-placeholder" style="width: 100%; max-width: 300px; height: 200px; background-color: var(--neutral-light); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 3rem; color: var(--neutral-gray); margin-bottom: var(--space-lg);">
+							<i class="fas fa-image"></i>
+						</div>
+						<label class="btn btn-outline mb-md" for="passenger-passport" style="display: inline-flex;"><i class="fas fa-upload"></i> Upload Passport</label>
+						<input type="file" id="passenger-passport" accept="image/*" class="hidden">
+						<p class="form-text">PNG/JPG, max 2MB. Clear, legible image required.</p>
+					</div>
+				</div>
+			</div>
+
+			<!-- Save Status Message -->
+			<div style="height: 20px; margin-bottom: 2rem;"></div>
+		</div>
+	</div>
+
+	<style>
+		.card-header {
+			display: flex;
+			align-items: center;
+			padding: var(--space-md);
+			border-bottom: 1px solid var(--neutral-light);
+		}
+
+		.card-title {
+			display: flex;
+			align-items: center;
+			gap: 0.75rem;
+			margin: 0;
+			font-size: 1.1rem;
+			font-weight: 600;
+			color: var(--neutral-dark);
+		}
+
+		.card-body {
+			padding: var(--space-md);
+		}
+
+		.form-text {
+			display: block;
+			margin-top: 0.5rem;
+			font-size: 0.875rem;
+			color: var(--neutral-gray);
+		}
+
+		.hidden {
+			display: none;
+		}
+
+		.flex {
+			display: flex;
+		}
+
+		.flex-col {
+			flex-direction: column;
+		}
+
+		.items-center {
+			align-items: center;
+		}
+
+		.gap-lg {
+			gap: var(--space-lg);
+		}
+	</style>
+
+	<script>
+		$(function() {
+			SkyWingsUI.initNavigation('profile');
+
+			// Load passenger profile for sidebar and form
+			function loadPassengerProfile() {
+				$.ajax({
+					url: '/Flight-Booking-V2/Back-End/passenger/passenger-profile.php',
+					method: 'GET',
+					dataType: 'json',
+					success: function(resp) {
+						if (resp && resp.success && resp.data) {
+							const profile = resp.data;
+							const displayName = profile.full_name || profile.name || 'User';
+							const initials = (displayName.match(/\b\w/g) || []).join('').substring(0,2).toUpperCase() || '--';
+							
+							// Populate sidebar
+							$('#user-avatar-initials').text(initials);
+							$('#user-name').text(displayName);
+							$('#user-membership').text('SkyWings Member');
+							
+							// Populate form fields
+							$('#passenger-name').val(profile.full_name || profile.name || '');
+							$('#passenger-phone').val(profile.tel || '');
+							
+							// Display photo preview if exists
+							if (profile.photo) {
+								const photoUrl = profile.photo.startsWith('http') ? profile.photo : '/Flight-Booking-V2/Back-End/' + profile.photo;
+								$('#photo-preview').attr('src', photoUrl).show();
+								$('#photo-placeholder').hide();
+							}
+							
+							// Display passport preview if exists
+							if (profile.passport_img && profile.passport_img.trim() !== '') {
+								const passportUrl = profile.passport_img.startsWith('http') ? profile.passport_img : '/Flight-Booking-V2/Back-End/' + profile.passport_img;
+								$('#passport-preview').attr('src', passportUrl).show();
+								$('#passport-placeholder').hide();
+							}
+						}
+					},
+					error: function(xhr) {
+						console.error('Error loading profile', xhr.status, xhr.responseText);
+					}
+				});
+			}
+
+			// Load profile on page initialization
+			loadPassengerProfile();
+
+			// Photo upload preview handler
+			$('#passenger-photo').on('change', function(e) {
+				const file = e.target.files && e.target.files[0];
+				if (!file) return;
+				const reader = new FileReader();
+				reader.onload = function(evt) {
+					$('#photo-preview').attr('src', evt.target.result).show();
+					$('#photo-placeholder').hide();
+				};
+				reader.readAsDataURL(file);
+			});
+
+			// Passport upload preview handler
+			$('#passenger-passport').on('change', function(e) {
+				const file = e.target.files && e.target.files[0];
+				if (!file) return;
+				const reader = new FileReader();
+				reader.onload = function(evt) {
+					$('#passport-preview').attr('src', evt.target.result).show();
+					$('#passport-placeholder').hide();
+				};
+				reader.readAsDataURL(file);
+			});
+
+			// Save profile handler
+			$('#save-profile').on('click', function(e) {
+				e.preventDefault();
+				const formData = new FormData();
+				formData.append('full_name', $('#passenger-name').val());
+				formData.append('tel', $('#passenger-phone').val());
+				
+				const photoFile = $('#passenger-photo')[0].files[0];
+				if (photoFile) {
+					formData.append('photo', photoFile);
+				}
+
+				const passportFile = $('#passenger-passport')[0].files[0];
+				if (passportFile) {
+					formData.append('passport', passportFile);
+				}
+
+				const status = $('#profile-status');
+				status.text('Saving...').removeClass('text-error text-success').addClass('text-secondary');
+
+				$.ajax({
+					url: '/Flight-Booking-V2/Back-End/passenger/edit-passenger.php',
+					method: 'POST',
+					data: formData,
+					processData: false,
+					contentType: false,
+					success: function(resp) {
+						if (resp && resp.success) {
+							status.text('✓ Profile saved successfully!').removeClass('text-error text-secondary').addClass('text-success');
+							setTimeout(function() {
+								window.location.href = 'profile.html';
+							}, 1500);
+						} else {
+							status.text('✗ ' + (resp?.message || 'Failed to save profile.')).removeClass('text-success text-secondary').addClass('text-error');
+						}
+					},
+					error: function(xhr) {
+						status.text('✗ Error saving profile.').removeClass('text-success text-secondary').addClass('text-error');
+						console.error('Error saving profile', xhr.status, xhr.responseText);
+					}
+				});
+			});
+		});
+	</script>
+</body>
+</html>

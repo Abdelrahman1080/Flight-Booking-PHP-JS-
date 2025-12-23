@@ -80,7 +80,7 @@ try {
     }
     $updateStmt->close();
 
-    $insertStmt = $conn->prepare('INSERT INTO flight_bookings (flight_id, passenger_id, status) VALUES (?, ?, "registered")');
+    $insertStmt = $conn->prepare('INSERT INTO flight_bookings (flight_id, passenger_id, status) VALUES (?, ?, "pending")');
     for ($i = 0; $i < $quantity; $i++) {
         $insertStmt->bind_param('ii', $flightId, $passengerId);
         $insertStmt->execute();
