@@ -49,7 +49,7 @@
 					<i class="fas fa-envelope sidebar-icon"></i>
 					<span>Messages</span>
 				</a>
-				<a href="../companyDashboard.html#settings" class="sidebar-item" data-page="settings">
+				<a href="settings.html" class="sidebar-item" data-page="settings">
 					<i class="fas fa-cog sidebar-icon"></i>
 					<span>Settings</span>
 				</a>
@@ -137,38 +137,39 @@
 	<script>
 		$(function() {
 			SkyWingsUI.initNavigation('bookings');
+			SkyWingsUI.bindSidebarClicks();
 
-			// Load company profile for sidebar
 			$.ajax({
-				url: '../../../Back-End/company/dashboard-company.php',
+				url: '/Flight-Booking-V2/Back-End/company/company-profile.php',
 				method: 'GET',
 				dataType: 'json',
 				success: function(resp) {
 					if (resp?.success && resp.data?.company) {
 						const c = resp.data.company;
+						const compName = c.company_name || c.name || 'Company';
 						const logo = c.logo || null;
 						
 						if (logo) {
-							const logoPath = logo.startsWith('http') ? logo : `../../../Back-End/${logo}`;
+							const logoPath = logo.startsWith('http') ? logo : '/Flight-Booking-V2/Back-End/' + logo;
 							$('#company-avatar-logo').attr('src', logoPath).show();
 							$('#company-avatar-text').hide();
 						} else {
 							$('#company-avatar-logo').hide();
-							$('#company-avatar-text').text(c.avatarInitials || 'CO').show();
+							$('#company-avatar-text').text((compName.match(/\b\w/g) || []).join('').substring(0,2).toUpperCase() || 'CO').show();
 						}
 						
-						$('#companyName').text(c.name || 'Company');
+						$('#companyName').text(compName);
 						$('#companyRole').text('Flight Operations');
 					}
 				}
 			});
 
 			let flights = [];
-			let bookings = [];
+			let allBookings = [];
 
 			function statusBadge(status) {
-				if (status === 'Confirmed') return '<span class="badge badge-success">Confirmed</span>';
-				if (status === 'Cancelled') return '<span class="badge badge-error">Cancelled</span>';
+				if (status === 'registered') return '<span class="badge badge-success">Confirmed</span>';
+				if (status === 'cancelled') return '<span class="badge badge-error">Cancelled</span>';
 				return '<span class="badge badge-warning">Pending</span>';
 			}
 
@@ -176,21 +177,22 @@
 				const body = $('#bookings-body');
 				body.empty();
 				if (!list.length) {
-					body.append('<tr><td colspan="6" class="text-secondary">No bookings found.</td></tr>');
+					body.append('<tr><td colspan="6" class="text-center text-secondary py-lg">No bookings found.</td></tr>');
 					$('#booking-count').text('0 bookings');
 					return;
 				}
 				list.forEach(function(b) {
 					const row = `
 						<tr>
-							<td class="font-semibold">${b.id}</td>
+							<td class="font-semibold">#${b.id}</td>
 							<td>${b.passenger}</td>
 							<td>${b.flight}</td>
 							<td>${statusBadge(b.status)}</td>
 							<td>${b.amount}</td>
 							<td class="text-right">
-								<button class="btn btn-outline btn-sm btn-view-booking" data-id="${b.id}"><i class="fas fa-eye"></i> View</button>
-							</td>
+							<button class="btn btn-outline btn-sm btn-view-booking" data-id="${b.id}"><i class="fas fa-eye"></i> View</button>
+							<button class="btn btn-primary btn-sm btn-message-passenger" data-passenger-id="${b.passenger_id}" data-flight-id="${b.flight_id}"><i class="fas fa-envelope"></i></button>
+						</td>
 						</tr>`;
 					body.append(row);
 				});
@@ -202,8 +204,8 @@
 				const status = $('#filter-booking-status').val();
 				const flightId = $('#filter-flight').val();
 
-				const filtered = bookings.filter(function(b) {
-					const matchesQuery = !query || b.id.toLowerCase().includes(query) || b.passenger.toLowerCase().includes(query);
+				const filtered = allBookings.filter(function(b) {
+					const matchesQuery = !query || b.id.toString().includes(query) || b.passenger.toLowerCase().includes(query);
 					const matchesStatus = status === 'all' || b.status === status;
 					const matchesFlight = flightId === 'all' || b.flight_id == flightId;
 					return matchesQuery && matchesStatus && matchesFlight;
@@ -217,86 +219,125 @@
 				select.empty();
 				select.append('<option value="all" selected>All flights</option>');
 				list.forEach(function(f) {
-					select.append(`<option value="${f.id}">${f.flight_code}</option>`);
+					select.append(`<option value="${f.id}">${f.flight_code || f.name}</option>`);
 				});
 			}
 
 			function fetchFlightDetails(flightId) {
 				return $.ajax({
-					url: '../../Back-End/company/flight_details.php',
+					url: '/Flight-Booking-V2/Back-End/company/flight_details.php',
 					method: 'GET',
 					dataType: 'json',
 					data: { flight_id: flightId }
 				});
 			}
 
-			function loadBookingsForFlight(flightId) {
-				if (!flightId || flightId === 'all') {
-					bookings = [];
-					renderBookings(bookings);
-					$('#booking-count').text('0 bookings');
+			function loadAllBookings() {
+				allBookings = [];
+				
+				if (!flights.length) {
+					renderBookings([]);
 					return;
 				}
+
 				$('#booking-count').text('Loading...');
-				fetchFlightDetails(flightId).done(function(resp) {
-					if (!resp?.success) {
-						bookings = [];
-						renderBookings(bookings);
-						return;
-					}
-					const data = resp.data || {};
-					const flightCode = data.flight?.flight_code || '—';
-					const amount = data.flight?.fees ? `$${data.flight.fees}` : '$0';
-					const pending = (data.pending_passengers || []).map(function(p) {
-						return { id: `P-${p.id}`, passenger: p.name || p.email || 'Passenger', flight: flightCode, flight_id: flightId, status: 'Pending', amount: amount };
+				let loadedCount = 0;
+
+				flights.forEach(function(f) {
+					fetchFlightDetails(f.id).done(function(resp) {
+						if (resp?.success) {
+							const data = resp.data || {};
+							const flightCode = data.flight?.flight_code || f.flight_code || '—';
+							const flightName = data.flight?.name || f.name || 'Flight';
+							const amount = data.flight?.fees ? `$${parseFloat(data.flight.fees).toFixed(2)}` : '$0';
+							
+							(data.pending_passengers || []).forEach(function(p) {
+								allBookings.push({
+									id: p.booking_id,
+									passenger: p.name || p.email || 'Passenger',
+									passenger_id: p.user_id,
+									flight: flightCode,
+									flight_id: f.id,
+									status: 'pending',
+									amount: amount
+								});
+							});
+
+							// Add registered bookings
+							(data.registered_passengers || []).forEach(function(p) {
+								allBookings.push({
+									id: p.booking_id,
+									passenger: p.name || p.email || 'Passenger',
+									passenger_id: p.user_id,
+									flight: flightCode,
+									flight_id: f.id,
+									status: 'registered',
+									amount: amount
+								});
+							});
+							
+							loadedCount++;
+							if (loadedCount === flights.length) {
+								applyBookingFilters();
+							}
+						}
+					}).fail(function(xhr) {
+						console.error('load flight details error', xhr.status, xhr.responseText);
+						loadedCount++;
+						if (loadedCount === flights.length) {
+							applyBookingFilters();
+						}
 					});
-					const registered = (data.registered_passengers || []).map(function(p) {
-						return { id: `P-${p.id}`, passenger: p.name || p.email || 'Passenger', flight: flightCode, flight_id: flightId, status: 'Confirmed', amount: amount };
-					});
-					bookings = [...pending, ...registered];
-					applyBookingFilters();
-				}).fail(function(xhr) {
-					console.error('load bookings error', xhr.responseText);
-					bookings = [];
-					renderBookings(bookings);
 				});
 			}
 
 			function loadFlights() {
 				$.ajax({
-					url: '../../Back-End/company/home.php',
+					url: '/Flight-Booking-V2/Back-End/company/home.php',
 					method: 'GET',
 					dataType: 'json',
 					success: function(resp) {
 						if (resp?.success) {
 							flights = resp.data?.flights || [];
-							loadFlightOptions(flights);
-							const first = flights[0]?.id;
-							if (first) {
-								$('#filter-flight').val(first);
-								loadBookingsForFlight(first);
+							if (flights.length) {
+								loadFlightOptions(flights);
+								loadAllBookings();
 							} else {
-								bookings = [];
-								renderBookings(bookings);
+								$('#booking-count').text('No flights');
+								renderBookings([]);
 							}
+						} else {
+							console.warn('Failed to load flights:', resp?.message);
+							$('#booking-count').text('Error loading flights');
 						}
+					},
+					error: function(xhr) {
+						console.error('Flights load error', xhr.status, xhr.responseText);
+						$('#booking-count').text('Error loading flights');
 					}
 				});
 			}
 
 			$('#booking-search').on('input', applyBookingFilters);
 			$('#filter-booking-status').on('change', applyBookingFilters);
-			$('#filter-flight').on('change', function() {
-				loadBookingsForFlight($(this).val());
-			});
+			$('#filter-flight').on('change', applyBookingFilters);
 
 			$(document).on('click', '.btn-view-booking', function() {
 				const id = $(this).data('id');
-				// TODO: Wire to backend endpoint to load and display booking details
+				const booking = allBookings.find(b => b.id == id);
+				if (booking) {
+					alert(`Booking #${booking.id}\nPassenger: ${booking.passenger}\nFlight: ${booking.flight}\nStatus: ${booking.status}\nAmount: ${booking.amount}`);
+				}
 			});
 
-			loadFlights();
-		});
-	</script>
+            $(document).on('click', '.btn-message-passenger', function() {
+                const passengerId = $(this).data('passenger-id');
+                const flightId = $(this).data('flight-id');
+                window.location.href = 'companyMessages.html?chat_with=' + passengerId + '&flight_id=' + flightId;
+            });
+
+            loadFlights();
+        });
+    </script>
 </body>
 </html>

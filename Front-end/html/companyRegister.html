@@ -8,7 +8,6 @@
     <link rel="stylesheet" href="../css/styles.css">
     <script src="../js/jquery.js"></script>
     <style>
-        /* Registration Page Specific Styles */
         .register-container {
             min-height: 100vh;
             display: flex;
@@ -194,7 +193,6 @@
             font-family: var(--font-family);
         }
 
-        /* File Upload Styling */
         .file-input-wrapper {
             position: relative;
             display: inline-block;
@@ -364,7 +362,6 @@
             margin-bottom: 0;
         }
 
-        /* Alert Messages */
         .alert {
             padding: var(--space-md) var(--space-lg);
             border-radius: var(--border-radius-md);
@@ -401,7 +398,6 @@
             border: 1px solid #f5c6cb;
         }
 
-        /* Responsive Design */
         @media (max-width: 768px) {
             .register-container {
                 flex-direction: column;
@@ -441,14 +437,12 @@
     </style>
 </head>
 <body>
-    <!-- Brand -->
     <a href="landingPage.html" class="register-brand">
         <i class="fas fa-plane-departure register-brand-icon"></i>
         <span>SkyWings</span>
     </a>
 
     <div class="register-container">
-        <!-- Left Section -->
         <div class="register-left">
             <div class="register-left-content">
                 <h1 class="register-left-title">Complete Your Profile</h1>
@@ -487,22 +481,17 @@
             </div>
         </div>
 
-        <!-- Right Section - Company Profile Form -->
         <div class="register-right">
             <div class="register-form-container">
-                <!-- Form Header -->
                 <div class="register-form-header">
                     <i class="fas fa-briefcase register-form-icon"></i>
                     <h2 class="register-form-title">Company Information</h2>
                     <p class="register-form-subtitle">Add your company details</p>
                 </div>
 
-                <!-- Alert Messages -->
                 <div id="alert" class="alert"></div>
 
-                <!-- Company Profile Form -->
                 <form id="companyForm">
-                    <!-- Company Name -->
                     <div class="form-group">
                         <label class="form-label">Company Name</label>
                         <input 
@@ -515,7 +504,6 @@
                         <small class="form-text error"></small>
                     </div>
 
-                    <!-- Company Email -->
                     <div class="form-group">
                         <label class="form-label">Company Email</label>
                         <input 
@@ -529,7 +517,6 @@
                         <small class="form-text error"></small>
                     </div>
 
-                    <!-- Company Bio -->
                     <div class="form-group">
                         <label class="form-label">
                             Company Bio
@@ -544,7 +531,6 @@
                         <small class="form-text error"></small>
                     </div>
 
-                    <!-- Address and Location -->
                     <div class="form-row">
                         <div class="form-group">
                             <label class="form-label">
@@ -576,7 +562,6 @@
                         </div>
                     </div>
 
-                    <!-- Account Balance -->
                     <div class="form-group">
                         <label class="form-label">
                             Initial Account Balance
@@ -595,7 +580,6 @@
                         <small class="form-text error"></small>
                     </div>
 
-                    <!-- Company Logo Upload -->
                     <div class="form-group">
                         <label class="form-label">
                             Company Logo
@@ -620,7 +604,6 @@
                         </div>
                     </div>
 
-                    <!-- Submit and Skip Buttons -->
                     <div class="button-group">
                         <button type="submit" class="btn btn-primary" id="submitBtn">
                             <span>Complete Registration</span>
@@ -631,7 +614,6 @@
                     </div>
                 </form>
 
-                <!-- Dashboard Link -->
                 <div class="register-login">
                     Already completed? <a href="companyDashboard.html">Go to Dashboard</a>
                 </div>
@@ -646,17 +628,14 @@
         
         $(document).ready(function() {
             console.log('jQuery ready - initializing company form');
-            // Check for user data from sessionStorage (fresh registration)
             let user = sessionStorage.getItem('userData');
             console.log('Checking for user data. Got:', user);
             
             if (!user) {
-                // Try to get from window (if session-guard set it)
                 if (window.SkyWingsUser) {
                     console.log('Using window.SkyWingsUser:', window.SkyWingsUser);
                     user = window.SkyWingsUser;
                 } else {
-                    // No user data available - redirect to register
                     console.error('No user data found - redirecting to register');
                     window.location.href = 'register.html';
                     return;
@@ -676,22 +655,18 @@
             const submitBtn = $('#submitBtn');
             const skipBtn = $('#skipBtn');
 
-            // Populate read-only fields with user info
             $('#companyName').val(user.name);
             $('#companyEmail').val(user.email);
 
             console.log('Company registration page loaded for user:', user.user_id);
 
-            // Form submission
             companyForm.on('submit', function(e) {
                 e.preventDefault();
 
-                // Clear previous alerts
                 hideAlert();
 
                 console.log('Submitting company profile...');
 
-                // Prepare form data
                 const formData = new FormData();
                 formData.append('user_id', user.user_id);
                 formData.append('company_name', $('#companyName').val());
@@ -700,18 +675,15 @@
                 formData.append('location', $('#location').val());
                 formData.append('account_balance', $('#accountBalance').val() || 0);
 
-                // Handle logo upload
                 const logoFile = document.getElementById('logo').files[0];
                 if (logoFile) {
                     console.log('Appending logo file:', logoFile.name);
                     formData.append('logo', logoFile);
                 }
 
-                // Show loading state
                 submitBtn.prop('disabled', true);
                 submitBtn.html('<div class="loading-spinner"></div><span>Completing Profile...</span>');
 
-                // Submit company profile
                 console.log('Sending profile data to complete-company.php...');
                 $.ajax({
                     url: '/Flight-Booking-V2/Back-End/company/complete-company.php',
@@ -747,13 +719,11 @@
                 });
             });
 
-            // Skip button - redirect to dashboard
             skipBtn.on('click', function() {
                 console.log('Skipping company profile, redirecting to dashboard...');
                 window.location.href = 'companyDashboard.html';
             });
 
-            // File upload preview
             $('#logo').on('change', function() {
                 const file = this.files[0];
                 if (file) {
@@ -768,7 +738,6 @@
                 }
             });
 
-            // Show alert
             function showAlert(type, message) {
                 const alert = $('#alert');
                 const icon = type === 'success' ? 'fa-check-circle' : 'fa-exclamation-circle';
@@ -781,12 +750,10 @@
                 alert.addClass(`show ${alertClass}`);
             }
 
-            // Hide alert
             function hideAlert() {
                 $('#alert').removeClass('show alert-success alert-error').text('');
             }
 
-            // Reset button
             function resetButton() {
                 submitBtn.prop('disabled', false);
                 submitBtn.html('<span>Complete Registration</span>');

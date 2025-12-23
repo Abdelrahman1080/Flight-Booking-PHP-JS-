@@ -37,7 +37,7 @@ $stmt->execute();
 $itinerary = $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
 
 $stmt = $conn->prepare("
-    SELECT p.id, u.name, u.email, p.account_balance
+    SELECT fb.id AS booking_id, p.id AS passenger_id, u.id AS user_id, u.name, u.email, p.account_balance
     FROM flight_bookings fb
     JOIN passengers p ON fb.passenger_id = p.id
     JOIN users u ON p.user_id = u.id
@@ -48,7 +48,7 @@ $stmt->execute();
 $pending = $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
 
 $stmt = $conn->prepare("
-    SELECT p.id, u.name, u.email, p.account_balance
+    SELECT fb.id AS booking_id, p.id AS passenger_id, u.id AS user_id, u.name, u.email, p.account_balance
     FROM flight_bookings fb
     JOIN passengers p ON fb.passenger_id = p.id
     JOIN users u ON p.user_id = u.id

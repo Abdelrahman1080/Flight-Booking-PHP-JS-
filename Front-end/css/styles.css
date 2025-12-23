@@ -1,12 +1,9 @@
-/* styles.css - Flight Booking System Components */
-/* Base Styles & Variables */
+
 :root {
-    /* Primary Colors */
     --primary-blue: #1a73e8;
     --primary-blue-dark: #0d5cb6;
     --primary-blue-light: #e8f0fe;
     
-    /* Secondary Colors */
     --secondary-teal: #20c5c5;
     --secondary-purple: #7b61ff;
     --secondary-orange: #ff6b35;

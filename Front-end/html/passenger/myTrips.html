@@ -10,7 +10,58 @@
 	<script src="/Flight-Booking-V2/Front-end/js/session-guard.js"></script>
 </head>
 <body>
-	<div class="container">
+	<div class="container flex">
+		<div class="sidebar">
+			<div class="sidebar-brand">
+				<div class="logo flex items-center gap-sm">
+					<i class="fas fa-plane navbar-logo"></i>
+					<h1>SkyWings</h1>
+				</div>
+			</div>
+			
+			<div class="sidebar-menu">
+				<a href="../userDashboard.html" class="sidebar-item">
+					<i class="fas fa-home sidebar-icon"></i>
+					<span>Dashboard</span>
+				</a>
+				<a href="bookFlight.html" class="sidebar-item">
+					<i class="fas fa-plane-departure sidebar-icon"></i>
+					<span>Book Flight</span>
+				</a>
+				<a href="myTrips.html" class="sidebar-item active">
+					<i class="fas fa-suitcase sidebar-icon"></i>
+					<span>My Trips</span>
+				</a>
+				<a href="profile.html" class="sidebar-item">
+					<i class="fas fa-user sidebar-icon"></i>
+					<span>Profile</span>
+				</a>
+				<a href="wallet.html" class="sidebar-item">
+					<i class="fas fa-wallet sidebar-icon"></i>
+					<span>Wallet</span>
+				</a>
+				<a href="messages.html" class="sidebar-item">
+					<i class="fas fa-envelope sidebar-icon"></i>
+					<span>Messages</span>
+				</a>
+				<a href="settings.html" class="sidebar-item">
+					<i class="fas fa-cog sidebar-icon"></i>
+					<span>Settings</span>
+				</a>
+			</div>
+			
+			<div class="user-profile mt-auto p-lg">
+				<div class="user-info flex items-center">
+					<div class="user-avatar" id="user-avatar-initials">--</div>
+					<div class="user-details">
+						<h4 class="text-md font-semibold" id="user-name">—</h4>
+						<p class="text-sm text-secondary" id="user-membership">—</p>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<div class="main-content">
 		<div class="page-header mb-xl flex justify-between items-center">
 			<div>
 				<h2 class="page-title">My Trips</h2>
@@ -24,7 +75,7 @@
 		<div class="grid grid-cols-2 gap-lg">
 			<div class="card">
 				<div class="card-header flex justify-between items-center">
-					<h3 class="card-title">Upcoming</h3>
+					<h3 class="card-title">Upcoming & Active</h3>
 					<div class="text-sm text-secondary" id="upcoming-count"></div>
 				</div>
 				<div class="card-body">
@@ -36,6 +87,7 @@
 									<th>Route</th>
 									<th>Schedule</th>
 									<th>Status</th>
+									<th>Actions</th>
 								</tr>
 							</thead>
 							<tbody id="upcoming-body"></tbody>
@@ -46,7 +98,7 @@
 
 			<div class="card">
 				<div class="card-header flex justify-between items-center">
-					<h3 class="card-title">Completed</h3>
+					<h3 class="card-title">Completed & Cancelled</h3>
 					<div class="text-sm text-secondary" id="completed-count"></div>
 				</div>
 				<div class="card-body">
@@ -57,7 +109,8 @@
 									<th>Flight</th>
 									<th>Route</th>
 									<th>Date</th>
-									<th>SkyMiles</th>
+									<th>Status</th>
+									<th>Action</th>
 								</tr>
 							</thead>
 							<tbody id="completed-body"></tbody>
@@ -65,56 +118,111 @@
 					</div>
 				</div>
 			</div>
+			</div>
 		</div>
 	</div>
 
+	<script src="../../js/scripts.js"></script>
 	<script>
 		$(function() {
+			SkyWingsUI.bindSidebarClicks();
+			
+			function loadDashboard() {
+				$.ajax({
+					url: '/Flight-Booking-V2/Back-End/passenger/dashboard-passenger.php',
+					method: 'GET',
+					dataType: 'json',
+					success: function(resp) {
+						if (resp && resp.success) {
+							renderDashboard(resp.data || {});
+						} else {
+							console.warn('Failed to load dashboard data:', resp?.message);
+						}
+					},
+					error: function(xhr) {
+						console.error('Error loading dashboard data', xhr.status, xhr.responseText);
+					}
+				});
+			}
+			
+			function renderDashboard(data) {
+				const name = data.user?.name || 'Guest';
+				const membership = data.user?.membership || 'Member';
+				const initials = (name.match(/\b\w/g) || []).join('').substring(0,2).toUpperCase();
+				$('#user-name').text(name);
+				$('#user-membership').text(membership);
+				$('#user-avatar-initials').text(initials);
+			}
+			
+			loadDashboard();
+
 			$('#refresh-trips').on('click', loadTrips);
 
 			function loadTrips() {
 				$.ajax({
-					url: '../../Back-End/passenger/dashboard-passenger.php',
+					url: '/Flight-Booking-V2/Back-End/passenger/get-bookings.php',
 					method: 'GET',
 					dataType: 'json'
 				}).done(function(res) {
-					renderTrips(res);
+					if (res && res.success) {
+						renderTrips(res.data || []);
+					} else {
+						renderTrips([]);
+					}
 				}).fail(function() {
-					renderTrips({});
+					renderTrips([]);
 				});
 			}
 
-			function renderTrips(data) {
-				renderUpcoming(data.upcomingFlights || []);
-				renderCompleted(data.completedTrips || []);
+			function renderTrips(bookings) {
+				const upcoming = bookings.filter(b => 
+					(b.status === 'registered' || b.status === 'pending') && b.is_completed === 0
+				);
+				const past = bookings.filter(b => 
+					b.status === 'completed' || b.status === 'cancelled' || b.is_completed === 1
+				);
+				
+				renderUpcoming(upcoming);
+				renderCompleted(past);
 			}
 
 			function renderUpcoming(list) {
 				const body = $('#upcoming-body');
 				body.empty();
-				$('#upcoming-count').text(list.length ? `${list.length} trips` : '');
-				list.forEach(function(f) {
+				$('#upcoming-count').text(list.length ? `${list.length} bookings` : '');
+				
+				if (!list.length) {
+					body.append('<tr><td colspan="5" class="text-center text-secondary">No upcoming bookings</td></tr>');
+					return;
+				}
+				
+				list.forEach(function(b) {
+					const statusClass = b.status === 'registered' ? 'badge-success' : 'badge-warning';
 					const row = `
 						<tr>
 							<td>
 								<div class="flight-details">
-									<h4>${f.flightNumber || ''}</h4>
-									<p class="text-secondary">${f.airline || ''}</p>
+									<h4>${b.flight_code || ''}</h4>
+									<p class="text-secondary">${b.company_name || ''}</p>
 								</div>
 							</td>
 							<td>
 								<div class="flight-route">
-									<h4>${f.route || ''}</h4>
-									<p class="text-secondary">${f.origin || ''} → ${f.destination || ''}</p>
+									<h4>${b.route || ''}</h4>
+									<p class="text-secondary">${b.origin || ''} → ${b.destination || ''}</p>
 								</div>
 							</td>
 							<td>
 								<div class="flight-time">
-									<h4>${f.date || ''}</h4>
-									<p class="text-secondary">${f.time || ''}</p>
+									<p class="text-secondary">Depart: ${b.start_datetime || ''}</p>
+									<p class="text-secondary">Arrive: ${b.end_datetime || ''}</p>
 								</div>
 							</td>
-							<td><span class="badge badge-primary">${f.status || ''}</span></td>
+							<td><span class="badge ${statusClass}">${ucfirst(b.status)}</span></td>
+							<td>
+								<button class="btn btn-outline btn-sm view-booking" data-id="${b.booking_id}">View</button>
+								<button class="btn btn-error btn-sm cancel-booking" data-id="${b.booking_id}">Cancel</button>
+							</td>
 						</tr>`;
 					body.append(row);
 				});
@@ -123,33 +231,82 @@
 			function renderCompleted(list) {
 				const body = $('#completed-body');
 				body.empty();
-				$('#completed-count').text(list.length ? `${list.length} trips` : '');
-				list.forEach(function(f) {
+				$('#completed-count').text(list.length ? `${list.length} bookings` : '');
+				
+				if (!list.length) {
+					body.append('<tr><td colspan="5" class="text-center text-secondary">No past bookings</td></tr>');
+					return;
+				}
+				
+				list.forEach(function(b) {
+					const statusClass = b.status === 'completed' ? 'badge-success' : 'badge-secondary';
 					const row = `
 						<tr>
 							<td>
 								<div class="flight-details">
-									<h4>${f.flightNumber || ''}</h4>
-									<p class="text-secondary">${f.airline || ''}</p>
+									<h4>${b.flight_code || ''}</h4>
+									<p class="text-secondary">${b.company_name || ''}</p>
 								</div>
 							</td>
 							<td>
 								<div class="flight-route">
-									<h4>${f.route || ''}</h4>
-									<p class="text-secondary">${f.origin || ''} → ${f.destination || ''}</p>
+									<h4>${b.route || ''}</h4>
+									<p class="text-secondary">${b.origin || ''} → ${b.destination || ''}</p>
 								</div>
 							</td>
 							<td>
 								<div class="flight-time">
-									<h4>${f.date || ''}</h4>
-									<p class="text-secondary">${f.time || ''}</p>
+									<p class="text-secondary">${b.start_datetime || ''}</p>
 								</div>
 							</td>
-							<td class="text-primary">${f.skyMiles || ''}</td>
+							<td><span class="badge ${statusClass}">${ucfirst(b.status)}</span></td>
+							<td>
+								<button class="btn btn-outline btn-sm view-booking" data-id="${b.booking_id}">View</button>
+							</td>
 						</tr>`;
 					body.append(row);
 				});
 			}
+			
+			function ucfirst(str) {
+				return str.charAt(0).toUpperCase() + str.slice(1);
+			}
+			
+			$(document).on('click', '.view-booking', function() {
+				const bookingId = $(this).data('id');
+				window.location.href = 'viewBooking.html?booking_id=' + bookingId;
+			});
+			
+			$(document).on('click', '.cancel-booking', function() {
+				const bookingId = $(this).data('id');
+				if (!confirm('Are you sure you want to cancel this booking? You will receive a refund.')) {
+					return;
+				}
+				
+				const btn = $(this);
+				btn.prop('disabled', true).text('Cancelling...');
+				
+				$.ajax({
+					url: '/Flight-Booking-V2/Back-End/passenger/cancel-booking.php',
+					method: 'POST',
+					dataType: 'json',
+					data: { booking_id: bookingId },
+					success: function(resp) {
+						if (resp && resp.success) {
+							alert('Booking cancelled successfully! Refund: $' + parseFloat(resp.data.refund_amount).toFixed(2));
+							loadTrips();
+						} else {
+							alert(resp?.message || 'Cancellation failed');
+							btn.prop('disabled', false).text('Cancel');
+						}
+					},
+					error: function(xhr) {
+						alert('Error cancelling booking');
+						console.error('cancel error', xhr.responseText);
+						btn.prop('disabled', false).text('Cancel');
+					}
+				});
+			});
 
 			loadTrips();
 		});

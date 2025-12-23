@@ -1,4 +1,3 @@
-/* Shared helpers for the SkyWings portal - company & passenger */
 (function($) {
 	const defaults = { name: 'SkyWings', role: 'Administrator' };
 
@@ -11,12 +10,10 @@
 		const role = user?.role || defaults.role;
 		const initials = initialsFromName(name);
 
-		// Company profile IDs
 		$('#companyName').text(name);
 		$('#companyRole').text(role);
 		$('#company-avatar-initials').text(initials);
 
-		// Passenger profile IDs
 		$('#user-name').text(name);
 		$('#user-membership').text(role);
 		$('#user-avatar-initials').text(initials);

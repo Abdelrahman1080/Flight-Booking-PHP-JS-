@@ -11,7 +11,6 @@ if (!isset($_SESSION['user_id']) || $_SESSION['user_type'] !== 'company') {
 
 $userId = $_SESSION['user_id'];
 
-/* Company Info */
 $stmt = $conn->prepare("
     SELECT c.id AS company_id, u.name, c.logo
     FROM companies c
@@ -26,7 +25,6 @@ if (!$company) {
     jsonResponse(false, "Company not found");
 }
 
-/* Flights List */
 $stmt = $conn->prepare("
     SELECT id, flight_code, name, fees, is_completed
     FROM flights

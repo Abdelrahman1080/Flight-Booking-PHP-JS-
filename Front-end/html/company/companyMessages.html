@@ -49,7 +49,7 @@
 					<i class="fas fa-envelope sidebar-icon"></i>
 					<span>Messages</span>
 				</a>
-				<a href="../companyDashboard.html#settings" class="sidebar-item" data-page="settings">
+				<a href="settings.html" class="sidebar-item" data-page="settings">
 					<i class="fas fa-cog sidebar-icon"></i>
 					<span>Settings</span>
 				</a>
@@ -117,9 +117,42 @@
 		</div>
 	</div>
 
+	<style>
+		.message-item {
+			display: flex;
+			margin-bottom: var(--space-md);
+			flex-direction: column;
+		}
+
+		.message-item.sent .message-text {
+			background-color: var(--primary-blue);
+			color: white;
+			align-self: flex-end;
+		}
+
+		.message-item.received .message-text {
+			background-color: var(--neutral-light);
+			align-self: flex-start;
+		}
+
+		.message-text {
+			padding: var(--space-md) var(--space-lg);
+			border-radius: var(--border-radius-md);
+			max-width: 70%;
+			word-wrap: break-word;
+		}
+
+		.message-time {
+			font-size: 0.75rem;
+			color: var(--neutral-gray);
+			margin-top: var(--space-xs);
+		}
+	</style>
+
 	<script>
 		$(function() {
 			SkyWingsUI.initNavigation('messages');
+			SkyWingsUI.bindSidebarClicks();
 
 			// Load company profile for sidebar
 			$.ajax({
@@ -146,52 +179,185 @@
 				}
 			});
 
-			// Hook: refresh conversation list
+			const urlParams = new URLSearchParams(window.location.search);
+			const chatWith = urlParams.get('chat_with');
+			const flightId = urlParams.get('flight_id');
+
+			// Load conversations list
+			loadConversations();
+
+			if (chatWith) {
+				openChat(chatWith, flightId);
+			}
+
+			function loadConversations() {
+				$.ajax({
+					url: '/Flight-Booking-V2/Back-End/passenger/list-conversations.php',
+					method: 'GET',
+					dataType: 'json',
+					success: function(resp) {
+						if (resp && resp.success) {
+							renderConversations(resp.data || []);
+						}
+					},
+					error: function() {
+						console.error('Error loading conversations');
+					}
+				});
+			}
+
+			function renderConversations(conversations) {
+				const container = $('#conversation-list');
+				container.empty();
+
+				if (!conversations.length) {
+					container.append('<p class="text-secondary text-center py-lg">No conversations yet</p>');
+					return;
+				}
+
+				conversations.forEach(function(conv) {
+					const convHtml = `
+						<div class="conversation-item" data-user-id="${conv.other_user_id}" data-flight-id="${conv.flight_id || ''}" style="padding: 12px; border-bottom: 1px solid #eee; cursor: pointer;">
+							<div style="font-weight: 600; margin-bottom: 4px;">${conv.other_user_name || 'Passenger'}</div>
+							<div style="font-size: 0.85rem; color: #666; margin-bottom: 4px;">
+								${conv.flight_code ? 'Flight ' + conv.flight_code : 'General'}
+							</div>
+							<div style="font-size: 0.85rem; color: #666; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+								${conv.last_message || ''}
+							</div>
+						</div>
+					`;
+					container.append(convHtml);
+				});
+			}
+
+			// Click handler for conversations
+			$(document).on('click', '.conversation-item', function() {
+				const userId = $(this).data('user-id');
+				const flightId = $(this).data('flight-id');
+				$('.conversation-item').css('background-color', '');
+				$(this).css('background-color', '#f0f7ff');
+				openChat(userId, flightId);
+			});
+
+			function openChat(userId, flightId) {
+				$('#message-input-section').show();
+				$('#message-thread').empty();
+				$('#active-conversation-meta').text('Loading conversation...');
+
+				$.ajax({
+					url: '/Flight-Booking-V2/Back-End/auth(log-register)/get-user.php',
+					method: 'GET',
+					data: { user_id: userId },
+					dataType: 'json',
+					success: function(resp) {
+						if (resp && resp.success) {
+							$('#active-conversation-meta').text('Chat with ' + (resp.data.name || 'Passenger'));
+						}
+					}
+				});
+
+				loadChatMessages(userId, flightId);
+
+				$('#message-form').on('submit', function(e) {
+					e.preventDefault();
+					const message = $('#message-input').val().trim();
+					if (!message) return;
+
+					$.ajax({
+						url: '/Flight-Booking-V2/Back-End/passenger/send_message.php',
+						method: 'POST',
+						data: {
+							receiver_id: userId,
+							flight_id: flightId,
+							message: message
+						},
+						dataType: 'json',
+						success: function(resp) {
+							if (resp && resp.success) {
+								$('#message-input').val('');
+								loadChatMessages(userId, flightId);
+								loadConversations();
+							} else {
+								alert('Failed to send message');
+							}
+						},
+						error: function() {
+							alert('Error sending message');
+						}
+					});
+				});
+			}
+
+			function loadChatMessages(userId, flightId) {
+				$.ajax({
+					url: '/Flight-Booking-V2/Back-End/passenger/get_messages.php',
+					method: 'GET',
+					data: {
+						chat_with: userId,
+						flight_id: flightId
+					},
+					dataType: 'json',
+					success: function(resp) {
+						if (resp && resp.success) {
+							renderMessages(resp.data || []);
+						}
+					},
+					error: function() {
+						console.error('Error loading messages');
+					}
+				});
+			}
+
+			function renderMessages(messages) {
+				const container = $('#message-thread');
+				container.empty();
+
+				if (!messages.length) {
+					container.append('<p class="text-secondary text-center py-lg">No messages yet. Start the conversation!</p>');
+					$('#active-conversation-meta').text('New Conversation');
+					return;
+				}
+
+				$('#active-conversation-meta').text('Chat with Passenger');
+
+				messages.forEach(function(msg) {
+					const isSent = msg.sender_id == msg.current_user_id;
+					const msgClass = isSent ? 'sent' : 'received';
+					const msgHtml = `
+						<div class="message-item ${msgClass}">
+							<div class="message-text">${escapeHtml(msg.message)}</div>
+							<div class="message-time">${msg.created_at}</div>
+						</div>
+					`;
+					container.append(msgHtml);
+				});
+
+				container.scrollTop(container[0].scrollHeight);
+			}
+
+			function escapeHtml(text) {
+				const map = {
+					'&': '&amp;',
+					'<': '&lt;',
+					'>': '&gt;',
+					'"': '&quot;',
+					"'": '&#039;'
+				};
+				return text.replace(/[&<>\"']/g, function(m) { return map[m]; });
+			}
+
 			$('#refresh-conversations').on('click', function() {
 				loadConversations();
 			});
 
-			// Hook: filter conversations
 			$('#conversation-search').on('input', function() {
 				const term = $(this).val().toLowerCase();
-				$('#conversation-list .message').each(function() {
+				$('.conversation-item').each(function() {
 					const text = $(this).text().toLowerCase();
 					$(this).toggle(text.includes(term));
 				});
 			});
-
-			// Hook: submit new message
-			$('#message-form').on('submit', function(e) {
-				e.preventDefault();
-				const text = $('#message-input').val().trim();
-				if (!text) return;
-				sendMessage(text);
-				$('#message-input').val('');
-			});
-
-			// Hook: select conversation (delegated)
-			$(document).on('click', '.conversation-item', function() {
-				const conversationId = $(this).data('id');
-				loadThread(conversationId);
-			});
-
-			function loadConversations() {
-				// Implement data fetch and rendering here.
-				// Expected to populate #conversation-list with .conversation-item entries.
-			}
-
-			function loadThread(conversationId) {
-				// Implement message thread fetch using conversationId and render into #message-thread.
-				$('#active-conversation-meta').text(conversationId ? `Conversation #${conversationId}` : '');
-			}
-
-			function sendMessage(text) {
-				// Implement message send API call and then refresh thread.
-				void text; // placeholder to avoid linting errors until wired.
-			}
-
-			// Initial load
-			loadConversations();
 		});
 	</script>
 </body>

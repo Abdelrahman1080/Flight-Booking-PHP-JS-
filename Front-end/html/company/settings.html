@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SkyWings - Company Settings</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="../../css/styles.css">
+    <script src="../../js/jquery.js"></script>
+    <script src="/Flight-Booking-V2/Front-end/js/session-guard.js"></script>
+    <script src="../../js/scripts.js"></script>
+</head>
+<body>
+    <div class="container flex">
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <div class="sidebar-brand">
+                <div class="logo flex items-center gap-sm">
+                    <i class="fas fa-plane navbar-logo"></i>
+                    <h1>SkyWings</h1>
+                </div>
+            </div>
+            
+            <div class="sidebar-menu">
+                <a href="../companyDashboard.html" class="sidebar-item" data-page="dashboard">
+                    <i class="fas fa-home sidebar-icon"></i>
+                    <span>Dashboard</span>
+                </a>
+                <a href="addFlight.html" class="sidebar-item" data-page="add-flight">
+                    <i class="fas fa-plane-departure sidebar-icon"></i>
+                    <span>Add Flight</span>
+                </a>
+                <a href="manageFlgihts.html" class="sidebar-item" data-page="manage-flights">
+                    <i class="fas fa-list sidebar-icon"></i>
+                    <span>Manage Flights</span>
+                </a>
+                <a href="bookings.html" class="sidebar-item" data-page="bookings">
+                    <i class="fas fa-users sidebar-icon"></i>
+                    <span>Bookings</span>
+                </a>
+                <a href="companyProfile.html" class="sidebar-item" data-page="profile">
+                    <i class="fas fa-id-card sidebar-icon"></i>
+                    <span>Profile</span>
+                </a>
+                <a href="analytics.html" class="sidebar-item" data-page="analytics">
+                    <i class="fas fa-chart-bar sidebar-icon"></i>
+                    <span>Analytics</span>
+                </a>
+                <a href="companyMessages.html" class="sidebar-item" data-page="messages">
+                    <i class="fas fa-envelope sidebar-icon"></i>
+                    <span>Messages</span>
+                </a>
+                <a href="settings.html" class="sidebar-item active" data-page="settings">
+                    <i class="fas fa-cog sidebar-icon"></i>
+                    <span>Settings</span>
+                </a>
+            </div>
+            
+            <div class="user-profile mt-auto p-lg">
+                <div class="user-info flex items-center">
+                    <div class="user-avatar" id="company-avatar-initials" style="overflow: hidden;">
+                        <img id="company-avatar-logo" src="" alt="" style="display: none; width: 100%; height: 100%; object-fit: cover;">
+                        <span id="company-avatar-text">--</span>
+                    </div>
+                    <div class="user-details">
+                        <h4 class="text-md font-semibold" id="companyName">—</h4>
+                        <p class="text-sm text-secondary" id="companyRole">—</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <div class="page-header mb-xl">
+                <div class="header flex justify-between items-center mb-lg">
+                    <div>
+                        <h2 class="page-title">Settings</h2>
+                        <p class="page-subtitle">Manage organization preferences, security, and notifications</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Organization -->
+            <div class="card mb-xl">
+                <div class="card-header">
+                    <h3 class="card-title">Organization</h3>
+                </div>
+                <div class="card-body">
+                    <div class="grid grid-cols-2 gap-lg">
+                        <div>
+                            <p class="text-sm text-secondary mb-sm">Company Name</p>
+                            <h4 class="text-lg font-semibold" id="org-name">—</h4>
+                        </div>
+                        <div class="text-right">
+                            <a class="btn btn-outline btn-sm" href="editCompany.html"><i class="fas fa-pen"></i> Edit Company Profile</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Notifications -->
+            <div class="card mb-xl">
+                <div class="card-header">
+                    <h3 class="card-title">Notifications</h3>
+                </div>
+                <div class="card-body">
+                    <div class="setting-item flex justify-between items-center">
+                        <div>
+                            <h4 class="text-md font-semibold">New booking notifications</h4>
+                            <p class="text-sm text-secondary">Receive alerts when passengers book your flights</p>
+                        </div>
+                        <input type="checkbox" class="checkbox-input" id="notif-bookings" checked>
+                    </div>
+                    <div class="setting-item flex justify-between items-center">
+                        <div>
+                            <h4 class="text-md font-semibold">Cancellation notifications</h4>
+                            <p class="text-sm text-secondary">Notify when passengers cancel or flights are cancelled</p>
+                        </div>
+                        <input type="checkbox" class="checkbox-input" id="notif-cancellations" checked>
+                    </div>
+                    <div class="setting-item flex justify-between items-center">
+                        <div>
+                            <h4 class="text-md font-semibold">Messages from passengers</h4>
+                            <p class="text-sm text-secondary">Alerts for new messages in your inbox</p>
+                        </div>
+                        <input type="checkbox" class="checkbox-input" id="notif-messages" checked>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Security -->
+            <div class="card mb-xl">
+                <div class="card-header">
+                    <h3 class="card-title">Security</h3>
+                </div>
+                <div class="card-body">
+                    <div class="setting-item flex justify-between items-center">
+                        <div>
+                            <h4 class="text-md font-semibold">Two-factor authentication</h4>
+                            <p class="text-sm text-secondary">Add an extra layer of security to your account</p>
+                        </div>
+                        <input type="checkbox" class="checkbox-input" id="security-2fa">
+                    </div>
+                    <div class="setting-item flex justify-between items-center">
+                        <div>
+                            <h4 class="text-md font-semibold">Change password</h4>
+                            <p class="text-sm text-secondary">Update your password regularly to keep your account secure</p>
+                        </div>
+                        <button class="btn btn-outline btn-sm" id="change-password-btn">Change</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Billing -->
+            <div class="card mb-xl">
+                <div class="card-header">
+                    <h3 class="card-title">Billing</h3>
+                </div>
+                <div class="card-body">
+                    <div class="setting-item flex justify-between items-center">
+                        <div>
+                            <h4 class="text-md font-semibold">Invoice emails</h4>
+                            <p class="text-sm text-secondary">Send monthly invoice summaries to company admins</p>
+                        </div>
+                        <input type="checkbox" class="checkbox-input" id="billing-invoices" checked>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Danger Zone -->
+            <div class="card" style="border-left: 3px solid var(--error);">
+                <div class="card-header">
+                    <h3 class="card-title"><i class="fas fa-triangle-exclamation"></i> Danger Zone</h3>
+                </div>
+                <div class="card-body">
+                    <p class="text-sm text-secondary mb-lg">These actions are irreversible. Proceed with caution.</p>
+                    <button class="btn btn-error btn-sm" id="logout-all-btn">
+                        <i class="fas fa-right-from-bracket"></i> Log out of all sessions
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <style>
+        .setting-item { padding: var(--space-md) 0; border-bottom: 1px solid var(--neutral-light); }
+        .setting-item:last-child { border-bottom: none; }
+        .checkbox-input { width: 24px; height: 24px; cursor: pointer; }
+        .ml-md { margin-left: var(--space-md); }
+        @keyframes spin { to { transform: rotate(360deg); } }
+    </style>
+
+    <script>
+        $(function() {
+            SkyWingsUI.initNavigation('settings');
+            SkyWingsUI.bindSidebarClicks();
+
+            // Load company profile for sidebar and org section (prefer company-profile.php)
+            function applyCompanyIdentity(comp) {
+                const name = comp.company_name || comp.name || comp.companyName || comp.title || 'Company';
+
+                $('#companyName').text(name);
+                $('#companyRole').text(comp.role || 'Organization Admin');
+                $('#org-name').text(name);
+
+                const logoVal = comp.logo || comp.company_logo || '';
+                if (logoVal) {
+                    const logoSrc = (typeof logoVal === 'string' && logoVal.startsWith('http'))
+                        ? logoVal
+                        : '/Flight-Booking-V2/Back-End/' + logoVal;
+                    $('#company-avatar-logo').attr('src', logoSrc).show();
+                    $('#company-avatar-text').hide();
+                } else {
+                    const initials = (name.match(/\b\w/g) || []).join('').substring(0,2).toUpperCase() || '--';
+                    $('#company-avatar-text').text(initials).show();
+                    $('#company-avatar-logo').hide();
+                }
+            }
+
+            function loadCompanyIdentity() {
+                $.ajax({
+                    url: '/Flight-Booking-V2/Back-End/company/company-profile.php',
+                    method: 'GET',
+                    dataType: 'json'
+                }).done(function(resp) {
+                    const comp = resp?.data?.company || {};
+                    if (resp?.success && Object.keys(comp).length) {
+                        applyCompanyIdentity(comp);
+                    } else {
+                        $.ajax({
+                            url: '/Flight-Booking-V2/Back-End/company/dashboard-company.php',
+                            method: 'GET',
+                            dataType: 'json'
+                        }).done(function(resp2) {
+                            const comp2 = resp2?.data?.company || {};
+                            applyCompanyIdentity(comp2);
+                        }).fail(function(xhr2) {
+                            console.error('Failed to load company profile (fallback):', xhr2.status, xhr2.responseText);
+                        });
+                    }
+                }).fail(function(xhr) {
+                    // Fallback if primary endpoint fails
+                    $.ajax({
+                        url: '/Flight-Booking-V2/Back-End/company/dashboard-company.php',
+                        method: 'GET',
+                        dataType: 'json'
+                    }).done(function(resp2) {
+                        const comp2 = resp2?.data?.company || {};
+                        applyCompanyIdentity(comp2);
+                    }).fail(function(xhr2) {
+                        console.error('Failed to load company profile for settings:', xhr2.status, xhr2.responseText);
+                    });
+                });
+            }
+
+            loadCompanyIdentity();
+
+            // Change password placeholder
+            $('#change-password-btn').click(function() {
+                alert('Change password flow coming soon.');
+            });
+
+            // Logout All Sessions (reused from passenger settings)
+            $('#logout-all-btn').click(function() {
+                const confirmModal = `
+                    <div class="modal active" id="logoutConfirmModal" style="z-index: 9999;">
+                        <div class="modal-content" style="max-width: 420px;">
+                            <div class="modal-header">
+                                <h3 class="modal-title">Log out of all sessions?</h3>
+                                <button class="modal-close" id="cancel-logout">&times;</button>
+                            </div>
+                            <div class="modal-body">
+                                <p>You'll be signed out from this browser and any other devices currently logged in.</p>
+                            </div>
+                            <div class="modal-footer">
+                                <button class="btn btn-secondary" id="cancel-logout-btn">Cancel</button>
+                                <button class="btn btn-error" id="confirm-logout-btn">Log out</button>
+                            </div>
+                        </div>
+                    </div>`;
+
+                $('#logoutConfirmModal').remove();
+                $('body').append(confirmModal);
+
+                function closeLogoutModal() {
+                    $('#logoutConfirmModal').removeClass('active');
+                    setTimeout(() => $('#logoutConfirmModal').remove(), 250);
+                }
+
+                $('#cancel-logout, #cancel-logout-btn').on('click', closeLogoutModal);
+                $(document).on('click', '#logoutConfirmModal', function(e) {
+                    if (e.target.id === 'logoutConfirmModal') closeLogoutModal();
+                });
+
+                $('#confirm-logout-btn').on('click', function() {
+                    const btn = $(this);
+                    btn.prop('disabled', true).html('<div class="loading-spinner" style="width: 16px; height: 16px; border: 2px solid rgba(255,255,255,0.3); border-top: 2px solid white; border-radius: 50%; animation: spin 0.8s linear infinite; display: inline-block; vertical-align: middle; margin-right: 8px;"></div> Logging out...');
+
+                    $.ajax({
+                        url: '/Flight-Booking-V2/Back-End/auth(log-register)/logout.php',
+                        method: 'POST',
+                        dataType: 'json'
+                    }).always(function() {
+                        try { localStorage.clear(); } catch (e) {}
+                        try { sessionStorage.clear(); } catch (e) {}
+                        window.location.href = '/Flight-Booking-V2/Front-end/html/landingPage.html';
+                    });
+                });
+            });
+        });
+    </script>
+</body>
+</html>

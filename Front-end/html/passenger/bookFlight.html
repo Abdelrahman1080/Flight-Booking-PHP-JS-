@@ -10,7 +10,58 @@
 	<script src="/Flight-Booking-V2/Front-end/js/session-guard.js"></script>
 </head>
 <body>
-	<div class="container">
+	<div class="container flex">
+		<div class="sidebar">
+			<div class="sidebar-brand">
+				<div class="logo flex items-center gap-sm">
+					<i class="fas fa-plane navbar-logo"></i>
+					<h1>SkyWings</h1>
+				</div>
+			</div>
+			
+			<div class="sidebar-menu">
+				<a href="../userDashboard.html" class="sidebar-item">
+					<i class="fas fa-home sidebar-icon"></i>
+					<span>Dashboard</span>
+				</a>
+				<a href="bookFlight.html" class="sidebar-item active">
+					<i class="fas fa-plane-departure sidebar-icon"></i>
+					<span>Book Flight</span>
+				</a>
+				<a href="myTrips.html" class="sidebar-item">
+					<i class="fas fa-suitcase sidebar-icon"></i>
+					<span>My Trips</span>
+				</a>
+				<a href="profile.html" class="sidebar-item">
+					<i class="fas fa-user sidebar-icon"></i>
+					<span>Profile</span>
+				</a>
+				<a href="wallet.html" class="sidebar-item">
+					<i class="fas fa-wallet sidebar-icon"></i>
+					<span>Wallet</span>
+				</a>
+				<a href="messages.html" class="sidebar-item">
+					<i class="fas fa-envelope sidebar-icon"></i>
+					<span>Messages</span>
+				</a>
+				<a href="settings.html" class="sidebar-item">
+					<i class="fas fa-cog sidebar-icon"></i>
+					<span>Settings</span>
+				</a>
+			</div>
+			
+			<div class="user-profile mt-auto p-lg">
+				<div class="user-info flex items-center">
+					<div class="user-avatar" id="user-avatar-initials">--</div>
+					<div class="user-details">
+						<h4 class="text-md font-semibold" id="user-name">—</h4>
+						<p class="text-sm text-secondary" id="user-membership">—</p>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<div class="main-content">
 		<div class="page-header mb-xl flex justify-between items-center">
 			<div>
 				<h2 class="page-title">Book a Flight</h2>
@@ -77,12 +128,45 @@
 						<tbody id="results-body"></tbody>
 					</table>
 				</div>
+				</div>
 			</div>
 		</div>
 	</div>
 
-	<script>
-		$(function() {
+	<script src="../../js/scripts.js"></script>
+		<script>
+			$(document).ready(function() {
+			SkyWingsUI.bindSidebarClicks();
+            
+			function loadDashboard() {
+				$.ajax({
+					url: '/Flight-Booking-V2/Back-End/passenger/dashboard-passenger.php',
+					method: 'GET',
+					dataType: 'json',
+					success: function(resp) {
+						if (resp && resp.success) {
+							renderDashboard(resp.data || {});
+						} else {
+							console.warn('Failed to load dashboard data:', resp?.message);
+						}
+					},
+					error: function(xhr) {
+						console.error('Error loading dashboard data', xhr.status, xhr.responseText);
+					}
+				});
+			}
+            
+			function renderDashboard(data) {
+				const name = data.user?.name || 'Guest';
+				const membership = data.user?.membership || 'Member';
+				const initials = (name.match(/\b\w/g) || []).join('').substring(0,2).toUpperCase();
+				$('#user-name').text(name);
+				$('#user-membership').text(membership);
+				$('#user-avatar-initials').text(initials);
+			}
+            
+			loadDashboard();
+
 			$('#reset-search').on('click', function() {
 				$('#flight-search-form')[0].reset();
 				$('#results-body').empty();
@@ -91,7 +175,7 @@
 
 			$('#flight-search-form').on('submit', function(e) {
 				e.preventDefault();
-				performSearch(new FormData(this));
+				performSearch();
 			});
 
 			$(document).on('click', '.book-flight', function() {
@@ -99,60 +183,91 @@
 				reserveFlight(flightId);
 			});
 
-			function performSearch(formData) {
-				// TODO: Wire to search flights endpoint when available.
-				// On success, call renderResults(response.data)
-				void formData;
+			function performSearch() {
+				const from = $('#from-airport').val().trim();
+				const to = $('#to-airport').val().trim();
+				if (!from || !to) {
+					$('#results-count').text('Please enter departure and arrival.');
+					return;
+				}
+
+				const btn = $('#search-btn');
+				btn.prop('disabled', true).text('Searching...');
+				$('#results-body').empty();
+				$('#results-count').text('Searching...');
+
+				$.ajax({
+					url: '/Flight-Booking-V2/Back-End/passenger/search_flights.php',
+					method: 'GET',
+					dataType: 'json',
+					data: { from, to }
+				}).done(function(resp) {
+					if (resp && resp.success) {
+						renderResults(resp.data || []);
+					} else {
+						$('#results-count').text(resp?.message || 'No results');
+						$('#results-body').empty();
+					}
+				}).fail(function(xhr) {
+					console.error('Error searching flights', xhr.status, xhr.responseText);
+					$('#results-count').text('Error searching flights.');
+				}).always(function() {
+					btn.prop('disabled', false).text('Search');
+				});
 			}
 
 			function renderResults(flights) {
 				const body = $('#results-body');
 				body.empty();
 				if (!flights || !flights.length) {
-					$('#results-count').text('No results');
+					$('#results-count').text('No flights found');
 					return;
 				}
-				$('#results-count').text(`${flights.length} flights`);
+
+				$('#results-count').text(`${flights.length} flights found`);
 				flights.forEach(function(f) {
+					const start = f.start_datetime || '';
+					const end = f.end_datetime || '';
+					const price = typeof f.fees !== 'undefined' ? `$${parseFloat(f.fees).toFixed(2)}` : '';
+					const remaining = f.remaining_seats || 0;
 					const row = `
-						<tr>
-							<td>
-								<div class="flight-details">
-									<h4>${f.code || ''}</h4>
-									<p class="text-secondary">${f.airline || ''}</p>
-								</div>
-							</td>
-							<td>
-								<div class="flight-route">
-									<h4>${f.route || ''}</h4>
-									<p class="text-secondary">${f.from || ''} → ${f.to || ''}</p>
-								</div>
-							</td>
-							<td>
-								<div class="flight-time">
-									<h4>${f.date || ''}</h4>
-									<p class="text-secondary">${f.time || ''}</p>
-								</div>
-							</td>
-							<td>
-								<div class="flight-price">
-									<h4>${f.price || ''}</h4>
-									<p class="text-secondary">${f.cabin || ''}</p>
-								</div>
-							</td>
-							<td>
-								<button class="btn btn-primary btn-sm book-flight" data-id="${f.id || ''}">Book</button>
-							</td>
-						</tr>`;
-					body.append(row);
-				});
+					<tr>
+						<td>
+							<div class="flight-details">
+								<h4>${f.flight_code || f.name || ''}</h4>
+								<p class="text-secondary">${f.name || ''}</p>
+							</div>
+						</td>
+						<td>
+							<div class="flight-route">
+								<p class="text-secondary">${$('#from-airport').val()} → ${$('#to-airport').val()}</p>
+							</div>
+						</td>
+						<td>
+							<div class="flight-time">
+								<p class="text-secondary">Depart: ${start}</p>
+								<p class="text-secondary">Arrive: ${end}</p>
+							</div>
+						</td>
+						<td>
+							<div class="flight-price">
+								<h4>${price}</h4>
+								<p class="text-secondary text-sm">${remaining} seats left</p>
+							</div>
+						</td>
+						<td>
+							<button class="btn btn-primary btn-sm book-flight" data-id="${f.id || ''}">Book</button>
+						</td>
+					</tr>`;
+				body.append(row);
+			});
 			}
 
 			function reserveFlight(flightId) {
-				// TODO: Wire to booking endpoint when available.
-				void flightId;
+				if (!flightId) return;
+				window.location.href = `/Flight-Booking-V2/Front-end/html/passenger/flightBooking.html?flight_id=${flightId}`;
 			}
 		});
-	</script>
+		</script>
 </body>
 </html>

@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SkyWings - Confirm Booking</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="../../css/styles.css">
+    <script src="../../js/jquery.js"></script>
+    <script src="/Flight-Booking-V2/Front-end/js/session-guard.js"></script>
+    <script src="../../js/scripts.js"></script>
+</head>
+<body>
+    <div class="container flex">
+        <div class="sidebar">
+            <div class="sidebar-brand">
+                <div class="logo flex items-center gap-sm">
+                    <i class="fas fa-plane navbar-logo"></i>
+                    <h1>SkyWings</h1>
+                </div>
+            </div>
+            <div class="sidebar-menu">
+                <a href="../userDashboard.html" class="sidebar-item"><i class="fas fa-home sidebar-icon"></i><span>Dashboard</span></a>
+                <a href="bookFlight.html" class="sidebar-item"><i class="fas fa-plane-departure sidebar-icon"></i><span>Book Flight</span></a>
+                <a href="myTrips.html" class="sidebar-item"><i class="fas fa-suitcase sidebar-icon"></i><span>My Trips</span></a>
+                <a href="profile.html" class="sidebar-item"><i class="fas fa-user sidebar-icon"></i><span>Profile</span></a>
+                <a href="wallet.html" class="sidebar-item"><i class="fas fa-wallet sidebar-icon"></i><span>Wallet</span></a>
+                <a href="messages.html" class="sidebar-item"><i class="fas fa-envelope sidebar-icon"></i><span>Messages</span></a>
+                <a href="settings.html" class="sidebar-item"><i class="fas fa-cog sidebar-icon"></i><span>Settings</span></a>
+            </div>
+            <div class="user-profile mt-auto p-lg">
+                <div class="user-info flex items-center">
+                    <div class="user-avatar" id="user-avatar-initials">--</div>
+                    <div class="user-details">
+                        <h4 class="text-md font-semibold" id="user-name">—</h4>
+                        <p class="text-sm text-secondary" id="user-membership">—</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="main-content">
+            <div class="page-header mb-xl">
+                <div class="header flex justify-between items-center mb-lg">
+                    <div>
+                        <h2 class="page-title">Confirm Booking</h2>
+                        <p class="page-subtitle">Review flight details and complete your booking</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card mb-lg" id="flight-card" style="display:none;">
+                <div class="card-body">
+                    <div class="flex items-center gap-lg">
+                        <div style="flex-grow:1;">
+                            <p class="text-sm text-secondary">Flight</p>
+                            <h3 class="text-xl font-semibold" id="flight-name">—</h3>
+                            <p class="text-sm text-secondary" id="flight-code">—</p>
+                            <p class="text-sm text-secondary" id="flight-company">—</p>
+                        </div>
+                        <div>
+                            <p class="text-sm text-secondary">Fare per ticket</p>
+                            <h3 class="text-lg font-semibold" id="flight-fee">—</h3>
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-2 gap-lg mt-lg">
+                        <div>
+                            <p class="text-sm text-secondary">Departure</p>
+                            <p class="text-md" id="flight-start">—</p>
+                        </div>
+                        <div>
+                            <p class="text-sm text-secondary">Arrival</p>
+                            <p class="text-md" id="flight-end">—</p>
+                        </div>
+                    </div>
+                    <div class="mt-lg" style="padding-top: 1rem; border-top: 1px solid var(--neutral-light);">
+                        <p class="text-sm text-secondary mb-md">Flight Route</p>
+                        <div id="flight-itinerary" style="background: #f5f5f5; padding: 1rem; border-radius: 8px; font-weight: 500;">—</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-body">
+                    <div class="form-group mb-md">
+                        <label class="form-label" for="ticket-qty">Tickets</label>
+                        <input type="number" id="ticket-qty" class="form-control" value="1" min="1">
+                    </div>
+                    <div class="form-group mb-md">
+                        <label class="form-label">Total</label>
+                        <h3 class="text-lg font-semibold" id="total-price">$0.00</h3>
+                    </div>
+                    <div class="flex gap-md">
+                        <button class="btn btn-secondary" id="cancel-booking">Back</button>
+                        <button class="btn btn-primary" id="confirm-booking">Confirm Booking</button>
+                    </div>
+                    <p class="text-sm text-secondary mt-md" id="booking-status"></p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        $(function(){
+            SkyWingsUI.bindSidebarClicks();
+
+            const flightId = new URLSearchParams(window.location.search).get('flight_id');
+            if (!flightId) {
+                $('#booking-status').text('Missing flight_id.');
+                return;
+            }
+
+            function loadUser() {
+                $.get('/Flight-Booking-V2/Back-End/passenger/dashboard-passenger.php', function(resp){
+                    if (resp && resp.success) {
+                        const name = resp.data?.user?.name || 'Guest';
+                        const membership = resp.data?.user?.membership || 'Member';
+                        const initials = (name.match(/\b\w/g) || []).join('').substring(0,2).toUpperCase();
+                        $('#user-name').text(name);
+                        $('#user-membership').text(membership);
+                        $('#user-avatar-initials').text(initials);
+                    }
+                }, 'json');
+            }
+
+            function loadFlight() {
+                $.get('/Flight-Booking-V2/Back-End/passenger/flight_info.php', { flight_id: flightId }, function(resp){
+                    if (resp && resp.success) {
+                        const f = resp.data.flight;
+                        const registered = (resp.data.passengers?.registered || 0);
+                        const maxSeats = f.max_passengers || 0;
+                        const remaining = Math.max(0, maxSeats - registered);
+                        
+                        if (remaining <= 0) {
+                            $('#flight-card').show();
+                            $('#booking-status').text('Sorry, this flight is fully booked.');
+                            $('#confirm-booking').prop('disabled', true);
+                            return;
+                        }
+                        
+                        $('#flight-card').show();
+                        $('#flight-name').text(f.name || 'Flight');
+                        $('#flight-code').text(f.flight_code || '');
+                        $('#flight-company').text(f.company_name ? ('Operated by ' + f.company_name) : '');
+                        $('#flight-fee').text(f.fees ? ('$' + parseFloat(f.fees).toFixed(2)) : '$0.00');
+                        $('#flight-start').text(f.start_datetime || '');
+                        $('#flight-end').text(f.end_datetime || '');
+                        
+                        const itinerary = (resp.data.itinerary || []).map(i => i.city_name).join(' → ');
+                        $('#flight-itinerary').text(itinerary || '—');
+                        
+                        $('#ticket-qty').attr('max', remaining);
+                        window.maxSeats = remaining;
+                        updateTotal(remaining);
+                    } else {
+                        $('#booking-status').text(resp?.message || 'Unable to load flight');
+                    }
+                }, 'json').fail(function(xhr){
+                    $('#booking-status').text('Unable to load flight');
+                    console.error('flight load failed', xhr.status, xhr.responseText);
+                });
+            }
+
+            function updateTotal(maxAvailable) {
+                const qty = Math.max(1, parseInt($('#ticket-qty').val(), 10) || 1);
+                const limited = maxAvailable ? Math.min(qty, maxAvailable) : qty;
+                const feeText = $('#flight-fee').text().replace('$','');
+                const fee = parseFloat(feeText) || 0;
+                const total = limited * fee;
+                $('#ticket-qty').val(limited);
+                $('#total-price').text('$' + total.toFixed(2));
+            }
+
+            let maxSeats = 999;
+            $('#ticket-qty').on('input', function(){
+                updateTotal(maxSeats);
+            });
+
+            $('#cancel-booking').on('click', function(){
+                window.history.back();
+            });
+
+            $('#confirm-booking').on('click', function(){
+                const qty = Math.max(1, parseInt($('#ticket-qty').val(), 10) || 1);
+                const btn = $(this);
+                btn.prop('disabled', true).text('Booking...');
+                $('#booking-status').text('');
+
+                $.ajax({
+                    url: '/Flight-Booking-V2/Back-End/passenger/book-flight.php',
+                    method: 'POST',
+                    dataType: 'json',
+                    data: { flight_id: flightId, quantity: qty }
+                }).done(function(resp){
+                    if (resp && resp.success) {
+                        $('#booking-status').text('Booking confirmed. Charged $' + parseFloat(resp.data.charged || 0).toFixed(2) + '.');
+                        setTimeout(function(){
+                            window.location.href = '/Flight-Booking-V2/Front-end/html/passenger/wallet.html';
+                        }, 1200);
+                    } else {
+                        $('#booking-status').text(resp?.message || 'Booking failed');
+                    }
+                }).fail(function(xhr){
+                    $('#booking-status').text('Booking failed');
+                    console.error('booking failed', xhr.status, xhr.responseText);
+                }).always(function(){
+                    btn.prop('disabled', false).text('Confirm Booking');
+                });
+            });
+
+            loadUser();
+            loadFlight();
+        });
+    </script>
+</body>
+</html>

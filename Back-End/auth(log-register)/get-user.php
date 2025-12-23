@@ -16,7 +16,8 @@ if (!isset($_SESSION['user_id'])) {
     $response(false, 'No active session');
 }
 
-$user_id = intval($_SESSION['user_id']);
+// Allow fetching another user's info via user_id parameter (for messaging)
+$user_id = isset($_GET['user_id']) ? intval($_GET['user_id']) : intval($_SESSION['user_id']);
 
 $stmt = $conn->prepare('SELECT id as user_id, name, email, tel, user_type FROM users WHERE id = ? LIMIT 1');
 if (!$stmt) {

@@ -8,7 +8,6 @@
     <link rel="stylesheet" href="../css/styles.css">
     <script src="../js/jquery.js"></script>
     <style>
-        /* Login Page Specific Styles */
         .login-container {
             min-height: 100vh;
             display: flex;
@@ -338,7 +337,6 @@
             }
         }
 
-        /* Utility Classes */
         .mb-md {
             margin-bottom: var(--space-md);
         }
@@ -401,14 +399,12 @@
     </style>
 </head>
 <body>
-    <!-- Brand -->
     <a href="landingPage.html" class="login-brand">
         <i class="fas fa-plane-departure"></i>
         <span>SkyWings</span>
     </a>
 
     <div class="login-container">
-        <!-- Left Section -->
         <div class="login-left">
             <div class="login-left-content">
                 <div id="passengerContent" style="display: none;">
@@ -483,10 +479,8 @@
             </div>
         </div>
 
-        <!-- Right Section - Login Form -->
         <div class="login-right">
             <div class="login-form-container">
-                <!-- Passenger Login Form -->
                 <div id="passengerForm" style="display: none;">
                     <div class="login-form-header">
                         <div class="login-form-icon passenger">
@@ -544,7 +538,6 @@
                     </div>
                 </div>
 
-                <!-- Company Login Form -->
                 <div id="companyForm" style="display: none;">
                     <div class="login-form-header">
                         <div class="login-form-icon company">
@@ -607,11 +600,9 @@
 
     <script>
         $(document).ready(function() {
-            // Get role from URL parameter
             const urlParams = new URLSearchParams(window.location.search);
             const role = urlParams.get('role') || 'passenger';
 
-            // Show appropriate form
             function showLoginForm(type) {
                 if (type === 'passenger') {
                     $('#passengerContent').show();
@@ -626,10 +617,8 @@
                 }
             }
 
-            // Initialize
             showLoginForm(role);
 
-            // Passenger Login Handler
             $('#passengerLoginForm').on('submit', function(e) {
                 e.preventDefault();
                 
@@ -638,7 +627,6 @@
                     password: $('#passengerPassword').val()
                 };
 
-                // Validation
                 let isValid = true;
                 
                 if (!formData.email) {
@@ -657,10 +645,8 @@
 
                 if (!isValid) return;
 
-                // Show loading state
                 $('#passengerLoginBtn').prop('disabled', true);
 
-                // Send request
                 $.ajax({
                     type: 'POST',
                     url: '/Flight-Booking-V2/Back-End/auth(log-register)/login.php',
@@ -671,11 +657,9 @@
                     }),
                     success: function(response) {
                         if (response.success) {
-                            // Store user info if needed
                             localStorage.setItem('user_id', response.data.user_id);
                             localStorage.setItem('user_type', response.data.user_type);
                             
-                            // Redirect by user_type
                             const type = response.data.user_type;
                             if (type === 'company') {
                                 window.location.href = 'companyDashboard.html';
@@ -696,7 +680,6 @@
                 });
             });
 
-            // Company Login Handler
             $('#companyLoginForm').on('submit', function(e) {
                 e.preventDefault();
                 
@@ -705,7 +688,6 @@
                     password: $('#companyPassword').val()
                 };
 
-                // Validation
                 let isValid = true;
                 
                 if (!formData.email) {
@@ -724,10 +706,8 @@
 
                 if (!isValid) return;
 
-                // Show loading state
                 $('#companyLoginBtn').prop('disabled', true);
 
-                // Send request
                 $.ajax({
                     type: 'POST',
                     url: '/Flight-Booking-V2/Back-End/auth(log-register)/login.php',
@@ -738,11 +718,9 @@
                     }),
                     success: function(response) {
                         if (response.success) {
-                            // Store user info if needed
                             localStorage.setItem('user_id', response.data.user_id);
                             localStorage.setItem('user_type', response.data.user_type);
                             
-                            // Redirect by user_type
                             const type = response.data.user_type;
                             if (type === 'company') {
                                 window.location.href = 'companyDashboard.html';
@@ -763,7 +741,6 @@
                 });
             });
 
-            // Helper function to show alerts
             function showAlert(alertId, message, type) {
                 const alert = $('#' + alertId);
                 alert.removeClass('alert-success alert-error show');
@@ -778,7 +755,6 @@
                 `);
             }
 
-            // Input validation on blur
             $('.form-control').on('blur', function() {
                 const value = $(this).val();
                 const errorElement = $(this).siblings('.form-text.error');
@@ -795,7 +771,6 @@
                 }
             });
 
-            // Helper function to validate email
             function isValidEmail(email) {
                 const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
                 return emailRegex.test(email);

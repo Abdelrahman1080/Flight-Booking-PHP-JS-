@@ -49,7 +49,7 @@
 					<i class="fas fa-envelope sidebar-icon"></i>
 					<span>Messages</span>
 				</a>
-				<a href="../companyDashboard.html#settings" class="sidebar-item" data-page="settings">
+				<a href="settings.html" class="sidebar-item" data-page="settings">
 					<i class="fas fa-cog sidebar-icon"></i>
 					<span>Settings</span>
 				</a>
@@ -144,6 +144,21 @@
 							<label class="form-label" for="notes">Notes</label>
 							<textarea class="form-control" id="notes" name="notes" rows="3" placeholder="Add operational notes for your team"></textarea>
 						</div>
+						<div class="form-group">
+							<label class="form-label">Flight Route <span style="color: #d32f2f;">*</span> (Mandatory)</label>
+							<p class="text-sm text-secondary mb-md">Add all cities in the flight route. The first and last cities are the origin and destination.</p>
+							<div id="itinerary-container" style="border: 1px solid #ddd; border-radius: 8px; padding: 1rem; background: #fafafa;">
+								<div class="itinerary-stop flex items-center gap-md mb-md">
+									<div style="flex: 1;">
+										<input type="text" class="form-control stop-city" placeholder="e.g., Cairo (CAI)" required>
+									</div>
+									<span class="stop-order" style="font-weight: bold; min-width: 40px; text-align: center;">1</span>
+									<button type="button" class="btn btn-error btn-sm remove-stop" style="display:none;"><i class="fas fa-trash"></i></button>
+								</div>
+							</div>
+							<button type="button" class="btn btn-outline btn-sm" id="add-stop-btn"><i class="fas fa-plus"></i> Add Transit Stop</button>
+						</div>
+					</div>
 						<div class="flex justify-between items-center">
 							<p class="text-sm text-secondary" id="form-status">Ready to add a new flight.</p>
 							<div class="flex items-center gap-sm">
@@ -160,6 +175,7 @@
 	<script>
 		$(function() {
 			SkyWingsUI.initNavigation('add-flight');
+			SkyWingsUI.bindSidebarClicks();
 
 			$.ajax({
 				url: '../../../Back-End/company/dashboard-company.php',
@@ -196,8 +212,54 @@
 				return value.replace('T', ' ') + ':00';
 			}
 
+			$('#add-stop-btn').on('click', function(e) {
+				e.preventDefault();
+				const container = $('#itinerary-container');
+				const stopCount = container.find('.itinerary-stop').length + 1;
+				const newStop = `
+					<div class="itinerary-stop flex items-center gap-md mb-md">
+						<div style="flex: 1;">
+							<input type="text" class="form-control stop-city" placeholder="e.g., Riyadh (RUH)" required>
+						</div>
+						<span class="stop-order" style="font-weight: bold; min-width: 40px; text-align: center;">${stopCount}</span>
+						<button type="button" class="btn btn-error btn-sm remove-stop"><i class="fas fa-trash"></i></button>
+					</div>
+				`;
+				container.find('.itinerary-stop').last().after(newStop);
+				updateRemoveButtons();
+			});
+
+			$(document).on('click', '.remove-stop', function(e) {
+				e.preventDefault();
+				$(this).closest('.itinerary-stop').remove();
+				$('#itinerary-container').find('.itinerary-stop').each(function(idx) {
+					$(this).find('.stop-order').text(idx + 1);
+				});
+				updateRemoveButtons();
+			});
+
+			function updateRemoveButtons() {
+				const stops = $('#itinerary-container').find('.itinerary-stop');
+				stops.find('.remove-stop').each(function(idx) {
+					$(this).toggle(stops.length > 1);
+				});
+			}
+
 			$('#add-flight-form').on('submit', function(e) {
 				e.preventDefault();
+				
+				// Build itinerary from stops
+				const itinerary = [];
+				$('#itinerary-container').find('.stop-city').each(function() {
+					const city = $(this).val().trim();
+					if (city) itinerary.push(city);
+				});
+
+				if (itinerary.length < 2) {
+					$('#form-status').text('Flight route must have at least 2 stops (origin and destination).').removeClass('text-success').addClass('text-error');
+					return;
+				}
+
 				const origin = $('#origin').val();
 				const destination = $('#destination').val();
 				const payload = {
@@ -207,7 +269,7 @@
 					max_passengers: parseInt($('#seats').val() || '0', 10),
 					start_datetime: toDateTime($('#departure').val()),
 					end_datetime: toDateTime($('#arrival').val()),
-					itinerary: [origin, destination]
+					itinerary: itinerary
 				};
 
 				$('#form-status').text('Saving flight...').removeClass('text-error text-success').addClass('text-secondary');

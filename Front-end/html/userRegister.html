@@ -8,7 +8,6 @@
     <link rel="stylesheet" href="../css/styles.css">
     <script src="../js/jquery.js"></script>
     <style>
-        /* Registration Page Specific Styles */
         .register-container {
             min-height: 100vh;
             display: flex;
@@ -188,7 +187,6 @@
             display: block;
         }
 
-        /* File Upload Styling */
         .file-input-wrapper {
             position: relative;
             display: inline-block;
@@ -348,7 +346,6 @@
             color: var(--primary-blue-dark);
         }
 
-        /* Alert Messages */
         .alert {
             padding: var(--space-md) var(--space-lg);
             border-radius: var(--border-radius-md);
@@ -385,7 +382,6 @@
             border: 1px solid #f5c6cb;
         }
 
-        /* Responsive Design */
         @media (max-width: 768px) {
             .register-container {
                 flex-direction: column;
@@ -421,14 +417,12 @@
     </style>
 </head>
 <body>
-    <!-- Brand -->
     <a href="landingPage.html" class="register-brand">
         <i class="fas fa-plane-departure register-brand-icon"></i>
         <span>SkyWings</span>
     </a>
 
     <div class="register-container">
-        <!-- Left Section -->
         <div class="register-left">
             <div class="register-left-content">
                 <h1 class="register-left-title">Complete Your Profile</h1>
@@ -467,22 +461,17 @@
             </div>
         </div>
 
-        <!-- Right Section - Passenger Profile Form -->
         <div class="register-right">
             <div class="register-form-container">
-                <!-- Form Header -->
                 <div class="register-form-header">
                     <i class="fas fa-passport register-form-icon"></i>
                     <h2 class="register-form-title">Passenger Details</h2>
                     <p class="register-form-subtitle">Set up your travel profile</p>
                 </div>
 
-                <!-- Alert Messages -->
                 <div id="alert" class="alert"></div>
 
-                <!-- Passenger Profile Form -->
                 <form id="passengerForm">
-                    <!-- Passenger Name (Read-only) -->
                     <div class="form-group">
                         <label class="form-label">Full Name</label>
                         <input 
@@ -495,7 +484,6 @@
                         >
                     </div>
 
-                    <!-- Passenger Email (Read-only) -->
                     <div class="form-group">
                         <label class="form-label">Email Address</label>
                         <input 
@@ -508,7 +496,6 @@
                         >
                     </div>
 
-                    <!-- Passport/ID Number -->
                     <div class="form-group">
                         <label class="form-label">
                             Passport/ID Number
@@ -524,7 +511,6 @@
                         <small class="form-text error"></small>
                     </div>
 
-                    <!-- Passport Photo -->
                     <div class="form-group">
                         <label class="form-label">
                             Passport Photo
@@ -549,7 +535,6 @@
                         </div>
                     </div>
 
-                    <!-- Profile Photo -->
                     <div class="form-group">
                         <label class="form-label">
                             Profile Photo
@@ -574,7 +559,6 @@
                         </div>
                     </div>
 
-                    <!-- Account Balance -->
                     <div class="form-group">
                         <label class="form-label">
                             Initial Account Balance
@@ -593,7 +577,6 @@
                         <small class="form-text error"></small>
                     </div>
 
-                    <!-- Submit and Skip Buttons -->
                     <div class="button-group">
                         <button type="submit" class="btn btn-primary" id="submitBtn">
                             <span>Complete Registration</span>
@@ -604,7 +587,6 @@
                     </div>
                 </form>
 
-                <!-- Dashboard Link -->
                 <div class="register-login">
                     Already completed? <a href="userDashboard.html">Go to Dashboard</a>
                 </div>
@@ -614,15 +596,12 @@
 
     <script>
         $(document).ready(function() {
-            // Check for user data from sessionStorage (fresh registration)
             let user = sessionStorage.getItem('userData');
             
             if (!user) {
-                // Try to get from window (if session-guard set it)
                 if (window.SkyWingsUser) {
                     user = window.SkyWingsUser;
                 } else {
-                    // No user data available - redirect to register
                     console.error('No user data found');
                     window.location.href = 'register.html';
                     return;
@@ -641,27 +620,23 @@
             const submitBtn = $('#submitBtn');
             const skipBtn = $('#skipBtn');
 
-            // Populate read-only fields with user info
             $('#passengerName').val(user.name);
             $('#passengerEmail').val(user.email);
 
             console.log('Passenger registration page loaded for user:', user.user_id);
 
-            // Form submission
             passengerForm.on('submit', function(e) {
                 e.preventDefault();
 
-                // Clear previous alerts
                 hideAlert();
 
                 console.log('Submitting passenger profile...');
 
-                // Prepare form data
                 const formData = new FormData();
                 formData.append('user_id', user.user_id);
+                formData.append('full_name', user.name || $('#passengerName').val());
                 formData.append('account_balance', $('#accountBalance').val() || 0);
 
-                // Handle photo uploads
                 const photoFile = document.getElementById('photo').files[0];
                 if (photoFile) {
                     console.log('Appending photo file:', photoFile.name);
@@ -674,11 +649,9 @@
                     formData.append('passport_img', passportFile);
                 }
 
-                // Show loading state
                 submitBtn.prop('disabled', true);
                 submitBtn.html('<div class="loading-spinner"></div><span>Completing Profile...</span>');
 
-                // Submit passenger profile
                 console.log('Sending profile data to complete-passenger.php...');
                 $.ajax({
                     url: '/Flight-Booking-V2/Back-End/passenger/complete-passenger.php',
@@ -714,13 +687,11 @@
                 });
             });
 
-            // Skip button - redirect to dashboard
             skipBtn.on('click', function() {
                 console.log('Skipping passenger profile, redirecting to dashboard...');
                 window.location.href = 'userDashboard.html';
             });
 
-            // File upload preview
             $('#photo').on('change', function() {
                 const file = this.files[0];
                 if (file) {
@@ -749,7 +720,6 @@
                 }
             });
 
-            // Show alert
             function showAlert(type, message) {
                 const alert = $('#alert');
                 const icon = type === 'success' ? 'fa-check-circle' : 'fa-exclamation-circle';
@@ -762,12 +732,10 @@
                 alert.addClass(`show ${alertClass}`);
             }
 
-            // Hide alert
             function hideAlert() {
                 $('#alert').removeClass('show alert-success alert-error').text('');
             }
 
-            // Reset button
             function resetButton() {
                 submitBtn.prop('disabled', false);
                 submitBtn.html('<span>Complete Registration</span>');

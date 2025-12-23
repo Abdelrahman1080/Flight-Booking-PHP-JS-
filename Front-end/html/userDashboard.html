@@ -11,7 +11,6 @@
 </head>
 <body>
     <div class="container flex">
-        <!-- Sidebar -->
         <div class="sidebar">
             <div class="sidebar-brand">
                 <div class="logo flex items-center gap-sm">
@@ -21,31 +20,31 @@
             </div>
             
             <div class="sidebar-menu">
-                <a href="#" class="sidebar-item active">
+                <a href="#" class="sidebar-item active" id="dashboard-refresh">
                     <i class="fas fa-home sidebar-icon"></i>
                     <span>Dashboard</span>
                 </a>
-                <a href="#" class="sidebar-item">
+                <a href="passenger/bookFlight.html" class="sidebar-item">
                     <i class="fas fa-plane-departure sidebar-icon"></i>
                     <span>Book Flight</span>
                 </a>
-                <a href="#" class="sidebar-item">
+                <a href="passenger/myTrips.html" class="sidebar-item">
                     <i class="fas fa-suitcase sidebar-icon"></i>
                     <span>My Trips</span>
                 </a>
-                <a href="#" class="sidebar-item">
-                    <i class="fas fa-bell sidebar-icon"></i>
-                    <span>Notifications</span>
+                <a href="passenger/profile.html" class="sidebar-item">
+                    <i class="fas fa-user sidebar-icon"></i>
+                    <span>Profile</span>
                 </a>
-                <a href="#" class="sidebar-item">
-                    <i class="fas fa-heart sidebar-icon"></i>
-                    <span>Saved</span>
+                <a href="passenger/wallet.html" class="sidebar-item">
+                    <i class="fas fa-wallet sidebar-icon"></i>
+                    <span>Wallet</span>
                 </a>
-                <a href="messages.html" class="sidebar-item">
+                <a href="passenger/messages.html" class="sidebar-item">
                     <i class="fas fa-envelope sidebar-icon"></i>
                     <span>Messages</span>
                 </a>
-                <a href="#" class="sidebar-item">
+                <a href="passenger/settings.html" class="sidebar-item">
                     <i class="fas fa-cog sidebar-icon"></i>
                     <span>Settings</span>
                 </a>
@@ -62,7 +61,6 @@
             </div>
         </div>
 
-        <!-- Main Content -->
         <div class="main-content">
             <div class="page-header mb-xl">
                 <div class="header flex justify-between items-center mb-lg">
@@ -78,7 +76,6 @@
                 </div>
             </div>
 
-            <!-- Dashboard Cards -->
             <div class="stats-grid mb-xl">
                 <div class="stat-card">
                     <div class="stat-icon card-icon-primary">
@@ -144,7 +141,6 @@
                                             </tr>
                                         </thead>
                                         <tbody id="upcoming-flights-body">
-                                            <!-- Dynamic rows -->
                                         </tbody>
                                     </table>
                                 </div>
@@ -154,8 +150,7 @@
                 </div>
             </div>
 
-            <!-- Quick Stats -->
-            <div class="grid grid-cols-2 gap-lg">
+            <div class="grid grid-cols-2 gap-lg mb-xl">
                 <div class="card">
                     <h3 class="card-title mb-md">Popular Destinations</h3>
                     <div class="card-body" id="popular-destinations"></div>
@@ -166,10 +161,34 @@
                     <div class="card-body" id="recent-activity-list"></div>
                 </div>
             </div>
+            
+            <div class="card">
+                <div class="card-header flex justify-between items-center">
+                    <h3 class="card-title">My Bookings</h3>
+                    <a href="passenger/myTrips.html" class="btn btn-outline btn-sm">
+                        View All <i class="fas fa-arrow-right ml-auto"></i>
+                    </a>
+                </div>
+                <div class="card-body">
+                    <div class="table-container">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Flight</th>
+                                    <th>Route</th>
+                                    <th>Date</th>
+                                    <th>Status</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody id="my-bookings-body"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 
-    <!-- Modal for Flight Details -->
     <div class="modal" id="flightModal">
         <div class="modal-content">
             <div class="modal-header">
@@ -178,12 +197,10 @@
             </div>
             <div class="modal-body">
                 <div class="flight-info-details">
-                    <!-- Flight details will be populated here -->
                 </div>
             </div>
             <div class="modal-footer">
                 <button class="btn btn-secondary modal-close">Close</button>
-                <button class="btn btn-primary">Book Now</button>
             </div>
         </div>
     </div>
@@ -191,25 +208,20 @@
     <script src="../js/scripts.js"></script>
     <script>
         $(document).ready(function() {
-            // Load user profile from localStorage or backend
             const userId = localStorage.getItem('user_id');
             const userName = localStorage.getItem('user_name');
             
-            // Initialize navigation with user data
             SkyWingsUI.initNavigation('dashboard', {
                 name: userName || 'Passenger',
                 role: 'Traveler'
             });
             SkyWingsUI.bindSidebarClicks();
 
-            // Menu item click handler
-            $('.sidebar-item').click(function(e) {
+            $('#dashboard-refresh').click(function(e) {
                 e.preventDefault();
-                $('.sidebar-item').removeClass('active');
-                $(this).addClass('active');
+                location.reload();
             });
 
-            // View details button click handler (delegated)
             $(document).on('click', '.view-details', function() {
                 const flightRow = $(this).closest('tr');
                 const flightNumber = flightRow.find('.flight-details h4').text();
@@ -220,7 +232,6 @@
                 const cities = flightRow.find('td:nth-child(3) p').text();
                 const status = flightRow.find('.badge').text();
                 
-                // Populate modal
                 const modalContent = `
                     <div class="card">
                         <div class="card-body">
@@ -286,7 +297,6 @@
                 });
             });
 
-            // Notification bell click
             $('.btn-icon').click(function() {
                 const notificationModal = `
                     <div class="modal" id="notificationModal">
@@ -355,13 +365,11 @@
                 }
             });
 
-            // View all flights link
             $('.view-all').click(function(e) {
                 e.preventDefault();
                 alert('This would navigate to a page with all your flights.');
             });
 
-            // Card hover animation
             $('.card').hover(
                 function() {
                     $(this).addClass('shadow-lg');
@@ -380,13 +388,11 @@
                 $('#user-avatar-initials').text(initials);
                 $('#welcome-text').text(`Welcome back, ${name}! Here's your flight overview`);
 
-                // Stats
                 $('#stat-upcoming').text(data.stats?.upcomingFlights ?? '0');
                 $('#stat-completed').text(data.stats?.completedTrips ?? '0');
                 $('#stat-pending').text(data.stats?.pendingBookings ?? '0');
                 $('#stat-skymiles').text(data.stats?.skyMiles ?? '0');
 
-                // Upcoming flights table
                 const tbody = $('#upcoming-flights-body');
                 tbody.empty();
                 (data.upcomingFlights || []).forEach(function(f) {
@@ -417,13 +423,11 @@
                     tbody.append(row);
                 });
 
-                // Popular destinations (update progress widths)
                 const dests = data.popularDestinations || [];
                 $('.progress.progress-1').css('width', (dests[0]?.percent || 0) + '%');
                 $('.progress.progress-2').css('width', (dests[1]?.percent || 0) + '%');
                 $('.progress.progress-3').css('width', (dests[2]?.percent || 0) + '%');
 
-                // Recent activity
                 const actList = $('#recent-activity-list');
                 if (data.recentActivity && data.recentActivity.length) {
                     actList.empty();
@@ -445,12 +449,35 @@
 
             function loadDashboard() {
                 $.ajax({
-                    url: '../../Back-End/passenger/dashboard-passenger.php',
+                    url: '/Flight-Booking-V2/Back-End/passenger/dashboard-passenger.php',
                     method: 'GET',
                     dataType: 'json',
                     success: function(resp) {
                         if (resp && resp.success) {
-                            renderDashboard(resp.data || {});
+                            const dashboardData = resp.data || {};
+                            
+                            $.ajax({
+                                url: '/Flight-Booking-V2/Back-End/passenger/passenger-profile.php',
+                                method: 'GET',
+                                dataType: 'json',
+                                success: function(profileResp) {
+                                    if (profileResp && profileResp.success && profileResp.data) {
+                                        const accountBalance = parseFloat(profileResp.data.account_balance) || 0;
+                                        const skyMiles = Math.floor(accountBalance * 100);
+                                        
+                                        if (!dashboardData.stats) {
+                                            dashboardData.stats = {};
+                                        }
+                                        dashboardData.stats.skyMiles = skyMiles;
+                                    }
+                                    
+                                    renderDashboard(dashboardData);
+                                },
+                                error: function(xhr) {
+                                    console.log('Could not load profile data for SkyMiles:', xhr.status);
+                                    renderDashboard(dashboardData);
+                                }
+                            });
                         } else {
                             console.warn('Failed to load dashboard data:', resp?.message);
                         }
@@ -459,7 +486,85 @@
                         console.error('Error loading dashboard data', xhr.status, xhr.responseText);
                     }
                 });
+                
+                $.ajax({
+                    url: '/Flight-Booking-V2/Back-End/passenger/get-bookings.php',
+                    method: 'GET',
+                    dataType: 'json',
+                    success: function(resp) {
+                        if (resp && resp.success) {
+                            renderBookings(resp.data || []);
+                            updateStatsFromBookings(resp.data || []);
+                        }
+                    },
+                    error: function(xhr) {
+                        console.error('Error loading bookings', xhr.status, xhr.responseText);
+                    }
+                });
             }
+            
+            function updateStatsFromBookings(bookings) {
+                const upcoming = bookings.filter(b => 
+                    (b.status === 'registered' || b.status === 'pending') && b.is_completed === 0
+                ).length;
+                
+                const completed = bookings.filter(b => 
+                    b.status === 'completed' || b.is_completed === 1
+                ).length;
+                
+                const pending = bookings.filter(b => b.status === 'pending').length;
+                
+                const totalSpent = bookings
+                    .filter(b => b.status === 'completed' || b.status === 'registered')
+                    .reduce((sum, b) => sum + (parseFloat(b.fees) || 0), 0);
+                const skyMiles = Math.floor(totalSpent * 100);
+                
+                $('#stat-upcoming').text(upcoming);
+                $('#stat-completed').text(completed);
+                $('#stat-pending').text(pending);
+                $('#stat-skymiles').text(skyMiles);
+            }
+            
+            function renderBookings(bookings) {
+                const tbody = $('#my-bookings-body');
+                tbody.empty();
+                
+                if (!bookings.length) {
+                    tbody.append('<tr><td colspan="5" class="text-center text-secondary">No bookings yet. <a href="passenger/bookFlight.html">Book your first flight!</a></td></tr>');
+                    return;
+                }
+                
+                // Show last 5 bookings
+                const recent = bookings.slice(0, 5);
+                recent.forEach(function(b) {
+                    const statusClass = b.status === 'registered' ? 'badge-success' : 
+                                      b.status === 'pending' ? 'badge-warning' : 
+                                      b.status === 'completed' ? 'badge-success' : 'badge-secondary';
+                    const row = `
+                        <tr>
+                            <td>
+                                <div class="flight-details">
+                                    <h4>${b.flight_code || ''}</h4>
+                                    <p class="text-secondary">${b.company_name || ''}</p>
+                                </div>
+                            </td>
+                            <td>${b.route || ''}</td>
+                            <td>${b.start_datetime || ''}</td>
+                            <td><span class="badge ${statusClass}">${ucfirst(b.status)}</span></td>
+                            <td><button class="btn btn-outline btn-sm view-booking-dash" data-id="${b.booking_id}">View</button></td>
+                        </tr>`;
+                    tbody.append(row);
+                });
+            }
+            
+            function ucfirst(str) {
+                return str.charAt(0).toUpperCase() + str.slice(1);
+            }
+            
+            $(document).on('click', '.view-booking-dash', function() {
+                const bookingId = $(this).data('id');
+                window.location.href = 'passenger/viewBooking.html?booking_id=' + bookingId;
+            });
 
             loadDashboard();
         });

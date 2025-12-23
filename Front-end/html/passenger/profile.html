@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>SkyWings - Profile</title>
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+	<link rel="stylesheet" href="../../css/styles.css">
+	<script src="../../js/jquery.js"></script>
+	<script src="/Flight-Booking-V2/Front-end/js/session-guard.js"></script>
+</head>
+<body>
+	<div class="container flex">
+		<div class="sidebar">
+			<div class="sidebar-brand">
+				<div class="logo flex items-center gap-sm">
+					<i class="fas fa-plane navbar-logo"></i>
+					<h1>SkyWings</h1>
+				</div>
+			</div>
+			
+			<div class="sidebar-menu">
+				<a href="../userDashboard.html" class="sidebar-item">
+					<i class="fas fa-home sidebar-icon"></i>
+					<span>Dashboard</span>
+				</a>
+				<a href="bookFlight.html" class="sidebar-item">
+					<i class="fas fa-plane-departure sidebar-icon"></i>
+					<span>Book Flight</span>
+				</a>
+				<a href="myTrips.html" class="sidebar-item">
+					<i class="fas fa-suitcase sidebar-icon"></i>
+					<span>My Trips</span>
+				</a>
+				<a href="profile.html" class="sidebar-item active">
+					<i class="fas fa-user sidebar-icon"></i>
+					<span>Profile</span>
+				</a>
+				<a href="wallet.html" class="sidebar-item">
+					<i class="fas fa-wallet sidebar-icon"></i>
+					<span>Wallet</span>
+				</a>
+				<a href="messages.html" class="sidebar-item">
+					<i class="fas fa-envelope sidebar-icon"></i>
+					<span>Messages</span>
+				</a>
+				<a href="settings.html" class="sidebar-item">
+					<i class="fas fa-cog sidebar-icon"></i>
+					<span>Settings</span>
+				</a>
+			</div>
+			
+			<div class="user-profile mt-auto p-lg">
+				<div class="user-info flex items-center">
+					<div class="user-avatar" id="user-avatar-initials">--</div>
+					<div class="user-details">
+						<h4 class="text-md font-semibold" id="user-name">—</h4>
+						<p class="text-sm text-secondary" id="user-membership">—</p>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<div class="main-content">
+			<div class="page-header mb-xl">
+				<div class="header flex justify-between items-center mb-lg">
+					<div>
+						<h2 class="page-title">My Profile</h2>
+						<p class="page-subtitle">Manage your personal information</p>
+					</div>
+					<div class="header-actions flex items-center gap-md">
+						<button class="btn btn-primary btn-sm" id="edit-profile-btn">
+							<i class="fas fa-edit"></i> Edit Profile
+						</button>
+					</div>
+				</div>
+			</div>
+
+			<div class="grid grid-cols-2 gap-lg">
+				<div class="card">
+					<div class="card-header">
+						<h3 class="card-title">Personal Information</h3>
+					</div>
+					<div class="card-body">
+						<div class="form-group mb-lg">
+							<label class="form-label">Full Name</label>
+							<p class="text-md font-semibold" id="profile-name">—</p>
+						</div>
+						<div class="form-group mb-lg">
+							<label class="form-label">Email Address</label>
+							<p class="text-md" id="profile-email">—</p>
+						</div>
+						<div class="form-group mb-lg">
+							<label class="form-label">Phone Number</label>
+							<p class="text-md" id="profile-phone">—</p>
+						</div>
+						<div class="form-group">
+							<label class="form-label">Member Since</label>
+							<p class="text-md" id="profile-member-since">—</p>
+						</div>
+					</div>
+				</div>
+
+				<div class="card">
+					<div class="card-header">
+						<h3 class="card-title">Profile Photo</h3>
+					</div>
+					<div class="card-body flex flex-col items-center">
+						<div class="user-avatar" style="width: 100px; height: 100px; font-size: 2.5rem; margin-bottom: var(--space-lg);" id="profile-photo">--</div>
+						<p class="text-sm text-secondary text-center mb-lg">Your profile picture helps other users recognize you</p>
+						<button class="btn btn-outline btn-sm" id="upload-photo-btn">
+							<i class="fas fa-camera"></i> Change Photo
+						</button>
+					</div>
+				</div>
+			</div>
+
+			<div class="card mb-xl">
+				<div class="card-header">
+					<h3 class="card-title">Passport Information</h3>
+				</div>
+				<div class="card-body">
+					<div class="flex flex-col items-center">
+						<div id="passport-preview" style="max-width: 400px; width: 100%; margin-bottom: var(--space-lg);">
+							<p class="text-sm text-secondary text-center" id="no-passport-msg">No passport image uploaded</p>
+							<img id="passport-img" style="display: none; width: 100%; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);" alt="Passport">
+						</div>
+						<button class="btn btn-outline btn-sm" id="upload-passport-btn">
+							<i class="fas fa-passport"></i> Upload Passport
+						</button>
+					</div>
+				</div>
+			</div>
+
+			<div class="card">
+				<div class="card-header">
+					<h3 class="card-title">SkyMiles Program</h3>
+				</div>
+				<div class="card-body">
+					<div class="grid grid-cols-2 gap-lg">
+						<div>
+							<p class="text-sm text-secondary mb-sm">Current Balance</p>
+							<h3 class="text-3xl font-bold text-primary" id="skymiles-balance">0</h3>
+						</div>
+						<div>
+							<p class="text-sm text-secondary mb-sm">Status</p>
+							<p class="text-lg font-semibold" id="skymiles-status">Member</p>
+						</div>
+					</div>
+					<div class="mt-lg">
+						<p class="text-sm text-secondary mb-md">Membership Level</p>
+						<div class="progress-container">
+							<div class="progress-bar" id="status-progress" style="width: 25%;"></div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<style>
+		.progress-container {
+			width: 100%;
+			height: 8px;
+			background-color: var(--neutral-light);
+			border-radius: 4px;
+			overflow: hidden;
+		}
+
+		.progress-bar {
+			height: 100%;
+			background: linear-gradient(90deg, var(--primary-blue), var(--secondary-teal));
+			transition: width 0.3s ease;
+		}
+
+		.mt-lg {
+			margin-top: var(--space-lg);
+		}
+
+		.mb-sm {
+			margin-bottom: var(--space-sm);
+		}
+
+		.mb-lg {
+			margin-bottom: var(--space-lg);
+		}
+	</style>
+
+	<script src="../../js/scripts.js"></script>
+	<script>
+		$(document).ready(function() {
+			// Initialize sidebar
+			SkyWingsUI.bindSidebarClicks();
+
+			// Load sidebar data
+			function loadDashboard() {
+				$.ajax({
+					url: '/Flight-Booking-V2/Back-End/passenger/dashboard-passenger.php',
+					method: 'GET',
+					dataType: 'json',
+					success: function(resp) {
+						if (resp && resp.success) {
+							renderDashboard(resp.data || {});
+						}
+					},
+					error: function(xhr) {
+						console.error('Error loading dashboard data', xhr.status, xhr.responseText);
+					}
+				});
+			}
+			
+			function renderDashboard(data) {
+				const name = data.user?.name || 'Guest';
+				const membership = data.user?.membership || 'Member';
+				const initials = (name.match(/\b\w/g) || []).join('').substring(0,2).toUpperCase();
+				$('#user-name').text(name);
+				$('#user-membership').text(membership);
+				$('#user-avatar-initials').text(initials);
+			}
+
+			function loadProfile() {
+				$.ajax({
+					url: '/Flight-Booking-V2/Back-End/passenger/passenger-profile.php',
+					method: 'GET',
+					dataType: 'json',
+					success: function(resp) {
+						console.log('Profile response:', resp);
+						if (resp && resp.success && resp.data) {
+							const profile = resp.data;
+							
+							const displayName = profile.full_name || profile.name || 'User';
+							const initials = (displayName.match(/\b\w/g) || []).join('').substring(0,2).toUpperCase() || '--';
+							$('#user-avatar-initials').text(initials);
+							$('#user-name').text(displayName);
+							$('#user-membership').text('SkyWings Member');
+							
+							$('#profile-name').text(profile.full_name || profile.name || '—');
+							$('#profile-email').text(profile.email || '—');
+							$('#profile-phone').text(profile.tel || 'Not provided');
+							$('#profile-member-since').text(profile.created_at ? new Date(profile.created_at).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }) : '—');
+							
+							if (profile.photo) {
+								const photoUrl = profile.photo.startsWith('http') ? profile.photo : '/Flight-Booking-V2/Back-End/' + profile.photo;
+								$('#profile-photo').html(`<img src="${photoUrl}" alt="Profile Photo" style="width: 100px; height: 100px; border-radius: 50%; object-fit: cover;">`);
+							} else {
+								const avatarText = (displayName.match(/\b\w/g) || []).join('').substring(0,2).toUpperCase() || '--';
+								$('#profile-photo').text(avatarText);
+							}
+							
+							console.log('Passport image:', profile.passport_img); 
+							if (profile.passport_img && profile.passport_img.trim() !== '') {
+								const passportUrl = profile.passport_img.startsWith('http') ? profile.passport_img : '/Flight-Booking-V2/Back-End/' + profile.passport_img;
+								$('#passport-img').attr('src', passportUrl).show();
+								$('#no-passport-msg').hide();
+							} else {
+								$('#passport-img').hide();
+								$('#no-passport-msg').show();
+							}
+							
+							const skyMiles = Math.floor((profile.account_balance || 0) * 100);
+							$('#skymiles-balance').text(skyMiles.toLocaleString());
+							
+							let status = 'Member';
+							let statusProgress = 25;
+							if (skyMiles >= 100000) {
+								status = 'Diamond Elite';
+								statusProgress = 100;
+							} else if (skyMiles >= 50000) {
+								status = 'Platinum Elite';
+								statusProgress = 75;
+							} else if (skyMiles >= 25000) {
+								status = 'Gold Elite';
+								statusProgress = 50;
+							}
+							$('#skymiles-status').text(status);
+							$('#status-progress').css('width', statusProgress + '%');
+							
+							localStorage.setItem('user_full_name', displayName);
+						}
+					},
+					error: function(xhr) {
+						console.error('Could not load profile data:', xhr.status, xhr.responseText);
+					}
+				});
+			}
+
+			$('#edit-profile-btn').click(function() {
+				alert('Edit profile functionality coming soon!');
+			});
+
+			$('#upload-photo-btn').click(function() {
+				alert('Photo upload functionality coming soon!');
+			});
+
+			$('#upload-passport-btn').click(function() {
+				alert('Passport upload functionality coming soon!');
+			});
+
+			loadDashboard();
+			loadProfile();
+		});
+	</script>
+</body>
+</html>

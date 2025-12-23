@@ -20,14 +20,12 @@ $address = $data['address'] ?? '';
 $location = $data['location'] ?? '';
 $account = isset($data['account_balance']) ? floatval($data['account_balance']) : 0;
 
-// Create uploads directory if it doesn't exist
 if (!is_dir(__DIR__ . "/../uploads")) {
     mkdir(__DIR__ . "/../uploads", 0777, true);
 }
 
 $logoPath = null;
 
-// Handle logo upload
 if (!empty($_FILES['logo']['name']) && $_FILES['logo']['error'] === UPLOAD_ERR_OK) {
     $fileName = time() . "_" . basename($_FILES['logo']['name']);
     $uploadPath = __DIR__ . "/../uploads/" . $fileName;
@@ -37,7 +35,6 @@ if (!empty($_FILES['logo']['name']) && $_FILES['logo']['error'] === UPLOAD_ERR_O
     }
 }
 
-// Determine correct column name for company name (handle legacy typo)
 $companyNameColumn = 'company_name';
 $colCheck = $conn->query("SHOW COLUMNS FROM companies LIKE 'company_name'");
 if (!$colCheck || $colCheck->num_rows === 0) {
@@ -47,23 +44,19 @@ if (!$colCheck || $colCheck->num_rows === 0) {
     }
 }
 
-// Check if company profile already exists for this user
 $checkStmt = $conn->prepare("SELECT id FROM companies WHERE user_id = ?");
 $checkStmt->bind_param("i", $user_id);
 $checkStmt->execute();
 $checkStmt->store_result();
 
 if ($checkStmt->num_rows > 0) {
-    // Update existing profile (include company_name)
         if (!empty($logoPath)) {
             $updateSql = "UPDATE companies SET {$companyNameColumn} = ?, bio = ?, address = ?, location = ?, logo = ?, account_balance = ? WHERE user_id = ?";
             $updateStmt = $conn->prepare($updateSql);
-        // Types: s (company_name), s (bio), s (address), s (location), s (logo), d (account_balance), i (user_id)
         $updateStmt->bind_param("sssssdi", $company_name, $bio, $address, $location, $logoPath, $account, $user_id);
     } else {
             $updateSql = "UPDATE companies SET {$companyNameColumn} = ?, bio = ?, address = ?, location = ?, account_balance = ? WHERE user_id = ?";
             $updateStmt = $conn->prepare($updateSql);
-        // Types: s (company_name), s (bio), s (address), s (location), d (account_balance), i (user_id)
         $updateStmt->bind_param("ssssdi", $company_name, $bio, $address, $location, $account, $user_id);
     }
 
@@ -81,11 +74,9 @@ if ($checkStmt->num_rows > 0) {
         exit();
     }
 } else {
-    // Insert new profile (include company_name)
         $insertSql = "INSERT INTO companies (user_id, {$companyNameColumn}, bio, address, location, logo, account_balance) VALUES (?, ?, ?, ?, ?, ?, ?)";
         $insertStmt = $conn->prepare($insertSql);
 
-    // Types: i (user_id), s (company_name), s (bio), s (address), s (location), s (logo), d (account_balance)
     $insertStmt->bind_param("isssssd", $user_id, $company_name, $bio, $address, $location, $logoPath, $account);
 
     if ($insertStmt->execute()) {

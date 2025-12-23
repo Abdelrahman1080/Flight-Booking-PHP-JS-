@@ -13,18 +13,14 @@ $user_id = $_SESSION['user_id'];
 
 $stmt = $conn->prepare("
     SELECT 
-        u.id as user_id,
         u.name,
         u.email,
         u.tel,
-        u.created_at,
-        p.id as passenger_id,
-        p.full_name,
         p.photo,
         p.passport_img,
         p.account_balance
-    FROM users u
-    LEFT JOIN passengers p ON p.user_id = u.id
+    FROM passengers p
+    JOIN users u ON p.user_id = u.id
     WHERE u.id = ?
 ");
 $stmt->bind_param("i", $user_id);
@@ -32,7 +28,7 @@ $stmt->execute();
 $profile = $stmt->get_result()->fetch_assoc();
 
 if (!$profile) {
-    jsonResponse(false, "User not found");
+    jsonResponse(false, "Passenger profile not found");
 }
 
-jsonResponse(true, "Profile loaded", $profile);
+jsonResponse(true, "Passenger profile loaded", $profile);

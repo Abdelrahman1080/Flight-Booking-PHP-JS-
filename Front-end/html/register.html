@@ -8,7 +8,6 @@
     <link rel="stylesheet" href="../css/styles.css">
     <script src="../js/jquery.js"></script>
     <style>
-        /* Registration Page Specific Styles */
         .register-container {
             min-height: 100vh;
             display: flex;
@@ -183,7 +182,6 @@
             display: block;
         }
 
-        /* Account Type Selection */
         .account-type-section {
             margin-top: var(--space-2xl);
             padding-top: var(--space-2xl);
@@ -326,7 +324,6 @@
             margin-bottom: 0;
         }
 
-        /* Error/Success Alerts */
         .alert {
             padding: var(--space-md) var(--space-lg);
             border-radius: var(--border-radius-md);
@@ -363,7 +360,6 @@
             border: 1px solid #f5c6cb;
         }
 
-        /* Responsive Design */
         @media (max-width: 768px) {
             .register-container {
                 flex-direction: column;
@@ -402,14 +398,12 @@
     </style>
 </head>
 <body>
-    <!-- Brand -->
     <a href="landingPage.html" class="register-brand">
         <i class="fas fa-plane-departure register-brand-icon"></i>
         <span>SkyWings</span>
     </a>
 
     <div class="register-container">
-        <!-- Left Section -->
         <div class="register-left">
             <div class="register-left-content">
                 <h1 class="register-left-title">Join SkyWings</h1>
@@ -448,22 +442,17 @@
             </div>
         </div>
 
-        <!-- Right Section - Registration Form -->
         <div class="register-right">
             <div class="register-form-container">
-                <!-- Form Header -->
                 <div class="register-form-header">
                     <i class="fas fa-user-plus register-form-icon"></i>
                     <h2 class="register-form-title">Create Your Account</h2>
                     <p class="register-form-subtitle">Start your journey with us</p>
                 </div>
 
-                <!-- Alert Messages -->
                 <div id="alert" class="alert"></div>
 
-                <!-- Registration Form -->
                 <form id="registerForm">
-                    <!-- Name -->
                     <div class="form-group">
                         <label class="form-label">Full Name</label>
                         <input 
@@ -477,7 +466,6 @@
                         <small class="form-text error"></small>
                     </div>
 
-                    <!-- Email -->
                     <div class="form-group">
                         <label class="form-label">Email Address</label>
                         <input 
@@ -491,7 +479,6 @@
                         <small class="form-text error"></small>
                     </div>
 
-                    <!-- Phone -->
                     <div class="form-group">
                         <label class="form-label">Phone Number</label>
                         <input 
@@ -504,7 +491,6 @@
                         <small class="form-text error"></small>
                     </div>
 
-                    <!-- Password -->
                     <div class="form-group">
                         <label class="form-label">Password</label>
                         <input 
@@ -518,7 +504,6 @@
                         <small class="form-text error"></small>
                     </div>
 
-                    <!-- Confirm Password -->
                     <div class="form-group">
                         <label class="form-label">Confirm Password</label>
                         <input 
@@ -532,7 +517,6 @@
                         <small class="form-text error"></small>
                     </div>
 
-                    <!-- Account Type Selection -->
                     <div class="account-type-section">
                         <label class="account-type-label">Account Type</label>
                         <div class="account-type-options">
@@ -569,13 +553,11 @@
                         </div>
                     </div>
 
-                    <!-- Submit Button -->
                     <button type="submit" class="btn btn-primary" id="registerBtn">
                         <span>Create Account & Continue</span>
                     </button>
                 </form>
 
-                <!-- Login Link -->
                 <div class="register-login">
                     Already have an account? <a href="login.html">Login here</a>
                 </div>
@@ -588,22 +570,17 @@
             const registerForm = $('#registerForm');
             const registerBtn = $('#registerBtn');
 
-            // Form submission
             registerForm.on('submit', function(e) {
                 e.preventDefault();
 
-                // Clear previous alerts
                 hideAlert();
 
-                // Validate form
                 if (!validateForm()) {
                     return;
                 }
 
-                // Get account type
                 const userType = $('input[name="user_type"]:checked').val();
                 
-                // Prepare data
                 const registrationData = {
                     name: $('#name').val().trim(),
                     email: $('#email').val().trim(),
@@ -614,11 +591,9 @@
 
                 console.log('Registering user with data:', registrationData);
 
-                // Show loading state
                 registerBtn.prop('disabled', true);
                 registerBtn.html('<div class="loading-spinner"></div><span>Creating Account...</span>');
 
-                // Submit registration
                 $.ajax({
                     url: '/Flight-Booking-V2/Back-End/auth(log-register)/register.php',
                     method: 'POST',
@@ -634,17 +609,13 @@
                             console.log('User registered successfully with ID:', response.data.user_id);
                             console.log('User type:', userType);
                             
-                            // Store user data in sessionStorage for quick access on next page
                             sessionStorage.setItem('newUserType', userType);
                             sessionStorage.setItem('userData', JSON.stringify(response.data));
                             
-                            // Verify storage worked
                             console.log('Stored in sessionStorage:', sessionStorage.getItem('userData'));
                             
-                            // Also set window.SkyWingsUser directly so profile pages don't need to wait for session check
                             window.SkyWingsUser = response.data;
                             
-                            // Redirect based on account type
                             if (userType === 'company') {
                                 console.log('Redirecting to company registration...');
                                 setTimeout(() => {
@@ -679,7 +650,6 @@
                 });
             });
 
-            // Form validation
             function validateForm() {
                 const name = $('#name').val().trim();
                 const email = $('#email').val().trim();
@@ -725,20 +695,17 @@
                 return true;
             }
 
-            // Show field error
             function showFieldError(fieldId, message) {
                 const field = $(`#${fieldId}`);
                 field.addClass('error');
                 field.siblings('.form-text.error').text(message).addClass('show');
             }
 
-            // Clear field errors
             $('.form-control').on('focus', function() {
                 $(this).removeClass('error');
                 $(this).siblings('.form-text.error').removeClass('show').text('');
             });
 
-            // Show alert
             function showAlert(type, message) {
                 const alert = $('#alert');
                 const icon = type === 'success' ? 'fa-check-circle' : 'fa-exclamation-circle';
@@ -751,12 +718,10 @@
                 alert.addClass(`show ${alertClass}`);
             }
 
-            // Hide alert
             function hideAlert() {
                 $('#alert').removeClass('show alert-success alert-error').text('');
             }
 
-            // Reset button
             function resetButton() {
                 registerBtn.prop('disabled', false);
                 registerBtn.html('<span>Create Account & Continue</span>');

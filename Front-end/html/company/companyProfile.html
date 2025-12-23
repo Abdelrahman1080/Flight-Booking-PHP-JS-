@@ -49,7 +49,7 @@
 					<i class="fas fa-envelope sidebar-icon"></i>
 					<span>Messages</span>
 				</a>
-				<a href="../companyDashboard.html#settings" class="sidebar-item" data-page="settings">
+				<a href="settings.html" class="sidebar-item" data-page="settings">
 					<i class="fas fa-cog sidebar-icon"></i>
 					<span>Settings</span>
 				</a>
@@ -193,28 +193,32 @@
 	<script>
 		$(function() {
 			SkyWingsUI.initNavigation('profile');
+			SkyWingsUI.bindSidebarClicks();
 
-			// Load company profile for sidebar
+			// Load company profile for sidebar (prefer absolute path + company-profile)
 			$.ajax({
-				url: '../../../Back-End/company/dashboard-company.php',
+				url: '/Flight-Booking-V2/Back-End/company/company-profile.php',
 				method: 'GET',
 				dataType: 'json',
 				success: function(resp) {
 					if (resp?.success && resp.data?.company) {
 						const c = resp.data.company;
 						const logo = c.logo || null;
-						
+						const compName = c.company_name || c.name || 'Company';
+						const owner = c.user_name || '';
+
 						if (logo) {
-							const logoPath = logo.startsWith('http') ? logo : `../../../Back-End/${logo}`;
+							const logoPath = logo.startsWith('http') ? logo : '/Flight-Booking-V2/Back-End/' + logo;
 							$('#company-avatar-logo').attr('src', logoPath).show();
 							$('#company-avatar-text').hide();
 						} else {
 							$('#company-avatar-logo').hide();
-							$('#company-avatar-text').text(c.avatarInitials || 'CO').show();
+							$('#company-avatar-text').text((compName.match(/\b\w/g) || []).join('').substring(0,2).toUpperCase() || 'CO').show();
 						}
-						
-						$('#companyName').text(c.name || 'Company');
-						$('#companyRole').text('Flight Operations');
+
+						// Main line: company name; mention the user below
+						$('#companyName').text(compName);
+						$('#companyRole').text(owner ? ('Owner: ' + owner) : 'Flight Operations');
 					}
 				}
 			});

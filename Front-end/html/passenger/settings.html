@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>SkyWings - Settings</title>
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+	<link rel="stylesheet" href="../../css/styles.css">
+	<script src="../../js/jquery.js"></script>
+	<script src="/Flight-Booking-V2/Front-end/js/session-guard.js"></script>
+</head>
+<body>
+	<div class="container flex">
+		<div class="sidebar">
+			<div class="sidebar-brand">
+				<div class="logo flex items-center gap-sm">
+					<i class="fas fa-plane navbar-logo"></i>
+					<h1>SkyWings</h1>
+				</div>
+			</div>
+			
+			<div class="sidebar-menu">
+				<a href="../userDashboard.html" class="sidebar-item">
+					<i class="fas fa-home sidebar-icon"></i>
+					<span>Dashboard</span>
+				</a>
+				<a href="bookFlight.html" class="sidebar-item">
+					<i class="fas fa-plane-departure sidebar-icon"></i>
+					<span>Book Flight</span>
+				</a>
+				<a href="myTrips.html" class="sidebar-item">
+					<i class="fas fa-suitcase sidebar-icon"></i>
+					<span>My Trips</span>
+				</a>
+				<a href="profile.html" class="sidebar-item">
+					<i class="fas fa-user sidebar-icon"></i>
+					<span>Profile</span>
+				</a>
+				<a href="wallet.html" class="sidebar-item">
+					<i class="fas fa-wallet sidebar-icon"></i>
+					<span>Wallet</span>
+				</a>
+				<a href="messages.html" class="sidebar-item">
+					<i class="fas fa-envelope sidebar-icon"></i>
+					<span>Messages</span>
+				</a>
+				<a href="settings.html" class="sidebar-item active">
+					<i class="fas fa-cog sidebar-icon"></i>
+					<span>Settings</span>
+				</a>
+			</div>
+			
+			<div class="user-profile mt-auto p-lg">
+				<div class="user-info flex items-center">
+					<div class="user-avatar" id="user-avatar-initials">--</div>
+					<div class="user-details">
+						<h4 class="text-md font-semibold" id="user-name">—</h4>
+						<p class="text-sm text-secondary" id="user-membership">—</p>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<div class="main-content">
+			<div class="page-header mb-xl">
+				<div class="header flex justify-between items-center mb-lg">
+					<div>
+						<h2 class="page-title">Settings</h2>
+						<p class="page-subtitle">Manage your account preferences</p>
+					</div>
+				</div>
+			</div>
+
+			<div class="card mb-xl">
+				<div class="card-header">
+					<h3 class="card-title">Account Settings</h3>
+				</div>
+				<div class="card-body">
+					<div class="form-group mb-lg">
+						<label class="form-label">Password</label>
+						<p class="text-md text-secondary mb-md">Last changed 3 months ago</p>
+						<button class="btn btn-outline btn-sm">
+							<i class="fas fa-lock"></i> Change Password
+						</button>
+					</div>
+					<div class="form-group">
+						<label class="form-label">Two-Factor Authentication</label>
+						<p class="text-md text-secondary mb-md">Add an extra layer of security to your account</p>
+						<button class="btn btn-outline btn-sm">
+							<i class="fas fa-shield-alt"></i> Enable 2FA
+						</button>
+					</div>
+				</div>
+			</div>
+
+			<div class="card mb-xl">
+				<div class="card-header">
+					<h3 class="card-title">Notifications</h3>
+				</div>
+				<div class="card-body">
+					<div class="setting-item mb-lg flex justify-between items-center">
+						<div>
+							<h4 class="text-md font-semibold">Email Notifications</h4>
+							<p class="text-sm text-secondary">Receive updates about your bookings</p>
+						</div>
+						<input type="checkbox" class="checkbox-input" checked>
+					</div>
+					<div class="setting-item mb-lg flex justify-between items-center">
+						<div>
+							<h4 class="text-md font-semibold">Flight Updates</h4>
+							<p class="text-sm text-secondary">Get notified about flight delays and changes</p>
+						</div>
+						<input type="checkbox" class="checkbox-input" checked>
+					</div>
+					<div class="setting-item mb-lg flex justify-between items-center">
+						<div>
+							<h4 class="text-md font-semibold">Special Offers</h4>
+							<p class="text-sm text-secondary">Receive promotional offers and deals</p>
+						</div>
+						<input type="checkbox" class="checkbox-input">
+					</div>
+					<div class="setting-item flex justify-between items-center">
+						<div>
+							<h4 class="text-md font-semibold">SMS Notifications</h4>
+							<p class="text-sm text-secondary">Get important updates via SMS</p>
+						</div>
+						<input type="checkbox" class="checkbox-input">
+					</div>
+				</div>
+			</div>
+
+			<div class="card mb-xl">
+				<div class="card-header">
+					<h3 class="card-title">Privacy & Safety</h3>
+				</div>
+				<div class="card-body">
+					<div class="form-group mb-lg">
+						<label class="form-label">Profile Visibility</label>
+						<select class="form-control">
+							<option>Public</option>
+							<option>Friends Only</option>
+							<option>Private</option>
+						</select>
+					</div>
+					<div class="setting-item flex justify-between items-center">
+						<div>
+							<h4 class="text-md font-semibold">Allow Flight Sharing</h4>
+							<p class="text-sm text-secondary">Let others see your upcoming trips</p>
+						</div>
+						<input type="checkbox" class="checkbox-input" checked>
+					</div>
+				</div>
+			</div>
+
+			<div class="card" style="border-left: 3px solid var(--error);">
+				<div class="card-header">
+					<h3 class="card-title" style="color: var(--error);">Danger Zone</h3>
+				</div>
+				<div class="card-body">
+					<p class="text-sm text-secondary mb-lg">These actions are irreversible. Please proceed with caution.</p>
+				<button class="btn btn-error btn-sm" id="logout-all-btn">
+						<i class="fas fa-sign-out-alt"></i> Logout All Devices
+					</button>
+					<button class="btn btn-error btn-sm ml-md">
+						<i class="fas fa-trash"></i> Delete Account
+					</button>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<style>
+		.setting-item {
+			padding: var(--space-md) 0;
+			border-bottom: 1px solid var(--neutral-light);
+		}
+
+		.setting-item:last-child {
+			border-bottom: none;
+		}
+
+		.checkbox-input {
+			width: 24px;
+			height: 24px;
+			cursor: pointer;
+		}
+
+		.ml-md {
+			margin-left: var(--space-md);
+		}
+
+		@keyframes spin {
+			to { transform: rotate(360deg); }
+		}
+	</style>
+
+	<script src="../../js/scripts.js"></script>
+	<script>
+		$(document).ready(function() {
+			SkyWingsUI.bindSidebarClicks();
+			
+			function loadDashboard() {
+				$.ajax({
+					url: '/Flight-Booking-V2/Back-End/passenger/dashboard-passenger.php',
+					method: 'GET',
+					dataType: 'json',
+					success: function(resp) {
+						if (resp && resp.success) {
+							renderDashboard(resp.data || {});
+						}
+					},
+					error: function(xhr) {
+						console.error('Error loading dashboard data', xhr.status, xhr.responseText);
+					}
+				});
+			}
+			
+			function renderDashboard(data) {
+				const name = data.user?.name || 'Guest';
+				const membership = data.user?.membership || 'Member';
+				const initials = (name.match(/\b\w/g) || []).join('').substring(0,2).toUpperCase();
+				$('#user-name').text(name);
+				$('#user-membership').text(membership);
+				$('#user-avatar-initials').text(initials);
+			}
+			
+			loadDashboard();
+
+			$('#logout-all-btn').click(function() {
+			const confirmModal = `
+				<div class="modal active" id="logoutConfirmModal" style="z-index: 9999;">
+					<div class="modal-content" style="max-width: 400px;">
+						<div class="modal-header">
+							<h3 class="modal-title">Confirm Logout</h3>
+							<button class="modal-close" id="cancel-logout">&times;</button>
+						</div>
+						<div class="modal-body">
+							<div class="flex items-center gap-lg mb-lg">
+								<i class="fas fa-sign-out-alt" style="font-size: 3rem; color: var(--error);"></i>
+								<p class="text-md">Are you sure you want to logout from all devices? You will need to login again to access your account.</p>
+							</div>
+						</div>
+						<div class="modal-footer" style="display: flex; gap: var(--space-md); justify-content: flex-end;">
+							<button class="btn btn-secondary" id="cancel-logout-btn">Cancel</button>
+							<button class="btn btn-error" id="confirm-logout-btn">
+								<i class="fas fa-sign-out-alt"></i> Yes, Logout
+							</button>
+						</div>
+					</div>
+				</div>
+			`;
+			
+			$('#logoutConfirmModal').remove();
+			$('body').append(confirmModal);
+			
+			$('#cancel-logout, #cancel-logout-btn').click(function() {
+				$('#logoutConfirmModal').removeClass('active');
+				setTimeout(() => $('#logoutConfirmModal').remove(), 300);
+			});
+			
+			$('#confirm-logout-btn').click(function() {
+				$(this).prop('disabled', true).html('<div class="loading-spinner" style="width: 16px; height: 16px; border: 2px solid rgba(255,255,255,0.3); border-top: 2px solid white; border-radius: 50%; animation: spin 0.8s linear infinite;"></div> Logging out...');
+				
+				$.ajax({
+					url: '/Flight-Booking-V2/Back-End/auth(log-register)/logout.php',
+					method: 'POST',
+					dataType: 'json',
+					success: function(resp) {
+						if (resp.status) {
+							localStorage.clear();
+							sessionStorage.clear();
+							window.location.href = '../landingPage.html';
+						}
+					},
+					error: function() {
+						alert('Error logging out. Please try again.');
+						$('#logoutConfirmModal').removeClass('active');
+						setTimeout(() => $('#logoutConfirmModal').remove(), 300);
+					}
+				});
+			});
+        }); 
+
+			$('.btn-error:not(#logout-all-btn)').click(function() {
+				const action = $(this).text().trim();
+				if (action.includes('Delete')) {
+					if (confirm('Are you sure? This action cannot be undone.')) {
+						alert('Account deletion initiated. Please check your email to confirm.');
+					}
+				}
+			});
+
+			$('.btn-outline').click(function() {
+				const action = $(this).text().trim();
+				if (action.includes('Password')) {
+					alert('Change password functionality coming soon!');
+				} else if (action.includes('2FA')) {
+					alert('Two-factor authentication setup coming soon!');
+				}
+			});
+		});
+	</script>
+</body>
+</html>

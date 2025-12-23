@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SkyWings - View Booking</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="../../css/styles.css">
+    <script src="../../js/jquery.js"></script>
+    <script src="/Flight-Booking-V2/Front-end/js/session-guard.js"></script>
+    <script src="../../js/scripts.js"></script>
+</head>
+<body>
+<div class="container flex">
+    <div class="sidebar">
+        <div class="sidebar-brand">
+            <div class="logo flex items-center gap-sm">
+                <i class="fas fa-plane navbar-logo"></i>
+                <h1>SkyWings</h1>
+            </div>
+        </div>
+        <div class="sidebar-menu">
+            <a href="../userDashboard.html" class="sidebar-item"><i class="fas fa-home sidebar-icon"></i><span>Dashboard</span></a>
+            <a href="bookFlight.html" class="sidebar-item"><i class="fas fa-plane-departure sidebar-icon"></i><span>Book Flight</span></a>
+            <a href="myTrips.html" class="sidebar-item active"><i class="fas fa-suitcase sidebar-icon"></i><span>My Trips</span></a>
+            <a href="profile.html" class="sidebar-item"><i class="fas fa-user sidebar-icon"></i><span>Profile</span></a>
+            <a href="wallet.html" class="sidebar-item"><i class="fas fa-wallet sidebar-icon"></i><span>Wallet</span></a>
+            <a href="messages.html" class="sidebar-item"><i class="fas fa-envelope sidebar-icon"></i><span>Messages</span></a>
+            <a href="settings.html" class="sidebar-item"><i class="fas fa-cog sidebar-icon"></i><span>Settings</span></a>
+        </div>
+        <div class="user-profile mt-auto p-lg">
+            <div class="user-info flex items-center">
+                <div class="user-avatar" id="user-avatar-initials">--</div>
+                <div class="user-details">
+                    <h4 class="text-md font-semibold" id="user-name">—</h4>
+                    <p class="text-sm text-secondary" id="user-membership">—</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="main-content">
+        <div class="page-header mb-xl">
+            <div class="header flex justify-between items-center mb-lg">
+                <div>
+                    <h2 class="page-title">Booking Details</h2>
+                    <p class="page-subtitle">View your flight booking information</p>
+                </div>
+                <div class="header-actions flex items-center gap-md">
+                    <a class="btn btn-outline" href="myTrips.html"><i class="fas fa-arrow-left"></i> Back to My Trips</a>
+                </div>
+            </div>
+            <p class="text-sm text-secondary" id="booking-status-msg">Loading booking...</p>
+        </div>
+
+        <div class="grid grid-cols-2 gap-lg mb-lg">
+            <div class="card">
+                <div class="card-header"><h4 class="card-title"><i class="fas fa-ticket-alt"></i> Booking Information</h4></div>
+                <div class="card-body">
+                    <p class="text-sm text-secondary">Booking ID</p>
+                    <p class="text-xl font-semibold" id="b-id">—</p>
+                    <p class="text-sm text-secondary mt-md">Status</p>
+                    <p class="text-md" id="b-status">—</p>
+                    <p class="text-sm text-secondary mt-md">Booked On</p>
+                    <p class="text-md" id="b-date">—</p>
+                </div>
+            </div>
+            <div class="card">
+                <div class="card-header"><h4 class="card-title"><i class="fas fa-plane"></i> Flight Details</h4></div>
+                <div class="card-body">
+                    <p class="text-sm text-secondary">Flight Code</p>
+                    <p class="text-md" id="f-code">—</p>
+                    <p class="text-sm text-secondary mt-md">Airline</p>
+                    <p class="text-md" id="f-airline">—</p>
+                    <p class="text-sm text-secondary mt-md">Fare</p>
+                    <p class="text-md" id="f-fee">—</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="card mb-lg">
+            <div class="card-header"><h4 class="card-title"><i class="fas fa-route"></i> Route & Schedule</h4></div>
+            <div class="card-body">
+                <div class="grid grid-cols-3 gap-lg">
+                    <div>
+                        <p class="text-sm text-secondary">Route</p>
+                        <p class="text-md font-semibold" id="f-route">—</p>
+                    </div>
+                    <div>
+                        <p class="text-sm text-secondary">Departure</p>
+                        <p class="text-md" id="f-start">—</p>
+                    </div>
+                    <div>
+                        <p class="text-sm text-secondary">Arrival</p>
+                        <p class="text-md" id="f-end">—</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-header"><h4 class="card-title"><i class="fas fa-cog"></i> Actions</h4></div>
+            <div class="card-body">
+                <div class="flex gap-md">
+                    <button class="btn btn-secondary" onclick="window.location.href='myTrips.html'">
+                        <i class="fas fa-arrow-left"></i> Back
+                    </button>
+                    <button class="btn btn-primary" id="message-company-btn">
+                        <i class="fas fa-envelope"></i> Message Company
+                    </button>
+                    <button class="btn btn-error" id="cancel-booking-btn" style="display:none;">
+                        <i class="fas fa-times"></i> Cancel Booking
+                    </button>
+                    <p class="text-sm text-secondary" id="action-note"></p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+$(function() {
+    SkyWingsUI.bindSidebarClicks();
+
+    $.get('/Flight-Booking-V2/Back-End/passenger/dashboard-passenger.php', function(resp){
+        if (resp && resp.success) {
+            const name = resp.data?.user?.name || 'Guest';
+            const initials = (name.match(/\b\w/g) || []).join('').substring(0,2).toUpperCase();
+            $('#user-name').text(name);
+            $('#user-membership').text('Traveler');
+            $('#user-avatar-initials').text(initials);
+        }
+    }, 'json');
+
+    const params = new URLSearchParams(window.location.search);
+    const bookingId = params.get('booking_id');
+    let currentFlightId = null;
+    
+    if (!bookingId) {
+        $('#booking-status-msg').text('No booking ID provided.');
+        return;
+    }
+
+    function loadBooking() {
+        $('#booking-status-msg').text('Loading booking...');
+        $.ajax({
+            url: '/Flight-Booking-V2/Back-End/passenger/get-bookings.php',
+            method: 'GET',
+            dataType: 'json',
+            success: function(resp) {
+                if (!resp?.success || !resp.data) {
+                    $('#booking-status-msg').text('Unable to load bookings');
+                    return;
+                }
+                
+                const booking = resp.data.find(b => b.booking_id == bookingId);
+                if (!booking) {
+                    $('#booking-status-msg').text('Booking not found');
+                    return;
+                }
+                
+                currentFlightId = booking.flight_id;
+                $('#booking-status-msg').text('');
+                $('#b-id').text(booking.booking_id);
+                $('#b-status').html(`<span class="badge ${getStatusClass(booking.status)}">${ucfirst(booking.status)}</span>`);
+                $('#b-date').text(booking.booked_at);
+                $('#f-code').text(booking.flight_code);
+                $('#f-airline').text(booking.company_name);
+                $('#f-fee').text('$' + parseFloat(booking.fees).toFixed(2));
+                $('#f-route').text(booking.route);
+                $('#f-start').text(booking.start_datetime);
+                $('#f-end').text(booking.end_datetime);
+                
+                if ((booking.status === 'registered' || booking.status === 'pending') && booking.is_completed === 0) {
+                    $('#cancel-booking-btn').show();
+                    $('#action-note').text('You can cancel this booking and receive a refund.');
+                } else {
+                    $('#cancel-booking-btn').hide();
+                    if (booking.status === 'cancelled') {
+                        $('#action-note').text('This booking has been cancelled.');
+                    } else if (booking.is_completed === 1) {
+                        $('#action-note').text('This flight has been completed.');
+                    } else {
+                        $('#action-note').text('No actions available for this booking.');
+                    }
+                }
+            },
+            error: function(xhr) {
+                $('#booking-status-msg').text('Error loading booking');
+                console.error('booking load error', xhr.responseText);
+            }
+        });
+    }
+
+    function getStatusClass(status) {
+        switch(status) {
+            case 'registered': return 'badge-success';
+            case 'pending': return 'badge-warning';
+            case 'completed': return 'badge-success';
+            case 'cancelled': return 'badge-secondary';
+            default: return 'badge-secondary';
+        }
+    }
+
+    function ucfirst(str) {
+        return str.charAt(0).toUpperCase() + str.slice(1);
+    }
+
+    $('#message-company-btn').on('click', function() {
+        if (!currentFlightId) {
+            alert('Flight information not loaded');
+            return;
+        }
+        $.ajax({
+            url: '/Flight-Booking-V2/Back-End/passenger/get-company-from-booking.php',
+            method: 'GET',
+            data: { booking_id: bookingId },
+            dataType: 'json',
+            success: function(resp) {
+                if (resp && resp.success) {
+                    window.location.href = 'messages.html?chat_with=' + resp.data.company_user_id + '&flight_id=' + currentFlightId;
+                } else {
+                    alert('Unable to load company information');
+                }
+            },
+            error: function() {
+                alert('Error loading company information');
+            }
+        });
+    });
+
+    $('#cancel-booking-btn').on('click', function() {
+        if (!confirm('Are you sure you want to cancel this booking? You will receive a refund.')) {
+            return;
+        }
+        
+        const btn = $(this);
+        btn.prop('disabled', true).text('Cancelling...');
+        
+        $.ajax({
+            url: '/Flight-Booking-V2/Back-End/passenger/cancel-booking.php',
+            method: 'POST',
+            dataType: 'json',
+            data: { booking_id: bookingId },
+            success: function(resp) {
+                if (resp && resp.success) {
+                    alert('Booking cancelled successfully! Refund: $' + parseFloat(resp.data.refund_amount).toFixed(2));
+                    window.location.href = 'myTrips.html';
+                } else {
+                    alert(resp?.message || 'Cancellation failed');
+                    btn.prop('disabled', false).html('<i class="fas fa-times"></i> Cancel Booking');
+                }
+            },
+            error: function(xhr) {
+                alert('Error cancelling booking');
+                console.error('cancel error', xhr.responseText);
+                btn.prop('disabled', false).html('<i class="fas fa-times"></i> Cancel Booking');
+            }
+        });
+    });
+
+    loadBooking();
+});
+</script>
+</body>
+</html>

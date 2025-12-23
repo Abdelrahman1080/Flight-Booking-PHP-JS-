@@ -22,7 +22,6 @@ if (!in_array($user_type, ['company', 'passenger'])) {
 
 $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
 
-// check email exists
 $check = $conn->prepare("SELECT id FROM users WHERE email = ?");
 $check->bind_param("s", $email);
 $check->execute();
@@ -42,13 +41,10 @@ $stmt->bind_param("sssss", $name, $email, $hashedPassword, $tel, $user_type);
 if ($stmt->execute()) {
     $userId = $stmt->insert_id;
     
-    // Set session
     $_SESSION['user_id'] = $userId;
     $_SESSION['user_type'] = $user_type;
     
-    // AUTO-CREATE passenger or company record immediately
     if ($user_type === 'company') {
-        // Create empty company record
         $companyStmt = $conn->prepare("
             INSERT INTO companies (user_id, account_balance)
             VALUES (?, 0)
@@ -69,7 +65,6 @@ if ($stmt->execute()) {
             ]
         ]);
     } else {
-        // Create empty passenger record
         $passengerStmt = $conn->prepare("
             INSERT INTO passengers (user_id, account_balance)
             VALUES (?, 0)

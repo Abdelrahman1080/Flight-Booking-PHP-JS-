@@ -9,7 +9,6 @@ if (!isset($_SESSION['user_id']) || $_SESSION['user_type'] !== 'company') {
     jsonResponse(false, "Unauthorized");
 }
 
-// Enforce strict error reporting for clearer failures
 mysqli_report(MYSQLI_REPORT_ERROR | MYSQLI_REPORT_STRICT);
 
 $payload = json_decode(file_get_contents("php://input"), true);
@@ -29,7 +28,10 @@ if (!$flightCode || !$name || !$start || !$end) {
     jsonResponse(false, "Missing flight data");
 }
 
-// Ensure company exists for current session
+if (count($itinerary) < 2) {
+    jsonResponse(false, "Flight route must have at least 2 stops (origin and destination)");
+}
+
 $stmt = $conn->prepare("SELECT id FROM companies WHERE user_id = ? LIMIT 1");
 $stmt->bind_param("i", $_SESSION['user_id']);
 $stmt->execute();
@@ -41,7 +43,6 @@ if (!$company) {
 $conn->begin_transaction();
 
 try {
-    // Insert flight
     $stmt = $conn->prepare("
         INSERT INTO flights (company_id, flight_code, name, fees, max_passengers, start_datetime, end_datetime)
         VALUES (?, ?, ?, ?, ?, ?, ?)
@@ -59,7 +60,6 @@ try {
     $stmt->execute();
     $flightId = $stmt->insert_id;
 
-    // Insert itinerary stops (if any)
     foreach ($itinerary as $index => $city) {
         $cityName = trim((string)$city);
         if ($cityName === '') {

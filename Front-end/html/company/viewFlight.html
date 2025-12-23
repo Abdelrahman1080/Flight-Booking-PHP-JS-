@@ -27,7 +27,7 @@
             <a href="companyProfile.html" class="sidebar-item" data-page="profile"><i class="fas fa-id-card sidebar-icon"></i><span>Profile</span></a>
             <a href="analytics.html" class="sidebar-item" data-page="analytics"><i class="fas fa-chart-bar sidebar-icon"></i><span>Analytics</span></a>
             <a href="companyMessages.html" class="sidebar-item" data-page="messages"><i class="fas fa-envelope sidebar-icon"></i><span>Messages</span></a>
-            <a href="../companyDashboard.html#settings" class="sidebar-item" data-page="settings"><i class="fas fa-cog sidebar-icon"></i><span>Settings</span></a>
+            <a href="settings.html" class="sidebar-item" data-page="settings"><i class="fas fa-cog sidebar-icon"></i><span>Settings</span></a>
         </div>
         <div class="user-profile mt-auto p-lg">
             <div class="user-info flex items-center">
@@ -94,6 +94,7 @@
                 <div class="card-header"><h4 class="card-title"><i class="fas fa-route"></i> Itinerary</h4></div>
                 <div class="card-body">
                     <p class="text-md" id="f-itinerary">—</p>
+                    <div id="flight-itinerary-display" style="background: #f5f5f5; padding: 1rem; border-radius: 8px; margin-top: 1rem; display: flex; gap: 0.5rem; flex-wrap: wrap; align-items: center; justify-content: center;">—</div>
                 </div>
             </div>
         </div>
@@ -119,10 +120,11 @@
 <script>
 $(function() {
     SkyWingsUI.initNavigation('manage-flights');
+    SkyWingsUI.bindSidebarClicks();
 
     // Sidebar profile
     $.ajax({
-        url: '../../../Back-End/company/dashboard-company.php',
+        url: '/Flight-Booking-V2/Back-End/company/company-profile.php',
         method: 'GET',
         dataType: 'json',
         success: function(resp) {
@@ -130,7 +132,7 @@ $(function() {
                 const c = resp.data.company;
                 const logo = c.logo || null;
                 if (logo) {
-                    const logoPath = logo.startsWith('http') ? logo : `../../../Back-End/${logo}`;
+                    const logoPath = logo.startsWith('http') ? logo : `/Flight-Booking-V2/Back-End/${logo}`;
                     $('#company-avatar-logo').attr('src', logoPath).show();
                     $('#company-avatar-text').hide();
                 } else {
@@ -153,7 +155,7 @@ $(function() {
     function loadFlight() {
         $('#flight-status-msg').text('Loading flight...');
         $.ajax({
-            url: '../../../Back-End/company/flight_details.php',
+            url: '/Flight-Booking-V2/Back-End/company/flight_details.php',
             method: 'GET',
             data: { flight_id: flightId },
             dataType: 'json',
@@ -164,6 +166,11 @@ $(function() {
                 }
                 const f = resp.data.flight;
                 const itinerary = (resp.data.itinerary || []).map(i => i.city_name).join(' → ');
+                const pending = (resp.data.pending_passengers || []).length;
+                const registered = (resp.data.registered_passengers || []).length;
+                const maxSeats = f.max_passengers || 0;
+                const remaining = Math.max(0, maxSeats - registered);
+                
                 $('#flight-status-msg').text('');
                 $('#f-code').text(f.flight_code || '—');
                 $('#f-name').text(f.name || '—');
@@ -172,9 +179,22 @@ $(function() {
                 $('#f-fee').text(f.fees != null ? `$${f.fees}` : '—');
                 $('#f-start').text(f.start_datetime || '—');
                 $('#f-end').text(f.end_datetime || '—');
+                
+                // Display itinerary with proper formatting
+                const itineraryElements = (resp.data.itinerary || []).map(i => `<span style="background: #e3f2fd; padding: 0.5rem 1rem; border-radius: 6px; margin: 0 0.5rem;">${i.city_name}</span>`).join('<span style="margin: 0 0.25rem;">→</span>');
+                $('#flight-itinerary-display').html(itineraryElements || '—');
+                
                 $('#f-itinerary').text(itinerary || '—');
-                $('#f-pending').text(`${(resp.data.pending_passengers || []).length} passengers`);
-                $('#f-registered').text(`${(resp.data.registered_passengers || []).length} passengers`);
+                $('#f-pending').text(`${pending} passengers`);
+                $('#f-registered').text(`${registered} passengers`);
+                
+                // Show remaining seats
+                const seatsCard = $('div.card:has(#f-registered)');
+                if (seatsCard.length && seatsCard.find('#remaining-seats').length === 0) {
+                    const seatsSection = `<p class="text-sm text-secondary mt-md">Remaining Seats</p>
+                    <p class="text-md" id="remaining-seats" style="${remaining > 0 ? 'color: var(--success);' : 'color: var(--error);'}">${remaining} of ${maxSeats}</p>`;
+                    seatsCard.find('.card-body').append(seatsSection);
+                }
             },
             error: function(xhr) {
                 $('#flight-status-msg').text('Network error loading flight.');

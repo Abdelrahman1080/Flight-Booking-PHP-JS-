@@ -10,7 +10,6 @@
     <script src="/Flight-Booking-V2/Front-end/js/session-guard.js"></script>
     <script src="../js/scripts.js"></script>
     <style>
-        /* Dashboard Utilities */
         .mt-auto {
             margin-top: auto;
         }
@@ -47,7 +46,6 @@
             margin-right: var(--space-md);
         }
 
-        /* Stats Grid */
         .stats-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
@@ -127,7 +125,6 @@
             color: var(--error);
         }
 
-        /* Progress Bar */
         .progress-bar {
             width: 100%;
             height: 8px;
@@ -161,7 +158,6 @@
             align-items: center;
         }
 
-        /* Responsive */
         @media (max-width: 768px) {
             .stats-grid {
                 grid-template-columns: 1fr;
@@ -171,7 +167,6 @@
 </head>
 <body>
     <div class="container flex">
-        <!-- Sidebar -->
         <div class="sidebar">
             <div class="sidebar-brand">
                 <div class="logo flex items-center gap-sm">
@@ -209,7 +204,7 @@
                     <i class="fas fa-envelope sidebar-icon"></i>
                     <span>Messages</span>
                 </a>
-                <a href="companyDashboard.html#settings" class="sidebar-item" data-page="settings">
+                <a href="company/settings.html" class="sidebar-item" data-page="settings">
                     <i class="fas fa-cog sidebar-icon"></i>
                     <span>Settings</span>
                 </a>
@@ -229,7 +224,6 @@
             </div>
         </div>
 
-        <!-- Main Content -->
         <div class="main-content">
             <div class="page-header mb-xl">
                 <div class="header flex justify-between items-center mb-lg">
@@ -245,7 +239,6 @@
                 </div>
             </div>
 
-            <!-- Dashboard Cards -->
             <div class="stats-grid mb-xl" id="company-stats">
                 <div class="stat-card">
                     <div class="stat-icon card-icon-primary">
@@ -292,7 +285,6 @@
                 </div>
             </div>
 
-            <!-- Active Flights Table -->
             <div class="card mb-xl">
                 <div class="card-header flex justify-between items-center">
                     <h3 class="card-title">Recent Bookings</h3>
@@ -313,14 +305,12 @@
                                 </tr>
                             </thead>
                             <tbody id="recent-bookings-body">
-                                <!-- Dynamic rows -->
                             </tbody>
                         </table>
                     </div>
                 </div>
             </div>
 
-            <!-- Analytics Section -->
             <div class="grid grid-cols-2 gap-lg">
                 <div class="card">
                     <h3 class="card-title mb-md">Top Routes</h3>
@@ -373,59 +363,46 @@
             SkyWingsUI.initNavigation('dashboard');
             SkyWingsUI.bindSidebarClicks();
 
-            // Add Flight button
             $('#cta-add-flight').click(function(e) {
                 e.preventDefault();
                 window.location.href = 'company/addFlight.html';
             });
 
-            // Delegated manage/review buttons for dynamic rows
             $(document).on('click', '.btn-view-booking', function() {
                 alert('Booking details would open here.');
             });
 
             function renderCompanyDashboard(data) {
-                const name = data.company?.name || 'Company';
-                const role = 'Flight Operations';
-                const initials = data.company?.avatarInitials || (name.match(/\b\w/g) || []).join('').substring(0,2).toUpperCase();
-                const logo = data.company?.logo || null;
+                const companyName = data.company?.name || 'Company';
                 
-                // Update sidebar profile - show logo if available, otherwise initials
-                if (logo) {
-                    const logoPath = logo.startsWith('http') ? logo : `../../Back-End/${logo}`;
-                    $('#company-avatar-logo').attr('src', logoPath).show();
-                    $('#company-avatar-text').hide();
-                } else {
-                    $('#company-avatar-logo').hide();
-                    $('#company-avatar-text').text(initials).show();
-                }
-                
-                $('#companyName').text(name);
-                $('#companyRole').text(role);
-                
-                $('#companyWelcome').text(`Welcome back, ${name}! Here's your flight operations overview`);
+                $('#companyWelcome').text(`Welcome back, ${companyName}! Here's your flight operations overview`);
 
-                // Stats
                 $('#stat-active-flights').text(data.stats?.activeFlights ?? '0');
                 $('#stat-total-bookings').text(data.stats?.totalBookings ?? '0');
                 $('#stat-pending-confirmations').text(data.stats?.pendingConfirmations ?? '0');
                 $('#stat-revenue').text(data.stats?.revenueThisMonth ?? '$0');
 
-                // Recent bookings
                 const tbody = $('#recent-bookings-body');
                 tbody.empty();
-                (data.recentBookings || []).forEach(function(b){
-                    const row = `
-                        <tr>
-                            <td>${b.id}</td>
-                            <td>${b.passenger}</td>
-                            <td>${b.flight}</td>
-                            <td><span class="badge ${b.status === 'Confirmed' ? 'badge-success' : 'badge-warning'}">${b.status}</span></td>
-                            <td class="text-right"><button class="btn btn-outline btn-sm btn-view-booking">View</button></td>
-                        </tr>
-                    `;
-                    tbody.append(row);
-                });
+                if (!data.recentBookings || data.recentBookings.length === 0) {
+                    tbody.append('<tr><td colspan="5" class="text-center text-secondary">No recent bookings</td></tr>');
+                } else {
+                    (data.recentBookings || []).forEach(function(b){
+                        const statusClass = b.status === 'Registered' ? 'badge-success' : 
+                                          b.status === 'Pending' ? 'badge-warning' : 
+                                          b.status === 'Completed' ? 'badge-success' : 'badge-secondary';
+                        const row = `
+                            <tr>
+                                <td>${b.id}</td>
+                                <td>${b.passenger}</td>
+                                <td>${b.flight}</td>
+                                <td><span class="badge ${statusClass}">${b.status}</span></td>
+                                <td class="text-right"><button class="btn btn-outline btn-sm btn-view-booking">View</button></td>
+                            </tr>
+                        `;
+                        tbody.append(row);
+                    });
+                }
 
                 // Top routes
                 const routes = data.topRoutes || [];
@@ -445,7 +422,6 @@
                     $('.progress.progress-3').css('width', (routes[2].percent || 0) + '%');
                 }
 
-                // Recent activity
                 const actList = $('#company-recent-activity');
                 if (data.recentActivity && data.recentActivity.length) {
                     actList.empty();
@@ -465,15 +441,37 @@
                 }
             }
 
-            function loadCompanyDashboard() {
+            function loadUserProfile() {
                 $.ajax({
-                    url: '../../Back-End/company/dashboard-company.php',
+                    url: '/Flight-Booking-V2/Back-End/auth(log-register)/get-user.php',
                     method: 'GET',
                     dataType: 'json',
                     success: function(resp) {
-                           console.log('=== DASHBOARD RESPONSE ===', resp);
+                        if (resp && resp.success && resp.data) {
+                            const user = resp.data;
+                            const userName = user.name || user.username || 'User';
+                            const userType = user.user_type === 'company' ? 'Company Account' : 'User';
+                            const initials = (userName.match(/\b\w/g) || []).join('').substring(0,2).toUpperCase();
+                            
+                            $('#company-avatar-logo').hide();
+                            $('#company-avatar-text').text(initials).show();
+                            $('#companyName').text(userName);
+                            $('#companyRole').text(userType);
+                        }
+                    },
+                    error: function(xhr) {
+                        console.error('Error loading user profile', xhr.status, xhr.responseText);
+                    }
+                });
+            }
+
+            function loadCompanyDashboard() {
+                $.ajax({
+                    url: '/Flight-Booking-V2/Back-End/company/dashboard-company.php',
+                    method: 'GET',
+                    dataType: 'json',
+                    success: function(resp) {
                         if (resp && resp.success) {
-                               console.log('Company data:', resp.data?.company);
                             renderCompanyDashboard(resp.data || {});
                         } else {
                             console.warn('Failed to load company dashboard:', resp?.message);
@@ -481,11 +479,26 @@
                     },
                     error: function(xhr) {
                         console.error('Error loading company dashboard', xhr.status, xhr.responseText);
-                           console.log('Response text:', xhr.responseText);
+                    }
+                });
+
+                $.ajax({
+                    url: '/Flight-Booking-V2/Back-End/company/company-revenue.php',
+                    method: 'GET',
+                    dataType: 'json',
+                    success: function(resp) {
+                        if (resp && resp.success) {
+                            const revenue = resp.data?.total_revenue || 0;
+                            $('#stat-revenue').text('$' + parseFloat(revenue).toLocaleString(undefined, { maximumFractionDigits: 2 }));
+                        }
+                    },
+                    error: function(xhr) {
+                        console.error('Revenue load failed', xhr.status, xhr.responseText);
                     }
                 });
             }
 
+            loadUserProfile();
             loadCompanyDashboard();
         });
     </script>

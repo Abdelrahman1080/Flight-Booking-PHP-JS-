@@ -1,0 +1,617 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>SkyWings - Wallet</title>
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+	<link rel="stylesheet" href="../../css/styles.css">
+	<script src="../../js/jquery.js"></script>
+	<script src="/Flight-Booking-V2/Front-end/js/session-guard.js"></script>
+</head>
+<body>
+	<div class="container flex">
+		<div class="sidebar">
+			<div class="sidebar-brand">
+				<div class="logo flex items-center gap-sm">
+					<i class="fas fa-plane navbar-logo"></i>
+					<h1>SkyWings</h1>
+				</div>
+			</div>
+			
+			<div class="sidebar-menu">
+				<a href="../userDashboard.html" class="sidebar-item">
+					<i class="fas fa-home sidebar-icon"></i>
+					<span>Dashboard</span>
+				</a>
+				<a href="bookFlight.html" class="sidebar-item">
+					<i class="fas fa-plane-departure sidebar-icon"></i>
+					<span>Book Flight</span>
+				</a>
+				<a href="myTrips.html" class="sidebar-item">
+					<i class="fas fa-suitcase sidebar-icon"></i>
+					<span>My Trips</span>
+				</a>
+				<a href="profile.html" class="sidebar-item">
+					<i class="fas fa-user sidebar-icon"></i>
+					<span>Profile</span>
+				</a>
+				<a href="wallet.html" class="sidebar-item active">
+					<i class="fas fa-wallet sidebar-icon"></i>
+					<span>Wallet</span>
+				</a>
+				<a href="messages.html" class="sidebar-item">
+					<i class="fas fa-envelope sidebar-icon"></i>
+					<span>Messages</span>
+				</a>
+				<a href="settings.html" class="sidebar-item">
+					<i class="fas fa-cog sidebar-icon"></i>
+					<span>Settings</span>
+				</a>
+			</div>
+			
+			<div class="user-profile mt-auto p-lg">
+				<div class="user-info flex items-center">
+					<div class="user-avatar" id="user-avatar-initials">--</div>
+					<div class="user-details">
+						<h4 class="text-md font-semibold" id="user-name">—</h4>
+						<p class="text-sm text-secondary" id="user-membership">—</p>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<!-- Main Content -->
+		<div class="main-content">
+			<div class="page-header mb-xl">
+				<div class="header flex justify-between items-center mb-lg">
+					<div>
+						<h2 class="page-title">Wallet</h2>
+						<p class="page-subtitle">Manage your payment methods and balance</p>
+					</div>
+					<div class="header-actions flex items-center gap-md">
+						<button class="btn btn-primary btn-sm" id="add-balance-btn">
+							<i class="fas fa-plus"></i> Add Funds
+						</button>
+					</div>
+				</div>
+			</div>
+
+			<!-- Balance Overview -->
+			<div class="stats-grid mb-xl">
+				<div class="stat-card">
+					<div class="stat-icon card-icon-primary">
+						<i class="fas fa-wallet"></i>
+					</div>
+					<div class="stat-content">
+						<div class="stat-value" id="balance-amount">$0.00</div>
+						<div class="stat-label">Account Balance</div>
+					</div>
+				</div>
+
+				<div class="stat-card">
+					<div class="stat-icon card-icon-success">
+						<i class="fas fa-arrow-down"></i>
+					</div>
+					<div class="stat-content">
+						<div class="stat-value" id="total-spent">$0.00</div>
+						<div class="stat-label">Total Spent</div>
+					</div>
+				</div>
+
+				<div class="stat-card">
+					<div class="stat-icon card-icon-warning">
+						<i class="fas fa-history"></i>
+					</div>
+					<div class="stat-content">
+						<div class="stat-value" id="last-transaction">—</div>
+						<div class="stat-label">Last Transaction</div>
+					</div>
+				</div>
+
+				<div class="stat-card">
+					<div class="stat-icon card-icon-info">
+						<i class="fas fa-coins"></i>
+					</div>
+					<div class="stat-content">
+						<div class="stat-value" id="skymiles-earned">0</div>
+						<div class="stat-label">SkyMiles Earned</div>
+					</div>
+				</div>
+			</div>
+
+			<div class="grid grid-cols-2 gap-lg">
+				<!-- Payment Methods -->
+				<div class="card">
+					<div class="card-header flex justify-between items-center">
+						<h3 class="card-title">Payment Methods</h3>
+						<button class="btn btn-outline btn-sm" id="add-payment-btn">
+							<i class="fas fa-plus"></i>
+						</button>
+					</div>
+					<div class="card-body">
+						<div id="payment-methods-list">
+							<p class="text-secondary text-center py-lg">No payment methods added</p>
+						</div>
+					</div>
+				</div>
+
+				<!-- Quick Stats -->
+				<div class="card">
+					<div class="card-header">
+						<h3 class="card-title">Wallet Summary</h3>
+					</div>
+					<div class="card-body">
+						<div class="stat-item mb-lg flex justify-between items-center">
+							<div>
+								<p class="text-sm text-secondary">Available Balance</p>
+								<h4 class="text-lg font-semibold" id="summary-balance">$0.00</h4>
+							</div>
+							<i class="fas fa-wallet text-primary" style="font-size: 1.5rem;"></i>
+						</div>
+						<div class="stat-item mb-lg flex justify-between items-center">
+							<div>
+								<p class="text-sm text-secondary">This Month</p>
+								<h4 class="text-lg font-semibold" id="summary-month">$0.00</h4>
+							</div>
+							<i class="fas fa-calendar text-success" style="font-size: 1.5rem;"></i>
+						</div>
+						<div class="stat-item flex justify-between items-center">
+							<div>
+								<p class="text-sm text-secondary">This Year</p>
+								<h4 class="text-lg font-semibold" id="summary-year">$0.00</h4>
+							</div>
+							<i class="fas fa-chart-bar text-warning" style="font-size: 1.5rem;"></i>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<!-- Transaction History -->
+			<div class="card">
+				<div class="card-header flex justify-between items-center">
+					<h3 class="card-title">Transaction History</h3>
+					<div class="text-sm text-secondary" id="transaction-count"></div>
+				</div>
+				<div class="card-body">
+					<div class="table-container">
+						<table class="table">
+							<thead>
+								<tr>
+									<th>Date</th>
+									<th>Description</th>
+									<th>Amount</th>
+									<th>Status</th>
+									<th>Type</th>
+								</tr>
+							</thead>
+							<tbody id="transactions-body">
+								<tr>
+									<td colspan="5" class="text-center text-secondary py-lg">No transactions yet</td>
+								</tr>
+							</tbody>
+						</table>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<!-- Add Funds Modal -->
+	<div class="modal" id="addFundsModal">
+		<div class="modal-content" style="max-width: 400px;">
+			<div class="modal-header">
+				<h3 class="modal-title">Add Funds</h3>
+				<button class="modal-close" id="close-funds-modal">&times;</button>
+			</div>
+			<div class="modal-body">
+				<div class="form-group mb-lg">
+					<label class="form-label">Current Balance</label>
+					<p class="text-md font-semibold" id="current-balance-display">$0.00</p>
+				</div>
+				<div class="form-group mb-lg">
+					<label class="form-label" for="amount-input">Amount to Add</label>
+					<div class="flex items-center gap-md">
+						<span class="text-lg font-semibold">$</span>
+						<input type="number" id="amount-input" class="form-control" placeholder="Enter amount" min="0" step="0.01" required>
+					</div>
+				</div>
+				<div class="form-group">
+					<label class="form-label">New Balance</label>
+					<p class="text-md font-semibold text-primary" id="new-balance-preview">$0.00</p>
+				</div>
+			</div>
+			<div class="modal-footer flex gap-md justify-end">
+				<button class="btn btn-secondary" id="cancel-funds-btn">Cancel</button>
+				<button class="btn btn-primary" id="save-funds-btn">Add Funds</button>
+			</div>
+		</div>
+	</div>
+
+	<!-- Success Modal -->
+	<div class="modal" id="successModal">
+		<div class="modal-content" style="max-width: 400px;">
+			<div class="modal-body text-center py-xl">
+				<div class="success-icon mb-lg">
+					<i class="fas fa-check-circle"></i>
+				</div>
+				<h3 class="modal-title mb-md">Funds Added Successfully!</h3>
+				<p class="text-secondary mb-lg">Your account has been updated with the new balance.</p>
+				<div class="success-details card bg-light">
+					<div class="text-sm text-secondary mb-sm">New Balance</div>
+					<div class="text-2xl font-semibold text-primary" id="success-balance">$0.00</div>
+				</div>
+				<button class="btn btn-primary btn-block mt-lg" id="close-success-modal">Done</button>
+			</div>
+		</div>
+	</div>
+
+	<style>
+		.stat-item {
+			padding: var(--space-md) 0;
+			border-bottom: 1px solid var(--neutral-light);
+		}
+
+		.stat-item:last-child {
+			border-bottom: none;
+		}
+
+		.py-lg {
+			padding-top: var(--space-lg);
+			padding-bottom: var(--space-lg);
+		}
+
+		.py-xl {
+			padding-top: var(--space-xl);
+			padding-bottom: var(--space-xl);
+		}
+
+		.card-icon-info {
+			background-color: #e3f2fd !important;
+			color: #1976d2 !important;
+		}
+
+		.modal {
+			display: none;
+			position: fixed;
+			z-index: 1000;
+			left: 0;
+			top: 0;
+			width: 100%;
+			height: 100%;
+			background-color: rgba(0, 0, 0, 0.5);
+			align-items: center;
+			justify-content: center;
+		}
+
+		.modal.active {
+			display: flex;
+		}
+
+		.modal-content {
+			background-color: white;
+			border-radius: 8px;
+			box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+			max-width: 500px;
+			width: 90%;
+		}
+
+		.modal-header {
+			padding: var(--space-lg);
+			border-bottom: 1px solid var(--neutral-light);
+			display: flex;
+			justify-content: space-between;
+			align-items: center;
+		}
+
+		.modal-title {
+			margin: 0;
+			font-size: 1.25rem;
+			font-weight: 600;
+		}
+
+		.modal-close {
+			background: none;
+			border: none;
+			font-size: 1.5rem;
+			cursor: pointer;
+			color: var(--neutral-gray);
+			padding: 0;
+			width: 32px;
+			height: 32px;
+		}
+
+		.modal-close:hover {
+			color: var(--text-primary);
+		}
+
+		.modal-body {
+			padding: var(--space-lg);
+		}
+
+		.modal-footer {
+			padding: var(--space-lg);
+			border-top: 1px solid var(--neutral-light);
+			display: flex;
+			gap: var(--space-md);
+			justify-content: flex-end;
+		}
+
+		.justify-end {
+			justify-content: flex-end;
+		}
+
+		/* Success Modal Styles */
+		.success-icon {
+			font-size: 3.5rem;
+			color: #4caf50;
+			animation: scaleIn 0.5s ease-out;
+		}
+
+		@keyframes scaleIn {
+			from {
+				transform: scale(0.8);
+				opacity: 0;
+			}
+			to {
+				transform: scale(1);
+				opacity: 1;
+			}
+		}
+
+		.success-details {
+			padding: var(--space-lg);
+			border-radius: 8px;
+			background-color: #f5f5f5 !important;
+		}
+
+		.bg-light {
+			background-color: #f5f5f5;
+		}
+
+		.btn-block {
+			width: 100%;
+		}
+
+		.mt-lg {
+			margin-top: var(--space-lg);
+		}
+
+		.mb-sm {
+			margin-bottom: var(--space-sm);
+		}
+
+		.mb-md {
+			margin-bottom: var(--space-md);
+		}
+	</style>
+
+	<script src="../../js/scripts.js"></script>
+	<script>
+		$(document).ready(function() {
+			const userId = localStorage.getItem('user_id');
+			let currentBalance = 0;
+			let transactionsCache = [];
+			
+			SkyWingsUI.bindSidebarClicks();
+
+			function loadDashboard() {
+				$.ajax({
+					url: '/Flight-Booking-V2/Back-End/passenger/dashboard-passenger.php',
+					method: 'GET',
+					dataType: 'json',
+					success: function(resp) {
+						if (resp && resp.success) {
+							renderDashboard(resp.data || {});
+						}
+					},
+					error: function(xhr) {
+						console.error('Error loading dashboard data', xhr.status, xhr.responseText);
+					}
+				});
+			}
+			
+			function renderDashboard(data) {
+				const name = data.user?.name || 'Guest';
+				const membership = data.user?.membership || 'Member';
+				const initials = (name.match(/\b\w/g) || []).join('').substring(0,2).toUpperCase();
+				$('#user-name').text(name);
+				$('#user-membership').text(membership);
+				$('#user-avatar-initials').text(initials);
+			}
+
+			function loadWallet() {
+				$.ajax({
+					url: '/Flight-Booking-V2/Back-End/passenger/passenger-profile.php',
+					method: 'GET',
+					dataType: 'json',
+					success: function(resp) {
+						if (resp && resp.success && resp.data) {
+							const profile = resp.data;
+							
+							const balance = parseFloat(profile.account_balance) || 0;
+							currentBalance = balance;
+							const formattedBalance = '$' + balance.toFixed(2);
+							
+							$('#balance-amount').text(formattedBalance);
+							$('#summary-balance').text(formattedBalance);
+							$('#current-balance-display').text(formattedBalance);
+							
+					$('#skymiles-earned').text('0');
+							
+							loadTransactions();
+						}
+					},
+					error: function(xhr) {
+						console.log('Could not load wallet data:', xhr.responseText);
+					}
+				});
+			}
+
+			function loadTransactions() {
+				$.ajax({
+					url: '/Flight-Booking-V2/Back-End/passenger/wallet-transactions.php',
+					method: 'GET',
+					dataType: 'json'
+				}).done(function(resp){
+					if (resp && resp.success) {
+						transactionsCache = resp.data?.transactions || [];
+						renderTransactions(transactionsCache);
+					}
+				}).fail(function(xhr){
+					console.error('Could not load transactions', xhr.status, xhr.responseText);
+				});
+			}
+
+			function renderTransactions(items) {
+				const body = $('#transactions-body');
+				body.empty();
+				if (!items || !items.length) {
+					body.append('<tr><td colspan="5" class="text-center text-secondary py-lg">No transactions yet</td></tr>');
+					$('#transaction-count').text('0 transactions');
+					$('#total-spent').text('$0.00');
+					$('#summary-month').text('$0.00');
+					$('#summary-year').text('$0.00');
+					$('#last-transaction').text('No transactions');
+					return;
+				}
+
+				$('#transaction-count').text(items.length + ' transactions');
+
+				let totalSpent = 0;
+				let lastDesc = '';
+				const now = new Date();
+				let monthSpent = 0;
+				let yearSpent = 0;
+
+				items.forEach(function(t, idx) {
+					const amount = parseFloat(t.amount) || 0;
+					const dateStr = t.date ? new Date(t.date).toLocaleString() : '';
+					totalSpent += amount < 0 ? -amount : 0;
+					const d = t.date ? new Date(t.date) : null;
+					if (d) {
+						if (d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear()) {
+							monthSpent += amount < 0 ? -amount : 0;
+						}
+						if (d.getFullYear() === now.getFullYear()) {
+							yearSpent += amount < 0 ? -amount : 0;
+						}
+					}
+					if (idx === 0) {
+						lastDesc = t.description || '';
+					}
+
+					body.append(`
+						<tr>
+							<td>${dateStr}</td>
+							<td>${t.description || ''}</td>
+							<td class="${amount < 0 ? 'text-error' : 'text-success'}">${amount < 0 ? '-' : ''}$${Math.abs(amount).toFixed(2)}</td>
+							<td>${t.status || ''}</td>
+							<td>${t.type || ''}</td>
+						</tr>
+					`);
+				});
+
+				$('#total-spent').text('$' + totalSpent.toFixed(2));
+				$('#summary-month').text('$' + monthSpent.toFixed(2));
+				$('#summary-year').text('$' + yearSpent.toFixed(2));
+				$('#last-transaction').text(lastDesc || 'No transactions');
+				
+				const skyMiles = Math.floor(totalSpent * 100);
+				$('#skymiles-earned').text(skyMiles.toLocaleString());
+			}
+
+			$('#add-balance-btn').click(function() {
+				$('#addFundsModal').addClass('active');
+				$('#amount-input').val('').focus();
+				updateNewBalancePreview();
+			});
+
+			$('#close-funds-modal, #cancel-funds-btn').click(function() {
+				$('#addFundsModal').removeClass('active');
+				$('#amount-input').val('');
+			});
+
+			$('#amount-input').on('input', function() {
+				updateNewBalancePreview();
+			});
+
+			function updateNewBalancePreview() {
+				const addAmount = parseFloat($('#amount-input').val()) || 0;
+				const newBalance = currentBalance + addAmount;
+				$('#new-balance-preview').text('$' + newBalance.toFixed(2));
+			}
+
+			$('#save-funds-btn').click(function() {
+				const addAmount = parseFloat($('#amount-input').val());
+				
+				if (!addAmount || addAmount <= 0) {
+					alert('Please enter a valid amount');
+					return;
+				}
+
+				const newBalance = currentBalance + addAmount;
+				
+				$(this).prop('disabled', true).text('Processing...');
+				
+				$.ajax({
+					url: '/Flight-Booking-V2/Back-End/passenger/complete-passenger.php',
+					method: 'POST',
+					dataType: 'json',
+					data: {
+						action: 'update_balance',
+						account_balance: newBalance
+					},
+					success: function(resp) {
+						if (resp && resp.success) {
+							currentBalance = newBalance;
+							const formattedBalance = '$' + newBalance.toFixed(2);
+							$('#balance-amount').text(formattedBalance);
+							$('#summary-balance').text(formattedBalance);
+							
+							const skyMiles = Math.floor(newBalance * 100);
+							$('#skymiles-earned').text(skyMiles.toLocaleString());
+							
+							$('#addFundsModal').removeClass('active');
+							$('#amount-input').val('');
+							
+							$('#success-balance').text(formattedBalance);
+							$('#successModal').addClass('active');
+							
+							$('#save-funds-btn').prop('disabled', false).text('Add Funds');
+						} else {
+							alert('Error updating balance: ' + (resp?.message || 'Unknown error'));
+							$('#save-funds-btn').prop('disabled', false).text('Add Funds');
+						}
+					},
+					error: function(xhr) {
+						console.error('Error updating balance:', xhr.responseText);
+						alert('Error updating balance. Please try again.');
+						$('#save-funds-btn').prop('disabled', false).text('Add Funds');
+					}
+				});
+			});
+
+			$('#add-payment-btn').click(function() {
+				alert('Add payment method functionality coming soon!');
+			});
+
+			$(document).click(function(e) {
+				if ($(e.target).is('#addFundsModal')) {
+					$('#addFundsModal').removeClass('active');
+				}
+				if ($(e.target).is('#successModal')) {
+					$('#successModal').removeClass('active');
+				}
+			});
+
+			$('#close-success-modal').click(function() {
+				$('#successModal').removeClass('active');
+			});
+
+			loadDashboard();
+			loadWallet();
+		});
+	</script>
+</body>
+</html>

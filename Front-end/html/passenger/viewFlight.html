@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SkyWings - Flight Details</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="../../css/styles.css">
+    <script src="../../js/jquery.js"></script>
+    <script src="/Flight-Booking-V2/Front-end/js/session-guard.js"></script>
+    <script src="../../js/scripts.js"></script>
+</head>
+<body>
+    <div class="container flex">
+        <div class="sidebar">
+            <div class="sidebar-brand">
+                <div class="logo flex items-center gap-sm">
+                    <i class="fas fa-plane navbar-logo"></i>
+                    <h1>SkyWings</h1>
+                </div>
+            </div>
+            <div class="sidebar-menu">
+                <a href="../userDashboard.html" class="sidebar-item"><i class="fas fa-home sidebar-icon"></i><span>Dashboard</span></a>
+                <a href="bookFlight.html" class="sidebar-item active"><i class="fas fa-plane-departure sidebar-icon"></i><span>Book Flight</span></a>
+                <a href="myTrips.html" class="sidebar-item"><i class="fas fa-suitcase sidebar-icon"></i><span>My Trips</span></a>
+                <a href="profile.html" class="sidebar-item"><i class="fas fa-user sidebar-icon"></i><span>Profile</span></a>
+                <a href="wallet.html" class="sidebar-item"><i class="fas fa-wallet sidebar-icon"></i><span>Wallet</span></a>
+                <a href="messages.html" class="sidebar-item"><i class="fas fa-envelope sidebar-icon"></i><span>Messages</span></a>
+                <a href="settings.html" class="sidebar-item"><i class="fas fa-cog sidebar-icon"></i><span>Settings</span></a>
+            </div>
+            <div class="user-profile mt-auto p-lg">
+                <div class="user-info flex items-center">
+                    <div class="user-avatar" id="user-avatar-initials">--</div>
+                    <div class="user-details">
+                        <h4 class="text-md font-semibold" id="user-name">—</h4>
+                        <p class="text-sm text-secondary" id="user-membership">—</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="main-content">
+            <div class="page-header mb-xl">
+                <div class="header flex justify-between items-center mb-lg">
+                    <div>
+                        <h2 class="page-title">Flight Details</h2>
+                        <p class="page-subtitle" id="status-msg">Loading flight information...</p>
+                    </div>
+                    <button class="btn btn-outline" onclick="window.history.back()"><i class="fas fa-arrow-left"></i> Back</button>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-2 gap-lg mb-lg">
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">Flight Information</h3>
+                    </div>
+                    <div class="card-body">
+                        <div class="mb-md">
+                            <p class="text-sm text-secondary">Flight Code</p>
+                            <h4 class="text-lg font-semibold" id="flight-code">—</h4>
+                        </div>
+                        <div class="mb-md">
+                            <p class="text-sm text-secondary">Airline</p>
+                            <h4 class="text-lg font-semibold" id="flight-airline">—</h4>
+                        </div>
+                        <div class="mb-md">
+                            <p class="text-sm text-secondary">Fare per Ticket</p>
+                            <h4 class="text-lg font-semibold text-primary" id="flight-fee">—</h4>
+                        </div>
+                        <div>
+                            <p class="text-sm text-secondary">Available Seats</p>
+                            <h4 class="text-lg font-semibold" id="flight-seats">—</h4>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">Schedule</h3>
+                    </div>
+                    <div class="card-body">
+                        <div class="mb-md">
+                            <p class="text-sm text-secondary">Departure</p>
+                            <h4 class="text-lg font-semibold" id="flight-departure">—</h4>
+                        </div>
+                        <div class="mb-md">
+                            <p class="text-sm text-secondary">Arrival</p>
+                            <h4 class="text-lg font-semibold" id="flight-arrival">—</h4>
+                        </div>
+                        <div>
+                            <p class="text-sm text-secondary">Flight Duration</p>
+                            <h4 class="text-lg font-semibold" id="flight-duration">—</h4>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card mb-lg">
+                <div class="card-header">
+                    <h3 class="card-title"><i class="fas fa-map"></i> Flight Route</h3>
+                </div>
+                <div class="card-body">
+                    <div id="itinerary-display" style="background: #f5f5f5; padding: 1.5rem; border-radius: 8px; font-weight: 500; text-align: center;">
+                        —
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-body">
+                    <button class="btn btn-primary btn-lg" id="book-flight-btn" style="width: 100%;">
+                        <i class="fas fa-plane-departure"></i> Book This Flight
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        $(function(){
+            SkyWingsUI.bindSidebarClicks();
+
+            const flightId = new URLSearchParams(window.location.search).get('flight_id');
+            if (!flightId) {
+                $('#status-msg').text('No flight ID provided.');
+                return;
+            }
+
+            function loadUser() {
+                $.get('/Flight-Booking-V2/Back-End/passenger/dashboard-passenger.php', function(resp){
+                    if (resp && resp.success) {
+                        const name = resp.data?.user?.name || 'Guest';
+                        const membership = resp.data?.user?.membership || 'Member';
+                        const initials = (name.match(/\b\w/g) || []).join('').substring(0,2).toUpperCase();
+                        $('#user-name').text(name);
+                        $('#user-membership').text(membership);
+                        $('#user-avatar-initials').text(initials);
+                    }
+                }, 'json');
+            }
+
+            function calculateDuration(start, end) {
+                if (!start || !end) return '—';
+                const startTime = new Date(start);
+                const endTime = new Date(end);
+                const diff = (endTime - startTime) / (1000 * 60); 
+                const hours = Math.floor(diff / 60);
+                const mins = diff % 60;
+                return hours + 'h ' + mins + 'm';
+            }
+
+            function loadFlight() {
+                $.get('/Flight-Booking-V2/Back-End/passenger/flight_info.php', { flight_id: flightId }, function(resp){
+                    if (resp && resp.success) {
+                        const f = resp.data.flight;
+                        const itinerary = resp.data.itinerary || [];
+                        const registered = (resp.data.passengers?.registered || 0);
+                        const maxSeats = f.max_passengers || 0;
+                        const remaining = Math.max(0, maxSeats - registered);
+
+                        $('#flight-code').text(f.flight_code || '—');
+                        $('#flight-airline').text(f.company_name || '—');
+                        $('#flight-fee').text(f.fees ? ('$' + parseFloat(f.fees).toFixed(2)) : '—');
+                        $('#flight-seats').text(remaining + ' / ' + maxSeats + ' seats');
+
+                        $('#flight-departure').text(f.start_datetime || '—');
+                        $('#flight-arrival').text(f.end_datetime || '—');
+                        $('#flight-duration').text(calculateDuration(f.start_datetime, f.end_datetime));
+
+                        const routeString = itinerary.map(i => i.city_name).join(' → ');
+                        $('#itinerary-display').text(routeString || '—');
+
+                        if (remaining <= 0) {
+                            $('#book-flight-btn').prop('disabled', true).text('Flight Fully Booked');
+                            $('#status-msg').text('This flight is currently fully booked.');
+                        } else {
+                            $('#status-msg').text(remaining + ' seats available');
+                        }
+                    } else {
+                        $('#status-msg').text(resp?.message || 'Unable to load flight details');
+                    }
+                }, 'json').fail(function(xhr){
+                    $('#status-msg').text('Unable to load flight details');
+                    console.error('flight load failed', xhr.status, xhr.responseText);
+                });
+            }
+
+            $('#book-flight-btn').on('click', function(){
+                window.location.href = 'flightBooking.html?flight_id=' + flightId;
+            });
+
+            loadUser();
+            loadFlight();
+        });
+    </script>
+</body>
+</html>
